@@ -1,0 +1,1006 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Padova → Costa Brava → Eclissi 2026</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,700;12..96,800&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<style>
+:root{
+  --ink:#060917;
+  --ink-2:#0B1128;
+  --card:#111935;
+  --card-2:#16203F;
+  --line:rgba(180,196,255,.14);
+  --line-2:rgba(180,196,255,.28);
+  --corona:#FFC24A;
+  --corona-hot:#FF7A3D;
+  --sea:#3AD1BE;
+  --violet:#9C8CFF;
+  --text:#E9E9F5;
+  --muted:#9199BE;
+  --ok:#4ADE80;
+  --warn:#FF6B6B;
+  --r:14px;
+  --display:'Bricolage Grotesque',ui-sans-serif,system-ui,sans-serif;
+  --body:'IBM Plex Sans',ui-sans-serif,system-ui,sans-serif;
+  --mono:'IBM Plex Mono',ui-monospace,monospace;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--ink);color:var(--text);font-family:var(--body);
+  font-size:16px;line-height:1.55;-webkit-font-smoothing:antialiased;
+  padding-bottom:96px;
+  background-image:
+    radial-gradient(900px 500px at 78% -8%, rgba(255,194,74,.14), transparent 62%),
+    radial-gradient(700px 500px at 8% 12%, rgba(156,140,255,.12), transparent 60%);
+  background-attachment:fixed;
+}
+a{color:var(--sea);text-decoration:none;border-bottom:1px solid rgba(58,209,190,.32)}
+a:hover{border-bottom-color:var(--sea)}
+:focus-visible{outline:2px solid var(--corona);outline-offset:3px;border-radius:6px}
+.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+
+/* ---------- nav ---------- */
+nav{position:sticky;top:0;z-index:50;backdrop-filter:blur(14px);
+  background:rgba(6,9,23,.78);border-bottom:1px solid var(--line)}
+nav .wrap{display:flex;gap:6px;align-items:center;height:54px;overflow-x:auto;scrollbar-width:none}
+nav .wrap::-webkit-scrollbar{display:none}
+nav a{border:0;color:var(--muted);font-size:13px;letter-spacing:.04em;text-transform:uppercase;
+  font-family:var(--mono);padding:6px 10px;border-radius:99px;white-space:nowrap}
+nav a:hover{color:var(--text);background:rgba(255,255,255,.06)}
+nav .brand{font-family:var(--display);font-weight:800;color:var(--text);text-transform:none;
+  font-size:15px;letter-spacing:-.01em;padding-left:0;margin-right:8px}
+
+/* ---------- hero ---------- */
+header{padding:56px 0 40px;position:relative;overflow:hidden}
+.hero-grid{display:grid;grid-template-columns:1.15fr .85fr;gap:40px;align-items:center}
+.eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.22em;text-transform:uppercase;color:var(--corona)}
+h1{font-family:var(--display);font-weight:800;font-size:clamp(38px,6.4vw,68px);line-height:.98;
+  letter-spacing:-.03em;margin:14px 0 8px}
+h1 em{font-style:normal;color:var(--corona);display:block}
+.lede{color:var(--muted);max-width:46ch;font-size:17px}
+.counts{display:flex;gap:12px;margin-top:26px;flex-wrap:wrap}
+.count{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:12px 16px;min-width:150px}
+.count b{display:block;font-family:var(--mono);font-size:26px;color:var(--corona);line-height:1.2}
+.count span{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);font-family:var(--mono)}
+.count.sea b{color:var(--sea)}
+
+/* eclipse signature */
+.eclipse{position:relative;aspect-ratio:1;max-width:340px;margin:0 auto;width:100%}
+.eclipse svg{width:100%;height:100%;display:block}
+@keyframes transit{0%{transform:translateX(-58px)}50%{transform:translateX(0)}100%{transform:translateX(58px)}}
+@keyframes flare{0%,100%{opacity:.55}50%{opacity:1}}
+#moon{animation:transit 14s ease-in-out infinite alternate;transform-origin:center}
+#corona{animation:flare 6s ease-in-out infinite}
+@media (prefers-reduced-motion:reduce){#moon,#corona{animation:none}}
+
+/* ---------- generic ---------- */
+section{padding:52px 0;border-top:1px solid var(--line)}
+h2{font-family:var(--display);font-weight:700;font-size:clamp(26px,3.4vw,38px);letter-spacing:-.02em;margin:0 0 6px}
+h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block;letter-spacing:.2em;margin-bottom:8px}
+.sub{color:var(--muted);margin:0 0 28px;max-width:62ch}
+.grid{display:grid;gap:16px}
+.g2{grid-template-columns:repeat(2,1fr)}
+.g3{grid-template-columns:repeat(3,1fr)}
+.card{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:18px}
+.card h3{font-family:var(--display);font-size:19px;margin:0 0 6px;letter-spacing:-.01em}
+.card p{margin:0 0 8px;color:var(--muted);font-size:14.5px}
+.tag{display:inline-block;font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  padding:3px 8px;border-radius:99px;border:1px solid var(--line-2);color:var(--muted);margin:0 6px 6px 0}
+.tag.sea{color:var(--sea);border-color:rgba(58,209,190,.4)}
+.tag.sun{color:var(--corona);border-color:rgba(255,194,74,.4)}
+.tag.ok{color:var(--ok);border-color:rgba(74,222,128,.4)}
+.tag.warn{color:var(--warn);border-color:rgba(255,107,107,.45)}
+
+/* alert */
+.alert{border:1px solid rgba(255,107,107,.4);background:linear-gradient(180deg,rgba(255,107,107,.10),rgba(255,107,107,.03));
+  border-radius:var(--r);padding:18px 20px}
+.alert h3{font-family:var(--display);margin:0 0 10px;font-size:18px;color:var(--warn)}
+.alert ul{margin:0;padding-left:18px;color:var(--text);font-size:14.5px}
+.alert li{margin-bottom:6px}
+
+/* timeline */
+.leg{display:grid;grid-template-columns:96px 1fr;gap:18px;padding:20px 0;border-bottom:1px solid var(--line)}
+.leg:last-child{border-bottom:0}
+.leg .when{font-family:var(--mono);font-size:13px;color:var(--corona);padding-top:3px}
+.leg .when small{display:block;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase}
+.leg h3{font-family:var(--display);font-size:21px;margin:0 0 6px;letter-spacing:-.01em}
+.leg p{margin:0 0 10px;color:var(--muted);font-size:14.5px}
+.spots{list-style:none;padding:0;margin:8px 0 0;display:grid;gap:8px}
+.spots li{padding-left:16px;position:relative;font-size:14.5px;color:var(--text)}
+.spots li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:99px;background:var(--sea);opacity:.7}
+.spots li span{color:var(--muted)}
+
+/* options / route picker */
+.route{background:var(--card);border:1px solid var(--line);border-radius:var(--r);padding:16px 18px;margin-bottom:14px}
+.route .rt-head{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+.route .rt-head b{font-family:var(--display);font-size:18px;font-weight:700}
+.opts{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.opt{border:1px solid var(--line-2);border-radius:10px;padding:12px;cursor:pointer;display:block;
+  transition:border-color .15s,background .15s}
+.opt:hover{border-color:var(--sea)}
+.opt input{position:absolute;opacity:0;pointer-events:none}
+.opt .ol{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.opt .name{font-size:14px;font-weight:600}
+.opt .price{font-family:var(--mono);color:var(--corona);font-size:16px}
+.opt .meta{font-family:var(--mono);font-size:11.5px;color:var(--muted);margin-top:4px}
+.opt.sel{border-color:var(--corona);background:rgba(255,194,74,.09)}
+.opt.single{grid-column:1/-1}
+
+/* activity toggles */
+.act{display:flex;align-items:flex-start;gap:12px;padding:14px 16px;border:1px solid var(--line);
+  border-radius:12px;background:var(--card);margin-bottom:10px}
+.act input[type=checkbox]{margin-top:4px;width:18px;height:18px;accent-color:var(--corona);flex:none}
+.act .body{flex:1;min-width:0}
+.act .body b{font-family:var(--display);font-size:16px;display:block}
+.act .body small{color:var(--muted);display:block;font-size:13px;margin-top:3px}
+.money{display:flex;align-items:center;gap:6px;font-family:var(--mono);flex:none}
+.money input{width:74px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
+  font-family:var(--mono);font-size:15px;padding:6px 8px;border-radius:8px;text-align:right}
+.money span{color:var(--muted);font-size:13px}
+
+/* budget */
+.budget{display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start}
+.rows{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.row{display:grid;grid-template-columns:1fr auto;gap:12px;padding:11px 16px;border-bottom:1px solid var(--line);align-items:center}
+.row:last-child{border-bottom:0}
+.row .lab{font-size:14.5px}
+.row .lab small{display:block;color:var(--muted);font-size:12px;font-family:var(--mono)}
+.row .val{font-family:var(--mono);color:var(--corona);font-size:15px}
+.row.head{background:var(--card-2);font-family:var(--mono);font-size:11.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--muted)}
+.row.head .val{color:var(--muted);font-size:11.5px}
+.panel{background:linear-gradient(180deg,var(--card-2),var(--card));border:1px solid var(--line-2);
+  border-radius:var(--r);padding:20px;position:sticky;top:70px}
+.panel .big{font-family:var(--mono);font-size:44px;color:var(--corona);line-height:1;letter-spacing:-.02em}
+.panel .sm{font-family:var(--mono);font-size:26px;color:var(--sea);line-height:1.1}
+.panel label{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
+  color:var(--muted);margin:16px 0 6px}
+.panel input[type=number]{width:100%;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
+  font-family:var(--mono);font-size:16px;padding:8px 10px;border-radius:8px}
+.divider{height:1px;background:var(--line);margin:16px 0}
+.btn{display:inline-block;font-family:var(--mono);font-size:12px;letter-spacing:.1em;text-transform:uppercase;
+  padding:9px 14px;border-radius:99px;border:1px solid var(--line-2);color:var(--text);background:transparent;
+  cursor:pointer;margin-top:14px}
+.btn:hover{border-color:var(--corona);color:var(--corona)}
+
+/* sticky total */
+.sticky{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(6,9,23,.9);
+  backdrop-filter:blur(14px);border-top:1px solid var(--line-2)}
+.sticky .wrap{display:flex;align-items:center;justify-content:space-between;gap:16px;height:76px}
+.sticky .l{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.sticky .v{font-family:var(--mono);font-size:28px;color:var(--corona);line-height:1}
+.sticky .v.sea{color:var(--sea)}
+.sticky a{border:0}
+
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+.pc{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;display:flex;flex-direction:column}
+.pc .ph{aspect-ratio:16/10;background:linear-gradient(135deg,var(--card-2),var(--ink-2));position:relative;overflow:hidden}
+.pc .ph img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .45s}
+.pc .ph img.in{opacity:1}
+.pc .ph .ns{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-align:center;padding:12px}
+.pc .bd{padding:14px 15px;display:flex;flex-direction:column;gap:6px;flex:1}
+.pc .bd b{font-family:var(--display);font-size:17px;letter-spacing:-.01em}
+.pc .bd .nt{color:var(--muted);font-size:13.5px;flex:1}
+.pc .bd .rw{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.pc .day{font-family:var(--mono);font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.pc .pr{font-family:var(--mono);font-size:14px;color:var(--corona)}
+.pc .pr.free{color:var(--ok)}
+.pc a.more{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;border:0}
+
+/* collapsible day */
+.day{border-bottom:1px solid var(--line)}
+.day:last-child{border-bottom:0}
+.day summary{list-style:none;cursor:pointer;display:grid;grid-template-columns:112px 1fr auto;gap:18px;
+  align-items:baseline;padding:20px 0;transition:opacity .15s}
+.day summary::-webkit-details-marker{display:none}
+.day summary:hover{opacity:.85}
+.day summary .when{font-family:var(--mono);font-size:13px;color:var(--corona)}
+.day summary .when small{display:block;color:var(--muted);font-size:11px;letter-spacing:.1em;text-transform:uppercase;margin-top:2px}
+.day summary .tt{font-family:var(--display);font-size:21px;letter-spacing:-.01em;line-height:1.15}
+.day summary .tt small{display:block;font-family:var(--body);font-size:13.5px;color:var(--muted);
+  letter-spacing:0;text-transform:none;margin-top:3px;font-weight:400}
+.day summary .chev{font-family:var(--mono);font-size:12px;color:var(--muted);padding-top:4px;
+  transition:transform .2s;white-space:nowrap}
+.day[open] summary .chev{transform:rotate(90deg)}
+.day .inner{padding:0 0 22px 130px}
+.day .inner > *:first-child{margin-top:0}
+@media (max-width:700px){
+  .day summary{grid-template-columns:1fr auto;gap:8px}
+  .day summary .when{grid-column:1;font-size:12px}
+  .day summary .tt{grid-column:1/-1;font-size:19px}
+  .day summary .chev{grid-column:2;grid-row:1}
+  .day .inner{padding-left:0}
+}
+
+/* schedule */
+.sched{list-style:none;padding:0;margin:14px 0 0;border-left:1px solid var(--line-2)}
+.sched li{display:grid;grid-template-columns:66px 1fr;gap:14px;padding:0 0 16px 16px;position:relative}
+.sched li::before{content:"";position:absolute;left:-4px;top:7px;width:7px;height:7px;border-radius:99px;background:var(--corona)}
+.sched li:last-child{padding-bottom:0}
+.sched .h{font-family:var(--mono);font-size:14px;color:var(--corona);letter-spacing:.02em}
+.sched .w b{font-family:var(--display);font-size:16px;display:block;letter-spacing:-.01em}
+.sched .w small{color:var(--muted);font-size:13.5px;display:block;margin-top:2px;line-height:1.45}
+@media (max-width:600px){.sched li{grid-template-columns:56px 1fr;gap:10px}}
+
+/* gallery */
+.gal{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px}
+.gcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden;
+  display:flex;flex-direction:column;transition:border-color .18s,transform .18s}
+.gcard:hover{border-color:var(--line-2);transform:translateY(-2px)}
+.gph{aspect-ratio:3/2;background:linear-gradient(135deg,#16203F,#0B1128);position:relative;overflow:hidden}
+.gph img{width:100%;height:100%;object-fit:cover;display:block;opacity:0;transition:opacity .5s}
+.gph img.in{opacity:1}
+.gph .ph{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
+  font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:rgba(145,153,190,.5)}
+.gbody{padding:14px;flex:1;display:flex;flex-direction:column;gap:6px}
+.gbody b{font-family:var(--display);font-size:16px;letter-spacing:-.01em;line-height:1.2}
+.gmeta{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-family:var(--mono);font-size:11px}
+.gday{color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.gprice{padding:2px 8px;border-radius:99px;border:1px solid rgba(58,209,190,.4);color:var(--sea)}
+.gprice.paid{border-color:rgba(255,194,74,.45);color:var(--corona)}
+.gbody small{color:var(--muted);font-size:13px;line-height:1.45}
+.gbody a{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-top:auto}
+
+/* map */
+#map{height:560px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--ink-2);z-index:1}
+.filters{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+.fbtn{font-family:var(--mono);font-size:12px;letter-spacing:.06em;text-transform:uppercase;padding:7px 13px;
+  border-radius:99px;border:1px solid var(--line-2);background:transparent;color:var(--muted);cursor:pointer}
+.fbtn:hover{color:var(--text);border-color:var(--sea)}
+.fbtn.on{background:rgba(255,194,74,.14);border-color:var(--corona);color:var(--corona)}
+.legend{display:flex;gap:18px;flex-wrap:wrap;margin-top:14px;font-family:var(--mono);font-size:12px;color:var(--muted)}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:99px;margin-right:6px;vertical-align:-1px}
+.mk{border-radius:99px;border:2px solid #060917;box-shadow:0 0 0 2px rgba(255,255,255,.10)}
+.mk.sleep{background:var(--corona)}
+.mk.spot{background:var(--sea)}
+.mk.ecl{background:var(--violet)}
+.leaflet-container{font-family:var(--body);background:#0A0F22}
+.leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card-2);color:var(--text);
+  border:1px solid var(--line-2);box-shadow:0 10px 40px rgba(0,0,0,.5)}
+.leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.5}
+.leaflet-popup-content b{font-family:var(--display);font-size:16px;display:block;margin-bottom:3px}
+.leaflet-popup-content .d{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--corona)}
+.leaflet-popup-content .t{font-family:var(--mono);font-size:12px;color:var(--sea);display:block;margin-top:5px}
+.leaflet-popup-close-button{color:var(--muted)!important}
+.leaflet-control-zoom a{background:var(--card-2)!important;color:var(--text)!important;border-color:var(--line)!important}
+.leaflet-control-attribution{background:rgba(6,9,23,.75)!important;color:var(--muted)!important;font-size:10px}
+.leaflet-control-attribution a{color:var(--muted)!important}
+
+/* sources */
+.src{font-size:14px;color:var(--muted)}
+.src li{margin-bottom:8px}
+footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--mono)}
+
+@media (max-width:900px){
+  .hero-grid{grid-template-columns:1fr}
+  .eclipse{max-width:240px;order:-1}
+  .g2,.g3{grid-template-columns:1fr}
+  .budget{grid-template-columns:1fr}
+  .panel{position:static}
+  .opts{grid-template-columns:1fr}
+  .leg{grid-template-columns:1fr;gap:6px}
+  .sticky .v{font-size:22px}
+  #map{height:420px}
+}
+</style>
+</head>
+<body>
+
+<nav><div class="wrap">
+  <a class="brand" href="#top">Padova → Eclissi 2026</a>
+  <a href="#urgente">Urgente</a>
+  <a href="#itinerario">Quadro</a>
+  <a href="#dettaglio">Giorno per giorno</a>
+  <a href="#mappa">Mappa</a>
+  <a href="#luoghi">Luoghi</a>
+  <a href="#tratte">Tratte</a>
+  <a href="#foto">Foto e biglietti</a>
+  <a href="#eclissi">Eclissi</a>
+  <a href="#extra">Extra</a>
+  <a href="#budget">Budget</a>
+  <a href="#fonti">Fonti</a>
+</div></nav>
+
+<header id="top"><div class="wrap hero-grid">
+  <div>
+    <div class="eyebrow">31 luglio – 15 agosto 2026 · due persone · una macchina</div>
+    <h1>Padova, la Costa Brava<em>e due minuti di buio.</em></h1>
+    <p class="lede">Prospetto completo: tratte, alloggi già prenotati, opzioni aperte e costi che si aggiornano mentre scegli. Il perno è il 12 agosto, quando la fascia di totalità attraversa il nord della Spagna.</p>
+    <div class="counts">
+      <div class="count"><b id="cd-dep">–</b><span>alla partenza</span></div>
+      <div class="count sea"><b id="cd-ecl">–</b><span>all'eclissi</span></div>
+    </div>
+  </div>
+  <div class="eclipse" aria-hidden="true">
+    <svg viewBox="0 0 200 200">
+      <defs>
+        <radialGradient id="sun" cx="50%" cy="50%">
+          <stop offset="55%" stop-color="#FFD98A"/>
+          <stop offset="82%" stop-color="#FFC24A"/>
+          <stop offset="100%" stop-color="#FF7A3D"/>
+        </radialGradient>
+        <radialGradient id="cor" cx="50%" cy="50%">
+          <stop offset="52%" stop-color="rgba(255,194,74,.55)"/>
+          <stop offset="72%" stop-color="rgba(255,122,61,.20)"/>
+          <stop offset="100%" stop-color="rgba(255,122,61,0)"/>
+        </radialGradient>
+      </defs>
+      <circle id="corona" cx="100" cy="100" r="92" fill="url(#cor)"/>
+      <circle cx="100" cy="100" r="46" fill="url(#sun)"/>
+      <circle id="moon" cx="100" cy="100" r="46" fill="#060917"/>
+      <circle cx="100" cy="100" r="46" fill="none" stroke="rgba(255,194,74,.35)" stroke-width="1"/>
+    </svg>
+  </div>
+</div></header>
+
+<section id="urgente"><div class="wrap">
+  <h2><span class="num">Prima di tutto</span>Cose che scadono</h2>
+  <p class="sub">Estratte dal documento di viaggio. Le date di cancellazione sono le uniche voci con una scadenza reale.</p>
+  <div class="grid g2">
+    <div class="alert" style="border-color:rgba(74,222,128,.35);background:linear-gradient(180deg,rgba(74,222,128,.09),rgba(74,222,128,.02))">
+      <h3 style="color:var(--ok)">Chiuso e prenotato</h3>
+      <ul>
+        <li><b>Camera Orchidea</b>, Castellero (AT) — notte del 31 luglio, 45 € totali, bagno privato. Via Vernetto 5, nel Monferrato astigiano. <span class="tag ok">confermato</span></li>
+        <li><b>La Ferme de Manon</b>, Montferrat — 1 notte, 76 €. Appartamento intero, campagna, parcheggio privato gratuito. <span class="tag ok">confermato</span></li>
+        <li><b>Les Merisiers</b>, Thorenc — <b>disdetto</b>. L'alternativa francese è fuori dal piano e fuori dal budget.</li>
+        <li><b>Pensió L'Avi Pep</b>, Camallera — 2 notti, 120 € totali, pagata dal loro sito. <span class="tag ok">confermato</span></li>
+        <li><b>Villa Baturra</b>, Saragozza — notte del 9 agosto, 55 € per due. <span class="tag ok">confermato</span></li>
+        <li><b>Santander</b> — 3 notti, 320 € totali, per l'eclissi. <span class="tag ok">confermato</span></li>
+      </ul>
+    </div>
+    <div class="alert" style="border-color:rgba(255,194,74,.4);background:linear-gradient(180deg,rgba(255,194,74,.10),rgba(255,194,74,.03))">
+      <h3 style="color:var(--corona)">Ancora aperto</h3>
+      <ul>
+        <li><b>Notte di rientro verso Padova</b>: 70 € a bilancio, nessun posto scelto. È l'ultima prenotazione mancante.</li>
+        <li><b>Accesso auto alle cale di Roses</b>: dal 1° luglio al 31 agosto 2026, dentro il Parc Natural del Cap de Creus, l'accesso in auto alla carretera de Montjoi è chiuso <b>dalle 9:30 alle 16:00</b> tutti i giorni (barriera al Mas de la Torre del Sastre). Riguarda Montjoi, Jóncols, Murtra e le altre cale del parco. Fuori da quell'orario l'accesso è libero. Il programma le evita e resta sulle cale a sud, non regolate.</li>
+        <li><b>Pedaggi Saragozza → Santander</b>: l'AP-68 resta a pagamento fino all'11 novembre 2026 (Saragozza–Bilbao intera vale 39,90 € nel 2026). L'AP-2 Barcellona–Saragozza è invece gratuita dal 2021.</li>
+      </ul>
+    </div>
+  </div>
+</div></section>
+
+<section id="itinerario"><div class="wrap">
+  <h2><span class="num">Il viaggio</span>Il quadro generale</h2>
+  <p class="sub">Sedici giorni in tre movimenti: la lunga discesa fino alla Costa Brava, Barcellona come base, la risalita al Cantabrico per l'eclissi e il rientro. Le date in verde sono prenotate; qui sotto, ogni tappa si apre per il programma ora per ora.</p>
+  <div class="rows" style="margin-top:8px">
+    <div class="row head"><span>Andata · verso la Spagna</span><span class="val">31 lug – 4 ago</span></div>
+    <div class="row"><span class="lab">Padova → Castellero<small>Camera Orchidea · sera in Monferrato astigiano</small></span><span class="val" style="color:var(--ok)">31 lug</span></div>
+    <div class="row"><span class="lab">Castellero → Mentone → Nizza → Montferrat<small>barbajuan, Museo Matisse, lungomare</small></span><span class="val" style="color:var(--ok)">1 ago</span></div>
+    <div class="row"><span class="lab">Montferrat → Costa Brava<small>Riviera occidentale, poi 5h 43min fino a Camallera</small></span><span class="val" style="color:var(--ok)">2 ago</span></div>
+    <div class="row"><span class="lab">Costa Brava<small>cale di Begur, snorkeling, borghi di pietra</small></span><span class="val" style="color:var(--ok)">2–4 ago</span></div>
+    <div class="row head"><span>Barcellona · la base</span><span class="val">4–9 ago</span></div>
+    <div class="row"><span class="lab">Barcellona<small>appartamento disponibile, 5 notti a costo zero</small></span><span class="val" style="color:var(--ok)">4–9 ago</span></div>
+    <div class="row head"><span>Risalita · l'eclissi e il ritorno</span><span class="val">9–15 ago</span></div>
+    <div class="row"><span class="lab">Barcellona → Saragozza<small>Villa Baturra · tappa intermedia, anche riserva meteo per l'eclissi</small></span><span class="val" style="color:var(--ok)">9 ago</span></div>
+    <div class="row"><span class="lab">Santander<small>3 notti · totalità la sera del 12 agosto verso le 20:27</small></span><span class="val" style="color:var(--ok)">10–13 ago</span></div>
+    <div class="row"><span class="lab">Santander → Barcellona → Padova<small>rientro con una notte intermedia da scegliere</small></span><span class="val" style="color:var(--warn)">13–15 ago</span></div>
+  </div>
+  <p class="src" style="margin-top:14px">Perno del viaggio: <b>12 agosto</b>, quando la fascia di totalità attraversa il nord della Spagna. Tutto il resto è costruito attorno a quella sera. L'unica prenotazione ancora mancante è la notte di rientro del 14.</p>
+
+  <h2 id="dettaglio" style="margin-top:44px"><span class="num">Il dettaglio</span>Giorno per giorno</h2>
+  <p class="sub">Ogni tappa è un blocco che si apre per mostrare il programma ora per ora. Tutti chiusi di default: tocca quello che ti interessa.</p>
+  <div class="days">
+  <details class="day">
+    <summary>
+      <span class="when">31 lug<small>Giorno 1</small></span>
+      <span class="tt">Padova → Castellero</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Partenza il pomeriggio del 31, sera nel Monferrato astigiano. Spezza in due la trasferta più lunga verso la Francia, e Castellero è già sul corridoio della A21.</p>
+      <span class="tag sun">~2h 50min</span><span class="tag ok">Camera Orchidea, 45 € · bagno privato</span>
+      <ul class="spots">
+        <li><b>Camera Orchidea</b> — Via Vernetto 5, 14013 Castellero (AT). Ripartenza la mattina dopo.</li>
+      </ul>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">1 ago<small>Giorno 2</small></span>
+      <span class="tt">Castellero → Mentone → Nizza → Montferrat</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Sedici ore di giornata, di cui circa 4h 15min al volante. Si entra in Francia da Ventimiglia, quindi la Riviera si percorre da est verso ovest: Mentone a metà mattina, Nizza dal pomeriggio, e l'ultima ora di guida verso l'entroterra dopo cena. È sabato, il Matisse è aperto (chiude solo il martedì).</p>
+      <span class="tag sun">~4h 15min di guida</span><span class="tag ok">alloggio confermato</span>
+      <ul class="sched">
+        <li><span class="h">07:00</span><span class="w"><b>Partenza da Castellero</b><small>Colazione in strada. A quest'ora si passa il confine prima del traffico di rientro.</small></span></li>
+        <li><span class="h">~10:00</span><span class="w"><b>Arrivo a Mentone → subito alle Halles</b><small>Circa 3h dal Monferrato astigiano. Il mercato coperto di Quai de Monléon, del 1898, chiude all'una: è la prima cosa da fare, non l'ultima. Barbajuan, socca, pichade e tarte au citron sui banchi. Chiuso il lunedì; il 1 agosto è sabato, il giorno più vivo.</small></span></li>
+        <li><span class="h">11:15</span><span class="w"><b>Centro storico</b><small>Dalle Halles si sale a piedi verso la città vecchia e la basilica. Il porto è a due passi.</small></span></li>
+        <li><span class="h">12:00</span><span class="w"><b>Pranzo</b><small>Anticipato rispetto alle 12:30: da Sini il barbajuan finisce presto proprio nei weekend di mercato. Gli indirizzi sono qui sotto.</small></span></li>
+        <li><span class="h">13:20</span><span class="w"><b>Mentone → Nizza</b><small>~35 min in A8, ~1h sulla Basse Corniche lungo il mare. Con un appuntamento alle 14 conviene l'autostrada.</small></span></li>
+        <li><span class="h">14:00</span><span class="w"><b>Museo Matisse, Cimiez</b><small>12 € a testa. Chiude alle 18, biglietteria alle 17:30: quattro ore di margine, più che sufficienti. Parcheggio in avenue du Monastère e place du Monastère; in alternativa bus 5, 16, 18, 33, 40, 70, fermata Arènes / Musée Matisse. Accanto c'è il Museo di Archeologia, incluso nel pass da 15 €.</small></span></li>
+        <li><span class="h">16:30</span><span class="w"><b>Discesa in centro</b><small>Vieux Nice, Cours Saleya, Promenade des Anglais. Tutto a piedi una volta lasciata la macchina.</small></span></li>
+        <li><span class="h">20:00</span><span class="w"><b>Cena sul lungomare</b><small>Tramonto sulla Baie des Anges verso le 20:50 a inizio agosto.</small></span></li>
+        <li><span class="h">21:45</span><span class="w"><b>Nizza → Montferrat</b><small>~1h 15min verso l'entroterra del Var. Ultimo tratto su strade minori: buio e curve, meglio non tardare oltre.</small></span></li>
+        <li><span class="h">23:00</span><span class="w"><b>La Ferme de Manon</b><small>76 €, appartamento intero con parcheggio privato. Arrivo tardi: conviene avvisare prima.</small></span></li>
+      </ul>
+      <div class="card" style="margin-top:18px">
+        <h3>Barbajuan a Mentone</h3>
+        <p>Ravioli fritti ripieni di bietole e spinaci, parmigiano e riso, tuffati nell'olio bollente. La leggenda li fa nascere a Castellar, il paesino sopra Mentone; Alain Ducasse se li è portati fino a Parigi. Ogni paese da Mentone a Tenda rivendica la sua variante, chi con la bietola, chi con la zucca. Sono uno spuntino da mano, non un primo: due bastano con un bicchiere.</p>
+        <ul class="spots" style="margin-top:12px">
+          <li><b>Marché des Halles</b> <span>· Quai de Monléon · aperto tutti i giorni 8–13, chiuso il lunedì · una quarantina di produttori dentro e intorno al padiglione del 1898. Il modo più diretto: si compra al banco e si mangia camminando.</span></li>
+          <li><b>Sini</b> <span>· 7 Rue des Marins, davanti alle Halles · mer–dom 9–22, chiuso lun e mar · focacce, pizze e la pichade mentonnaise. Il barbajuan qui si esaurisce in fretta nei weekend di mercato: chiedetelo appena entrate.</span></li>
+          <li><b>La Socca de Mémé</b> <span>· 23 Place Saint-Roch · mer–sab 9–13 · minuscolo e molto amato, socca e barbajuan fatti in casa. Il sabato è aperto, ma chiude all'una.</span></li>
+          <li><b>Barbajuan ou…</b> <span>· 71 Avenue de Sospel, fuori dal centro · gastronomia di famiglia: barbajuan, sardine ripiene, fougasse, pichade, verdure ripiene. Da asporto, orari non pubblicati: conviene telefonare.</span></li>
+          <li><b>Mitron Bakery</b> <span>· 8 Rue Pieta · sab 8–19 · non fa barbajuan, ma è il forno legato a Mauro Colagreco del Mirazur: fougasse mentonnaise e una tarte au citron che i mentonesi mettono al primo posto. Da tenere per il dolce.</span></li>
+        </ul>
+      </div>
+      <p style="margin-top:14px"><b>Cosa non entra:</b> con questo programma Saint-Jean-Cap-Ferrat e la Villa Ephrussi restano fuori — la villa chiude alle 19 e sareste al Matisse. Èze è l'unica deviazione compatibile, come sosta breve tra Mentone e Nizza.</p>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">2 ago<small>Giorno 3</small></span>
+      <span class="tt">Montferrat → Costa Brava</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Quello che resta della Costa Azzurra sta tutto a ovest di Nizza, cioè già sulla strada per la Spagna: si vede la mattina e si riparte. 5h 43min dalla Francia alla Costa Brava — conviene farla di seguito, perché partendo da Barcellona la Costa Brava sarebbe comunque a 2h 30min di macchina.</p>
+      <span class="tag sea">Pensió L'Avi Pep, 120 € per 2 notti</span>
+      <ul class="spots">
+        <li><b>Saint-Paul-de-Vence</b> <span>· borgo dell'entroterra, ~50 min da Montferrat, 30 min da Nizza</span></li>
+        <li><b>Antibes</b> e <b>Cap d'Antibes</b> <span>· 30 min da Nizza, in direzione Spagna</span> — <a href="https://maps.app.goo.gl/hxJrP7qsEMBmtVp8A" target="_blank" rel="noopener">Baie des Milliardaires</a></li>
+      </ul>
+      <p style="margin-top:10px">Il pomeriggio prosegue sulla Costa Brava: il programma dettagliato del nord (s'Alqueria, Cadaqués) è nel blocco qui sotto, perché la sera del 2 apre le tre giornate di mare.</p>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">2 ago<small>Costa Brava · nord</small></span>
+      <span class="tt">Arrivo dalla Francia → Cadaqués</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Giornata di trasferimento: si arriva nel primo pomeriggio e la serata va al nord, dove il tramonto su Cap de Creus vale il viaggio. Le cale di s'Alqueria si toccano prima del check-in, poi Cadaqués per cena.</p>
+      <ul class="sched">
+        <li><span class="h">~15:00</span><span class="w"><b>Arrivo sulla Costa Brava</b><small>5h 43min dalla Francia. Se arrivate stanchi, si salta direttamente al check-in e Cadaqués; la cala è opzionale.</small></span></li>
+        <li><span class="h">16:00</span><span class="w"><b>Platja de s'Alqueria</b><small>1h dalla pensione, verso nord. Cala di ciottoli tra le rocce, parcheggio vicino, nessun servizio: posidonia e acqua limpida. Fuori dalla zona a traffico regolato di Roses, quindi nessun vincolo d'orario.</small></span></li>
+        <li><span class="h">19:00</span><span class="w"><b>Cadaqués</b><small>Il paese bianco di Dalí, vicoli e lungomare. Tramonto e cena qui.</small></span></li>
+        <li><span class="h">21:00</span><span class="w"><b>Check-in a Camallera</b><small>Pensió L'Avi Pep. Rientro comodo per due notti di base.</small></span></li>
+      </ul>
+      <p style="margin-top:12px"><b>A tavola:</b> mar i muntanya — suquet di pesce, oca con rape, brunyols dell'Empordà, butifarra dolce, acciughe de L'Escala, vini DO Empordà. Carta del <a href="https://www.hotelmaslazuli.es/wp-content/uploads/2026/05/2026-Carta_Mas-Lazuli_Restaurant.pdf" target="_blank" rel="noopener">Mas Lazuli</a> a Roses. Cantine bio della <a href="https://costabrava.org/es/blog/bodegas-ecologicas-de-la-ruta-del-vino-do-emporda/" target="_blank" rel="noopener">ruta del vino DO Empordà</a>.</p>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">3 ago<small>Costa Brava · centro</small></span>
+      <span class="tt">Cale di Begur, poi Pals</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>La giornata bilanciata: mattina in acqua nelle cale più belle per lo snorkeling, prese presto quando i parcheggi sono ancora liberi, pomeriggio di riposo e sera nel borgo. Nessuna di queste cale è dentro la zona regolata di Roses, quindi niente vincoli d'orario — ma i parcheggi si riempiono lo stesso entro le 10.</p>
+      <ul class="sched">
+        <li><span class="h">08:00</span><span class="w"><b>Aiguablava</b><small>50 min dall'hotel. Prima spiaggia della giornata: acque trasparenti e pesci, ideale per lo snorkeling. Arrivare entro le 9 significa parcheggio e acqua vuota.</small></span></li>
+        <li><span class="h">10:30</span><span class="w"><b>Tamariu o Llafranc</b><small>A pochi minuti, verso sud lungo la costa: cale raccolte, buone per una seconda nuotata e per un caffè sul lungomare.</small></span></li>
+        <li><span class="h">13:00</span><span class="w"><b>Pranzo a Calella de Palafrugell</b><small>Il borgo di pescatori più fotografato della zona. Pausa lunga nelle ore calde.</small></span></li>
+        <li><span class="h">16:00</span><span class="w"><b>Rientro e riposo</b><small>Un po' di stacco in pensione prima della serata: le ore di punta del sole si saltano volentieri.</small></span></li>
+        <li><span class="h">18:30</span><span class="w"><b>Pals</b><small>Borgo medievale murato con la Torre de les Hores, tra i campi di riso allagati. La Ruta Pals gòtic è una passeggiata di 40 minuti tra i vicoli — luce migliore nel tardo pomeriggio.</small></span></li>
+        <li><span class="h">20:30</span><span class="w"><b>Cena a Pals</b><small>Arròs a la cassola, il riso locale, e birra artigianale fatta col riso di Pals. Da El Pedró.</small></span></li>
+      </ul>
+      <p style="margin-top:12px">Riferimenti: <a href="https://www.elxiuletdepals.com/es/Ruta-Pals-gotico" target="_blank" rel="noopener">Ruta Pals gòtic</a> · <a href="https://elpedropals.com/ca/menu/" target="_blank" rel="noopener">El Pedró, Pals</a>. Se volete una cala più selvaggia al posto di Tamariu, <b>Cala Estreta</b> è appartata, anche naturista, davanti a una pineta: si raggiunge solo a piedi.</p>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">4 ago<small>Costa Brava · entroterra</small></span>
+      <span class="tt">Ultima cala, borghi e Barcellona</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Check-out e discesa verso Barcellona, ma senza fretta: una nuotata di prima mattina, i due borghi di pietra dell'entroterra, poi l'autostrada. Sono ~1h 40min fino a Barcellona, quindi il pomeriggio basta.</p>
+      <ul class="sched">
+        <li><span class="h">08:30</span><span class="w"><b>Platja de l'Almadrava</b><small>Ultima nuotata prima di lasciare la costa: spiaggia lunga e tranquilla, comoda con l'auto già carica.</small></span></li>
+        <li><span class="h">10:00</span><span class="w"><b>Check-out da Camallera</b><small>Si lascia la pensione e si punta verso l'interno.</small></span></li>
+        <li><span class="h">10:45</span><span class="w"><b>Peratallada</b><small>Borgo medievale scavato nella roccia, tra i più belli della Catalogna: vicoli, archi e mura. Un'ora a piedi basta.</small></span></li>
+        <li><span class="h">12:15</span><span class="w"><b>Monells</b><small>30 min dall'hotel. Piazza porticata da cartolina, tranquillo. Buono per il pranzo prima di mettersi in strada.</small></span></li>
+        <li><span class="h">14:30</span><span class="w"><b>Partenza per Barcellona</b><small>~1h 40min in autostrada. Arrivo nel pomeriggio, primo giorno in città.</small></span></li>
+      </ul>
+      <p style="margin-top:12px">Serata alternativa in zona, se restate un po' di più: <a href="https://lasantamarket.com/" target="_blank" rel="noopener">La Santa Market</a> a Santa Cristina d'Aro, con concerti e serate.</p>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">4–9 ago<small>La base</small></span>
+      <span class="tt">Barcellona</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Cinque notti con appartamento disponibile. Nel foglio costi questi giorni non hanno né alloggio né vitto a bilancio: è il margine più grande dell'intero budget, e il ritmo è libero — città, non tabella oraria.</p>
+      <span class="tag ok">alloggio a costo zero</span><span class="tag warn">vitto non stimato</span>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">9 ago<small>Risalita</small></span>
+      <span class="tt">Barcellona → Saragozza</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Tappa intermedia sulla risalita, una notte. L'AP-2 è senza pedaggio dal 2021: è la tratta più economica del viaggio in rapporto ai chilometri.</p>
+      <span class="tag sun">~3h 15min · ~310 km</span><span class="tag ok">Villa Baturra, 55 € per due</span><span class="tag sea">zero pedaggi</span>
+      <p style="margin-top:10px">Curiosità utile: <b>Saragozza è dentro la fascia di totalità</b> ed è il punto con la maggiore probabilità di cielo sereno di tutto il percorso spagnolo, con circa 1 minuto e 25 secondi di totalità alle 20:29. Se il meteo sul Cantabrico si mettesse male, questa è la riserva.</p>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">10–13 ago<small>L'eclissi</small></span>
+      <span class="tt">Santander</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Tre notti prenotate, 320 € totali. La fase totale raggiunge la costa di Santander la sera del 12 agosto.</p>
+      <span class="tag sun">12 agosto · totalità ~20:27</span><span class="tag ok">alloggio confermato</span><span class="tag warn">AP-68 ancora a pedaggio</span>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">13–15 ago<small>Coda</small></span>
+      <span class="tt">Rientro</span>
+      <span class="chev">▸ dettaglio</span>
+    </summary>
+    <div class="inner">
+<p>Santander → Barcellona (8h 24min, 70 € di solo carburante), poi Barcellona → Padova con una notte intermedia ancora da scegliere.</p>
+      <span class="tag warn">una notte da prenotare</span>
+    </div>
+  </details>
+  </div>
+</div></section>
+
+<section id="mappa"><div class="wrap">
+  <h2><span class="num">Mappa</span>Dove si dorme, dove si va</h2>
+  <p class="sub">Ogni punto è cliccabile: giorno, ore di guida dalla tappa precedente e nota. La linea gialla è il percorso in macchina fra le basi notturne; i punti verdi sono le visite, e non seguono per forza l'ordine della linea.</p>
+  <div class="filters" id="filters"></div>
+  <div id="map"></div>
+  <div class="legend">
+    <span><i style="background:#FFC24A"></i>base notturna</span>
+    <span><i style="background:#3AD1BE"></i>punto turistico</span>
+    <span><i style="background:#9C8CFF"></i>eclissi</span>
+    <span>tratto giallo = spostamento in auto</span>
+  </div>
+</div></section>
+
+<section id="luoghi"><div class="wrap">
+  <h2><span class="num">Luoghi</span>Foto e biglietti</h2>
+  <p class="sub">Ogni tappa con il suo prezzo d'ingresso. Quasi tutto è gratis: si paga solo per i due Dalí, il Matisse, la villa a Cap-Ferrat e la degustazione. Le fotografie arrivano da Wikipedia e Wikimedia Commons.</p>
+  <div class="gal" id="gal"></div>
+</div></section>
+
+<section id="tratte"><div class="wrap">
+  <h2><span class="num">Opzioni</span>Autostrada o statali</h2>
+  <p class="sub">L'andata è fissata in autostrada. Restano aperte due scelte: come salire da Saragozza a Santander, e come tornare da Barcellona. Cambia la selezione e il budget in fondo si aggiorna.</p>
+  <div id="routes"></div>
+</div></section>
+
+
+<section id="eclissi"><div class="wrap">
+  <h2><span class="num">12 agosto</span>La totalità</h2>
+  <p class="sub">Il motivo per cui il viaggio risale fino al Cantabrico invece di fermarsi in Catalogna.</p>
+  <div class="grid g3">
+    <div class="card">
+      <h3>Dove</h3>
+      <p>La fascia di totalità entra in Spagna da Galizia e Asturie, attraversa Cantabria, Castilla y León, Navarra e Aragona, esce dalla costa valenciana e dalle Baleari. Santander è dentro la fascia.</p>
+      <span class="tag sun">Asturie · Cantabria · Saragozza · Valencia · Palma</span>
+    </div>
+    <div class="card">
+      <h3>Quando</h3>
+      <p>Nelle Asturie e in Cantabria le fasi iniziano attorno alle 19:30 con il massimo verso le <b>20:27</b> ora locale, circa 45 minuti prima del tramonto: si osserva senza la fretta di chi sta più a est, dove la totalità quasi coincide col tramonto.</p>
+      <span class="tag sea">~20:27 CEST</span>
+    </div>
+    <div class="card">
+      <h3>Perché non da Barcellona</h3>
+      <p>Nelle province di Girona e Barcellona l'oscuramento è altissimo — vicino al 95%, fino al 98–99% in alcune zone — ma resta parziale. Barcellona e Madrid sono appena fuori dalla fascia. Il salto tra 99% e totalità non è graduale: è un altro fenomeno.</p>
+      <span class="tag warn">99% ≠ totalità</span>
+    </div>
+  </div>
+  <div class="card" style="margin-top:16px">
+    <h3>Sicurezza e logistica</h3>
+    <p>Occhiali certificati <b>ISO 12312-2</b> obbligatori per tutte le fasi parziali; si tolgono solo durante la totalità. L'ultima eclissi totale in Spagna è del 1905, e la Spagna ne avrà un'altra il 2 agosto 2027 — la domanda di alloggi sulla fascia è concentrata su questa data. Verifica la tua posizione esatta sulla mappa dell'<a href="https://astronomia.ign.es/web/guest/eclipses-de-sol-y-luna/eclipse-total-sol-de-12-de-agosto-2026" target="_blank" rel="noopener">Osservatorio Astronomico Nazionale (IGN)</a>.</p>
+  </div>
+</div></section>
+
+<section id="extra"><div class="wrap">
+  <h2><span class="num">Extra</span>Cosa aggiungere al conto</h2>
+  <p class="sub">Spunta quello che vuoi fare: i prezzi sono per persona e modificabili. Entrano subito nel totale.</p>
+  <div id="acts"></div>
+</div></section>
+
+<section id="budget"><div class="wrap">
+  <h2><span class="num">Numeri</span>Budget</h2>
+  <p class="sub">Valori di partenza dal foglio di calcolo, con le tratte in versione autostrada. Tutti i campi sono modificabili.</p>
+  <div class="budget">
+    <div>
+      <div class="rows" id="rows"></div>
+      <p class="src" style="margin-top:14px">Il foglio originale chiudeva a 1.544 € per due. Il piano aggiornato — Saragozza al posto della tratta diretta, Santander a 320 € invece di 300 — parte da un totale più alto, e le cinque giornate di Barcellona restano ancora senza vitto a bilancio. Le tratte Barcellona–Saragozza–Santander sono stime, non calcoli ViaMichelin come le altre.</p>
+    </div>
+    <div class="panel">
+      <div class="l" style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">Totale viaggio</div>
+      <div class="big" id="tot">–</div>
+      <div class="divider"></div>
+      <div class="l" style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">A testa</div>
+      <div class="sm" id="pp">–</div>
+      <label for="people">Persone</label>
+      <input type="number" id="people" min="1" max="6" value="2">
+      <button class="btn" id="reset">Ripristina valori del foglio</button>
+    </div>
+  </div>
+</div></section>
+
+<section id="fonti"><div class="wrap">
+  <h2><span class="num">Fonti</span>Da dove viene ogni cosa</h2>
+  <ul class="src">
+    <li>Itinerario, alloggi, spiagge, borghi e note gastronomiche: <b>Viaggio_Padova_-_Barcellona.docx</b>.</li>
+    <li>Costi carburante, pedaggi, durate e totali: <b>Foglio_Viaggio_Babis.xlsx</b> (calcoli ViaMichelin).</li>
+    <li>Percorso e orari dell'eclissi: <a href="https://it.wikipedia.org/wiki/Eclissi_solare_del_12_agosto_2026" target="_blank" rel="noopener">Wikipedia — Eclissi solare del 12 agosto 2026</a> · <a href="https://www.lonelyplanetitalia.it/articoli/avventure-outdoor/eclissi-totale-2026-asturie-dove-vederla" target="_blank" rel="noopener">Lonely Planet, Asturie</a> · <a href="https://absoluteeclipse.eu/it/blogs/where-to-watch/tagged/where-to-watch" target="_blank" rel="noopener">Absolute Eclipse, guide per regione</a> · <a href="https://www.weroad.it/blog/eclissi-solare-12-agosto-2026" target="_blank" rel="noopener">WeRoad</a></li>
+    <li>Oscuramento a Girona e Barcellona: <a href="https://www.senia.es/en/blog/solar-eclipse-12-august-2026-spain" target="_blank" rel="noopener">Sènia, dati IGN</a></li>
+    <li>Teatre-Museu Dalí: <a href="https://tickets.salvador-dali.org/es" target="_blank" rel="noopener">biglietteria ufficiale Fundació Gala-Salvador Dalí</a></li>
+    <li>Regolazione accessi cale di Roses (1 lug – 31 ago 2026, 9:30–16:00): <a href="https://www.roses.cat/la-vila/medi-ambient-i-platges/medi-ambient-i-platges/mesures-provisionals-de-restriccio-dacces-al-parc-natural-del-cap-de-creus" target="_blank" rel="noopener">Ajuntament de Roses</a> · <a href="https://parcsnaturals.gencat.cat/es/xarxa-de-parcs/cap-creus/gaudeix-del-parc/com-accedir-hi/index.html" target="_blank" rel="noopener">Parc Natural Cap de Creus</a></li>
+    <li>Mentone — specialità e mercato delle Halles: <a href="https://www.menton.fr/Marche-des-Halles-Municipales.html" target="_blank" rel="noopener">Ville de Menton</a> · <a href="https://www.menton-riviera-merveilles.co.uk/menton-and-its-coastline/our-must-see-attractions/les-halles-market/" target="_blank" rel="noopener">ufficio del turismo</a>. Indirizzi e orari dei locali da Google Places: verificateli il giorno stesso.</li>
+    <li>Museo Matisse — orari, sede e tariffe (12 € intero, pass 4 giorni 15 €): <a href="https://www.musee-matisse-nice.org/en/practical-information/" target="_blank" rel="noopener">informazioni pratiche ufficiali</a> · <a href="https://www.nice.fr/lieux/musee-matisse/" target="_blank" rel="noopener">Ville de Nice</a></li>
+    <li>Prezzi Dalí (18,50 € intero, 15 € ridotto): <a href="https://www.salvador-dali.org/en/visit/dali-theatre-museum/" target="_blank" rel="noopener">Fundació Gala-Salvador Dalí</a> · prenotazione obbligatoria a Portlligat</li>
+    <li>Villa Ephrussi de Rothschild — orari e tariffe: <a href="https://www.villa-ephrussi.com/en/prepare-your-visit/rates" target="_blank" rel="noopener">sito ufficiale</a></li>
+    <li>Fotografie: caricate a runtime dall'API di Wikipedia (Wikimedia Commons), licenze libere. Senza connessione i riquadri restano vuoti.</li>
+    <li>Pedaggi: <a href="https://es.wikipedia.org/wiki/Autopista_Zaragoza-Mediterr%C3%A1neo" target="_blank" rel="noopener">AP-2 gratuita dal 2021</a> · <a href="https://www.motorpasion.com/industria/peajes-caros-este-2026-estas-dos-autopistas-pasan-a-ser-gratis-dejaremos-pagar-40-euros-para-ir-zaragoza-a-bilbao" target="_blank" rel="noopener">AP-68 libera solo dall'11 novembre 2026</a></li>
+    <li>Coordinate degli alloggi: Google Places. Le tratte Barcellona–Saragozza–Santander sono stime, non calcoli ViaMichelin.</li>
+  </ul>
+  <footer>Prospetto generato il 26 luglio 2026 · verifica sempre prezzi e orari sui siti ufficiali prima di partire.</footer>
+</div></section>
+
+<div class="sticky"><div class="wrap">
+  <div><div class="l">Totale</div><div class="v" id="tot2">–</div></div>
+  <div><div class="l">A testa</div><div class="v sea" id="pp2">–</div></div>
+  <div><a href="#budget" class="btn" style="margin:0">Vedi dettaglio</a></div>
+</div></div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>
+const EUR = n => new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',maximumFractionDigits:0}).format(n);
+
+/* ---------- countdown (per primo, indipendente dal resto) ---------- */
+(function(){
+  const DEP = new Date('2026-07-31T14:00:00+02:00');
+  const ECL = new Date('2026-08-12T20:27:00+02:00');
+  function fmt(t){
+    if(t<=0) return 'adesso';
+    const d=Math.floor(t/864e5), h=Math.floor(t%864e5/36e5), m=Math.floor(t%36e5/6e4);
+    return d>0 ? `${d}g ${h}h ${m}m` : `${h}h ${m}m`;
+  }
+  function tick(){
+    const now=Date.now();
+    const a=document.getElementById('cd-dep'), b=document.getElementById('cd-ecl');
+    if(a) a.textContent = fmt(DEP-now);
+    if(b) b.textContent = fmt(ECL-now);
+  }
+  tick(); setInterval(tick,30000);
+})();
+const EUR2 = n => new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',minimumFractionDigits:2}).format(n);
+
+/* ---------- dati ---------- */
+const ROUTES = [
+  {id:'pd_nice', name:'Padova → Montferrat, con sosta a Castellero', opts:[
+    {k:'fast', label:'Autostrada', cost:107, meta:'5h 24min · 55 carburante + 51 pedaggi'}], def:'fast'},
+  {id:'nice_bcn', name:'Nizza → Costa Brava → Barcellona', opts:[
+    {k:'fast', label:'Autostrada', cost:125, meta:'6h 40min · 67 carburante + 57 pedaggi'}], def:'fast'},
+  {id:'bcn_zgz', name:'Barcellona → Saragozza (9 ago)', opts:[
+    {k:'one', label:'AP-2, senza pedaggio dal 2021', cost:35, meta:'~3h 15min · ~310 km · stima carburante'}], def:'one'},
+  {id:'zgz_san', name:'Saragozza → Santander (10 ago)', opts:[
+    {k:'free', label:'N-232 e A-67 via Burgos', cost:45, meta:'~5h · nessun pedaggio · stima'},
+    {k:'ap68', label:'AP-68',                    cost:62, meta:'~4h 15min · ~40 carburante + ~22 pedaggi · stima'}], def:'ap68'},
+  {id:'san_bcn', name:'Santander → Barcellona (13 ago)', opts:[
+    {k:'one', label:'Ritorno diretto', cost:70, meta:'8h 24min · 70 carburante, zero pedaggi'}], def:'one'},
+  {id:'bcn_pd', name:'Barcellona → Padova (rientro)', opts:[
+    {k:'eco',  label:'Statali',    cost:142, meta:'~20h · 80 + 62'},
+    {k:'fast', label:'Autostrada', cost:232, meta:'~12h · 125 + 107'}], def:'fast'}
+];
+
+const STAYS = [
+  {id:'ca',   lab:'Castellero, 1 notte', note:'31 lug · Camera Orchidea, prenotata', v:45},
+  {id:'fr',   lab:'Montferrat, 1 notte', note:'1 ago · La Ferme de Manon, prenotata', v:76},
+  {id:'cb',   lab:'Camallera, 2 notti', note:'2–4 ago · Pensió L\'Avi Pep, prenotata', v:120},
+  {id:'bcn',  lab:'Barcellona, 5 notti', note:'4–9 ago · appartamento disponibile', v:0},
+  {id:'zgz',  lab:'Saragozza, 1 notte', note:'9 ago · Villa Baturra, prenotata', v:55},
+  {id:'ecl',  lab:'Santander, 3 notti', note:'10–13 ago · prenotata, 320 € totali', v:320},
+  {id:'ret',  lab:'Notte di rientro', note:'14 ago · posto da scegliere', v:70}
+];
+
+const FOOD = [
+  {id:'f1', lab:'Cibo e varie — Francia + Costa Brava', note:'31 lug – 4 ago, per due', v:160},
+  {id:'f2', lab:'Cibo e varie — Barcellona', note:'5 giorni, non stimati nel foglio', v:0},
+  {id:'f3', lab:'Cibo e varie — Saragozza, Santander, rientro', note:'6 giorni, per due', v:210}
+];
+
+const ACTS = [
+  {id:'dali_f', lab:'Teatre-Museu Dalí, Figueres', note:'2 ago · 18,50 € intero, 15 € ridotto · serale estiva dalle 21:30 con cava 25 €', v:18.5},
+  {id:'dali_p', lab:'Casa-Museu Dalí, Portlligat', note:'2 ago · prenotazione obbligatoria, posti molto limitati', v:18.5},
+  {id:'vins',   lab:'Degustazione vini invecchiati in mare', note:'Cala Jóncols, Roses · si può anche solo assaggiarne uno sul posto', v:30},
+  {id:'matisse',lab:'Museo Matisse, Nizza', note:'1 ago · 12 € intero · pass 4 giorni per tutti gli 11 musei municipali: 15 €', v:12},
+  {id:'ephrussi',lab:'Villa Ephrussi de Rothschild', note:'fuori dal programma del 1 ago (chiude alle 19) · tariffa 2025, da riverificare', v:18},
+  {id:'pals',   lab:'Ruta Pals gòtic', note:'3 ago · passeggiata 40 min · prenotazione da chiarire', v:0}
+];
+
+const state = {routes:{}, stays:{}, food:{}, acts:{}, actsOn:{}, people:2};
+ROUTES.forEach(r=>state.routes[r.id]=r.def);
+STAYS.forEach(s=>state.stays[s.id]=s.v);
+FOOD.forEach(f=>state.food[f.id]=f.v);
+ACTS.forEach(a=>{state.acts[a.id]=a.v; state.actsOn[a.id]=false;});
+
+/* ---------- render tratte ---------- */
+const routesEl = document.getElementById('routes');
+ROUTES.forEach(r=>{
+  const box = document.createElement('div');
+  box.className = 'route';
+  box.innerHTML = `<div class="rt-head"><b>${r.name}</b></div>
+    <div class="opts">${r.opts.map(o=>`
+      <label class="opt${o.k===r.def?' sel':''}${r.opts.length===1?' single':''}">
+        <input type="radio" name="${r.id}" value="${o.k}" ${o.k===r.def?'checked':''}>
+        <span class="ol"><span class="name">${o.label}</span><span class="price">${EUR(o.cost)}</span></span>
+        <span class="meta">${o.meta}</span>
+      </label>`).join('')}</div>`;
+  routesEl.appendChild(box);
+  box.querySelectorAll('input[type=radio]').forEach(inp=>{
+    inp.addEventListener('change',()=>{
+      box.querySelectorAll('.opt').forEach(l=>l.classList.remove('sel'));
+      inp.closest('.opt').classList.add('sel');
+      state.routes[r.id]=inp.value; compute();
+    });
+  });
+});
+
+/* ---------- render attività ---------- */
+const actsEl = document.getElementById('acts');
+ACTS.forEach(a=>{
+  const el = document.createElement('label');
+  el.className='act';
+  el.innerHTML = `<input type="checkbox" data-a="${a.id}">
+    <span class="body"><b>${a.lab}</b><small>${a.note}</small></span>
+    <span class="money"><input type="number" min="0" step="0.5" value="${a.v}" data-p="${a.id}"><span>€/pers.</span></span>`;
+  actsEl.appendChild(el);
+  el.querySelector('[data-a]').addEventListener('change',e=>{state.actsOn[a.id]=e.target.checked;compute();});
+  el.querySelector('[data-p]').addEventListener('input',e=>{state.acts[a.id]=+e.target.value||0;compute();});
+});
+
+/* ---------- render righe budget ---------- */
+const rowsEl = document.getElementById('rows');
+function money(id,val,group,pp){
+  return `<span class="money"><input type="number" min="0" step="${pp?1:5}" value="${val}" data-g="${group}" data-id="${id}"><span>${pp?'€/pers.':'€'}</span></span>`;
+}
+rowsEl.innerHTML = `
+  <div class="row head"><span>Tratte</span><span class="val" id="sum-routes"></span></div>
+  ${ROUTES.map(r=>`<div class="row"><span class="lab">${r.name}<small id="m-${r.id}"></small></span><span class="val" id="v-${r.id}"></span></div>`).join('')}
+  <div class="row head"><span>Alloggi</span><span class="val" id="sum-stays"></span></div>
+  ${STAYS.map(s=>`<div class="row"><span class="lab">${s.lab}<small>${s.note}</small></span>${money(s.id,s.v,'stays',s.pp)}</div>`).join('')}
+  <div class="row head"><span>Cibo e varie</span><span class="val" id="sum-food"></span></div>
+  ${FOOD.map(f=>`<div class="row"><span class="lab">${f.lab}<small>${f.note}</small></span>${money(f.id,f.v,'food')}</div>`).join('')}
+  <div class="row head"><span>Extra selezionati</span><span class="val" id="sum-acts"></span></div>
+  <div class="row"><span class="lab" id="acts-list">Nessun extra selezionato<small>spunta le voci nella sezione Extra</small></span><span class="val" id="v-acts"></span></div>`;
+
+rowsEl.querySelectorAll('input[data-g]').forEach(inp=>{
+  inp.addEventListener('input',e=>{
+    state[e.target.dataset.g][e.target.dataset.id] = +e.target.value||0; compute();
+  });
+});
+document.getElementById('people').addEventListener('input',e=>{
+  state.people = Math.max(1, +e.target.value||1); compute();
+});
+document.getElementById('reset').addEventListener('click',()=>location.reload());
+
+/* ---------- calcolo ---------- */
+function compute(){
+  let routes=0;
+  ROUTES.forEach(r=>{
+    const o = r.opts.find(x=>x.k===state.routes[r.id]);
+    routes += o.cost;
+    document.getElementById('v-'+r.id).textContent = EUR(o.cost);
+    document.getElementById('m-'+r.id).textContent = o.label.toLowerCase()+' · '+o.meta.split('·')[0].trim();
+  });
+  const stays = STAYS.reduce((a,s)=>a+state.stays[s.id]*(s.pp?state.people:1),0);
+  const food  = Object.values(state.food).reduce((a,b)=>a+b,0);
+  const on    = ACTS.filter(a=>state.actsOn[a.id]);
+  const acts  = on.reduce((a,x)=>a+state.acts[x.id],0)*state.people;
+
+  document.getElementById('sum-routes').textContent = EUR(routes);
+  document.getElementById('sum-stays').textContent  = EUR(stays);
+  document.getElementById('sum-food').textContent   = EUR(food);
+  document.getElementById('sum-acts').textContent   = EUR(acts);
+  document.getElementById('v-acts').textContent     = EUR(acts);
+  document.getElementById('acts-list').innerHTML = on.length
+    ? on.map(a=>a.lab).join(', ')+`<small>${on.length} voci × ${state.people} persone</small>`
+    : 'Nessun extra selezionato<small>spunta le voci nella sezione Extra</small>';
+
+  const tot = routes+stays+food+acts;
+  const pp  = tot/state.people;
+  ['tot','tot2'].forEach(i=>document.getElementById(i).textContent = EUR2(tot));
+  ['pp','pp2'].forEach(i=>document.getElementById(i).textContent = EUR2(pp));
+}
+compute();
+
+/* ---------- galleria: foto da Wikipedia + prezzi ---------- */
+const galEl = document.getElementById('gal');
+SPOTS.forEach((p,i)=>{
+  const paid = p.p && !/gratis/i.test(p.p);
+  const el = document.createElement('article');
+  el.className = 'gcard';
+  el.innerHTML = `
+    <div class="gph"><span class="ph">${p.w?'foto in arrivo':'nessuna foto'}</span><img id="ph-${i}" alt="${p.n}"></div>
+    <div class="gbody">
+      <div class="gmeta"><span class="gday">${p.d}</span>${p.p?`<span class="gprice${paid?' paid':''}">${p.p}</span>`:''}</div>
+      <b>${p.n}</b>
+      ${p.note?`<small>${p.note}</small>`:''}
+      ${p.u?`<a href="${p.u}" target="_blank" rel="noopener">Biglietti e info →</a>`:''}
+    </div>`;
+  galEl.appendChild(el);
+});
+
+async function loadPhotos(){
+  const langs = ['it','es','fr','ca','en'];
+  SPOTS.forEach(p=>{ p._q = p.w ? [...p.w] : []; });
+  for (const lang of langs){
+    const batch = SPOTS.filter(p=>!p.img && p._q.some(t=>t.startsWith(lang+':')));
+    if(!batch.length) continue;
+    const titles = batch.map(p=>p._q.find(t=>t.startsWith(lang+':')).slice(lang.length+1));
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*&redirects=1`
+      + `&prop=pageimages&piprop=thumbnail&pithumbsize=640&pilimit=50&titles=`
+      + titles.map(encodeURIComponent).join('%7C');
+    try{
+      const j = await (await fetch(url)).json();
+      const q = j.query || {};
+      const remap = {};
+      (q.normalized||[]).forEach(n=>remap[n.from.toLowerCase()] = n.to);
+      (q.redirects||[]).forEach(n=>remap[n.from.toLowerCase()] = n.to);
+      const thumbs = {};
+      Object.values(q.pages||{}).forEach(pg=>{ if(pg.thumbnail) thumbs[pg.title.toLowerCase()] = pg.thumbnail.source; });
+      batch.forEach((p,i)=>{
+        let key = titles[i].toLowerCase();
+        for(let hop=0; hop<3 && remap[key]; hop++) key = remap[key].toLowerCase();
+        const src = thumbs[key];
+        if(src){
+          p.img = src;
+          const img = document.getElementById('ph-'+SPOTS.indexOf(p));
+          if(img){ img.onload = ()=>{ img.classList.add('in'); const ph=img.parentElement.querySelector('.ph'); if(ph) ph.remove(); }; img.src = src; }
+        }
+      });
+    }catch(e){ /* rete assente: restano i segnaposto */ }
+  }
+  SPOTS.forEach(p=>{
+    if(!p.img){
+      const img = document.getElementById('ph-'+SPOTS.indexOf(p));
+      const ph = img && img.parentElement.querySelector('.ph');
+      if(ph) ph.textContent = 'nessuna foto';
+    }
+  });
+}
+loadPhotos();
+
+/* ---------- mappa ---------- */
+const SLEEP = [
+  {n:'Padova',            c:[45.4064,11.8768], d:'31 lug · partenza', t:'', k:'d1'},
+  {n:'Camera Orchidea',   c:[44.9256,8.0747],  d:'31 lug → 1 ago', t:'~2h 50min da Padova', note:'Via Vernetto 5, Castellero (AT), Monferrato astigiano. Bagno privato, 45 € totali.', k:'d1'},
+  {n:'La Ferme de Manon', c:[43.6055,6.4822],  d:'1 → 2 ago', t:'~4h 20min da Castellero', note:'Montferrat, Var. Appartamento intero, parcheggio privato. 76 €.', k:'d1'},
+  {n:"Pensió L'Avi Pep",  c:[42.1259,2.9676],  d:'2 → 4 ago', t:'5h 43min dalla Francia', note:'Camallera (Girona). Base per tutta la Costa Brava. 120 € per 2 notti.', k:'d2'},
+  {n:'Barcellona',        c:[41.3874,2.1686],  d:'4 → 9 ago', t:'~1h 40min da Camallera', note:'Appartamento disponibile, 5 notti a costo zero.', k:'d4'},
+  {n:'Villa Baturra, Saragozza', c:[41.6488,-0.8891], d:'9 → 10 ago', t:'~3h 15min da Barcellona', note:'Una notte, 55 € per due. AP-2 senza pedaggio.', k:'d9'},
+  {n:'Santander',         c:[43.4623,-3.8100], d:'10 → 13 ago', t:'~4h 15min da Saragozza', note:'3 notti, 320 € totali. Dentro la fascia di totalità.', k:'d10'},
+  {n:'Barcellona (ritorno)',c:[41.3874,2.1686],d:'13 ago', t:'8h 24min da Santander', note:'Tappa di passaggio verso casa.', k:'d13'},
+  {n:'Notte di rientro',  c:[43.6,4.0],        d:'14 ago · da prenotare', t:'circa a metà strada', note:'Posizione indicativa: l\'unica notte ancora da scegliere, 70 € a bilancio.', k:'d13'}
+];
+
+const SPOTS = [
+  {n:'Marché des Halles, Mentone', c:[43.7752,7.5062], d:'1 ago · 10:00', k:'d1', p:'~4 € il barbajuan', note:'Quai de Monléon. Padiglione del 1898, una quarantina di produttori. Aperto 8–13 tutti i giorni tranne il lunedì. Barbajuan, socca, pichade, tarte au citron.'},
+  {n:'Sini', c:[43.7754,7.5061], d:'1 ago · 12:00', k:'d1', p:'pranzo', note:'7 Rue des Marins, davanti alle Halles. Mer–dom 9–22. Focacce, pizze, pichade mentonnaise e barbajuan — che nei weekend di mercato finisce presto.'},
+  {n:'La Socca de Mémé', c:[43.7745,7.5008], d:'1 ago · alternativa', k:'d1', p:'street food', note:'23 Place Saint-Roch. Mer–sab 9–13. Socca e barbajuan fatti in casa, posto minuscolo.'},
+  {n:'Barbajuan ou…', c:[43.7811,7.4938], d:'1 ago · alternativa', k:'d1', p:'da asporto', note:'71 Avenue de Sospel, fuori dal centro. Gastronomia di famiglia: barbajuan, sardine ripiene, fougasse, pichade. Orari non pubblicati, meglio telefonare.'},
+  {n:'Mitron Bakery', c:[43.7758,7.5051], d:'1 ago · dolce', k:'d1', p:'forno', note:'8 Rue Pieta. Il forno legato a Mauro Colagreco del Mirazur: fougasse mentonnaise e tarte au citron. Sabato 8–19.'},
+  {n:'Museo Matisse, Nizza', c:[43.7188,7.2761], d:'1 ago · 14:00', k:'d1', p:'12 €', note:'164 avenue des Arènes de Cimiez. Chiude alle 18, biglietteria alle 17:30. Parcheggio in avenue du Monastère e place du Monastère.', u:'https://billetterie-museesnice.tickeasy.com/fr-FR/musee?site=2316454206350400007', w:['fr:Musée Matisse (Nice)','it:Museo Matisse']},
+  {n:'Nizza centro', c:[43.6961,7.2716], d:'1 ago · 16:30', k:'d1', p:'gratis', note:'Vieux Nice, Cours Saleya, Promenade des Anglais. Cena sul lungomare alle 20.', w:['it:Nizza']},
+  {n:'Mentone', c:[43.7749,7.4989], d:'1 ago · 10:00', k:'d1', p:'gratis', note:'Primo paese dopo la frontiera di Ventimiglia. Pranzo alle 12:30, ripartenza alle 13:20.', w:['it:Mentone','fr:Menton (Alpes-Maritimes)']},
+  {n:'Èze', c:[43.7275,7.3617], d:'1 ago · opzionale', k:'d1', p:'borgo gratis', note:'Unica deviazione compatibile con il programma: sosta breve tra Mentone e Nizza. Il Jardin Exotique in cima si paga a parte.', w:['it:Èze','fr:Èze']},
+  {n:'Villa Ephrussi de Rothschild', c:[43.6944,7.3306], d:'fuori programma', k:'d1', p:'~18 €', note:'Chiude alle 19: incompatibile con il Matisse alle 14. Resta come alternativa se cambiate il piano.', u:'https://www.villa-ephrussi.com/en/prepare-your-visit/rates', w:['fr:Villa Ephrussi de Rothschild','it:Villa Ephrussi de Rothschild']},
+  {n:'Saint-Jean-Cap-Ferrat', c:[43.6879,7.3308], d:'fuori programma', k:'d1', p:'gratis', note:'La penisola tra Èze e Nizza. Non entra nella giornata come pianificata.', u:'https://www.explorenicecotedazur.com/it/esplorare/citta-e-villaggi/litorale/saint-jean-cap-ferrat/brochure-da-scaricare/', w:['it:Saint-Jean-Cap-Ferrat','fr:Saint-Jean-Cap-Ferrat']},
+  {n:'Saint-Paul-de-Vence', c:[43.6959,7.1220], d:'2 ago', k:'d2', p:'gratis', note:'~50 min da Montferrat, sulla strada per la Spagna. Borgo murato di gallerie d\'arte.', w:['it:Saint-Paul-de-Vence','fr:Saint-Paul-de-Vence']},
+  {n:'Antibes e Cap d\'Antibes', c:[43.5589,7.1226], d:'2 ago', k:'d2', p:'gratis', note:'30 min da Nizza, verso la Spagna. Baie des Milliardaires.', u:'https://maps.app.goo.gl/hxJrP7qsEMBmtVp8A', w:['it:Antibes','fr:Antibes']},
+  {n:"Platja de s'Alqueria", c:[42.2973,3.2884], d:'2 ago · 16:00', k:'d2', p:'gratis', note:'1h dalla pensione, verso nord. Cala di ciottoli tra le rocce, parcheggio vicino, nessun servizio. Posidonia sott\'acqua. Fuori dalla zona regolata di Roses: nessun vincolo d\'orario.'},
+  {n:'Cadaqués', c:[42.2887,3.2779], d:'2 ago · 19:00', k:'d2', p:'gratis', note:'Il paese bianco di Dalí. Tramonto e cena qui, poi rientro a Camallera.', w:['it:Cadaqués','es:Cadaqués']},
+  {n:'Cala Montjoi', c:[42.2498,3.2285], d:'zona regolata', k:'d2', p:'gratis', note:'Dentro il Parc Natural: accesso auto chiuso 9:30–16:00 dal 1 luglio al 31 agosto. Raggiungibile solo prima delle 9:30 o dopo le 16. Non nel programma.'},
+  {n:'Cala Jóncols · vini del mare', c:[42.2874,3.2277], d:'zona regolata', k:'d2', p:'30 €', note:'Dentro la zona a traffico limitato di Roses (9:30–16:00). Degustazione di vini invecchiati sott\'acqua. Fattibile solo fuori dagli orari di chiusura.', u:'https://www.calajoncols.com/es/experiencias2/degustacion-de-vinos-del-mar/'},
+  {n:'Aiguablava', c:[41.9337,3.2135], d:'3 ago · 08:00', k:'d3', p:'gratis', note:'50 min dall\'hotel. Prima nuotata: acque trasparenti e pesci, ideali per snorkeling. Presto = parcheggio libero.', w:['ca:Aiguablava','es:Aiguablava']},
+  {n:'Tamariu', c:[41.9175,3.2050], d:'3 ago · 10:30', k:'d3', p:'gratis', note:'Cala raccolta a pochi minuti verso sud. Seconda nuotata e caffè.', w:['es:Tamariu','ca:Tamariu']},
+  {n:'Platja de Llafranc', c:[41.8934,3.1930], d:'3 ago · alt.', k:'d3', p:'gratis', note:'Alternativa a Tamariu, poco più a sud.', w:['es:Llafranc','ca:Llafranc']},
+  {n:'Calella de Palafrugell', c:[41.8875,3.1780], d:'3 ago · 13:00', k:'d3', p:'gratis', note:'Pranzo: il borgo di pescatori più fotografato della zona.', w:['es:Calella de Palafrugell','ca:Calella de Palafrugell']},
+  {n:'Cala Estreta', c:[41.8367,3.1633], d:'3 ago · alt.', k:'d3', p:'gratis', note:'Alternativa selvaggia: cala appartata, anche naturista, davanti a una pineta. Solo a piedi.'},
+  {n:'Pals', c:[41.9683,3.1478], d:'3 ago · 18:30', k:'d3', p:'gratis', note:'Borgo murato, Torre de les Hores, riso dei campi allagati. Ruta gòtic 40 min. Cena da El Pedró: arròs a la cassola.', u:'https://www.elxiuletdepals.com/es/Ruta-Pals-gotico', w:['it:Pals','es:Pals','ca:Pals']},
+  {n:'Platja de l\'Almadrava', c:[42.2497,3.1583], d:'4 ago · 08:30', k:'d4', p:'gratis', note:'Ultima nuotata prima di Barcellona. Spiaggia lunga e tranquilla.'},
+  {n:'Peratallada', c:[41.9836,3.0725], d:'4 ago · 10:45', k:'d4', p:'gratis', note:'Borgo medievale scavato nella roccia, tra i più belli della Catalogna.', w:['es:Peratallada','ca:Peratallada']},
+  {n:'Monells', c:[41.9797,2.9714], d:'4 ago · 12:15', k:'d4', p:'gratis', note:'Piazza porticata da cartolina. Pranzo prima di partire per Barcellona.', w:['es:Monells','ca:Monells']},
+  {n:'La Santa Market', c:[41.8133,2.9994], d:'serata alt.', k:'d3', p:'da verificare', note:'Santa Cristina d\'Aro. Concerti e serate, se restate di più.', w:['ca:Santa Cristina d\'Aro','es:Santa Cristina de Aro']}
+];
+
+const ECLIPSE = [
+  {n:'Santander · totalità', c:[43.4623,-3.8100], d:'12 ago', k:'d10', note:'Massimo verso le 20:27, circa 45 min prima del tramonto. Occhiali ISO 12312-2 obbligatori nelle fasi parziali.'},
+  {n:'Saragozza · riserva meteo', c:[41.6488,-0.8891], d:'12 ago', k:'d9', note:'Anche Saragozza è in fascia: ~1min 25s di totalità alle 20:29, con le migliori probabilità di cielo sereno del percorso spagnolo.'},
+  {n:'Barcellona · solo parziale', c:[41.3874,2.1686], d:'12 ago', k:'d4', note:'Oscuramento vicino al 95%, fino al 98–99% in alcune zone, ma fuori dalla fascia di totalità.'}
+];
+
+if (window.L) {
+  const map = L.map('map',{scrollWheelZoom:false}).setView([43.0,2.0],5);
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+    attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:18
+  }).addTo(map);
+
+  const icon = cls => L.divIcon({className:'', html:`<span class="mk ${cls}" style="display:block;width:14px;height:14px"></span>`, iconSize:[14,14], iconAnchor:[7,7]});
+  const pop = p => () => `${p.img?`<img src="${p.img}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px">`:''}<b>${p.n}</b><span class="d">${p.d}${p.p?' · '+p.p:''}</span>${p.note?`<div style="margin-top:6px">${p.note}</div>`:''}${p.t?`<span class="t">${p.t}</span>`:''}${p.u?`<div style="margin-top:6px"><a href="${p.u}" target="_blank" rel="noopener">apri il link</a></div>`:''}`;
+
+  const gSleep = L.layerGroup(), gSpot = L.layerGroup(), gEcl = L.layerGroup();
+  SLEEP.forEach(p=>L.marker(p.c,{icon:icon('sleep')}).bindPopup(pop(p)).addTo(gSleep));
+  SPOTS.forEach(p=>L.marker(p.c,{icon:icon('spot')}).bindPopup(pop(p)).addTo(gSpot));
+  ECLIPSE.forEach(p=>L.marker(p.c,{icon:icon('ecl')}).bindPopup(pop(p)).addTo(gEcl));
+
+  const line = L.polyline(SLEEP.map(p=>p.c).concat([[45.4064,11.8768]]),
+    {color:'#FFC24A',weight:2,opacity:.65,dashArray:'6 7'});
+
+  [line,gSleep,gSpot,gEcl].forEach(l=>l.addTo(map));
+  map.fitBounds(line.getBounds().pad(.12));
+
+  const FILTERS = [
+    {id:'all',  lab:'Tutto'},
+    {id:'sleep',lab:'Dove dormo'},
+    {id:'spot', lab:'Punti turistici'},
+    {id:'ecl',  lab:'Eclissi'},
+    {id:'d1',   lab:'1 ago'},
+    {id:'d2',   lab:'2 ago'},
+    {id:'d3',   lab:'3 ago'},
+    {id:'d4',   lab:'4 ago'},
+    {id:'d9',   lab:'9–13 ago'}
+  ];
+  const fEl = document.getElementById('filters');
+  FILTERS.forEach(f=>{
+    const b=document.createElement('button');
+    b.className='fbtn'+(f.id==='all'?' on':''); b.textContent=f.lab;
+    b.addEventListener('click',()=>{
+      fEl.querySelectorAll('.fbtn').forEach(x=>x.classList.remove('on'));
+      b.classList.add('on'); apply(f.id);
+    });
+    fEl.appendChild(b);
+  });
+
+  function apply(id){
+    [gSleep,gSpot,gEcl].forEach(g=>map.removeLayer(g));
+    map.removeLayer(line);
+    if(apply.tmp){ map.removeLayer(apply.tmp); apply.tmp = null; }
+    if(id==='all'){ line.addTo(map); [gSleep,gSpot,gEcl].forEach(g=>g.addTo(map)); return map.fitBounds(line.getBounds().pad(.12)); }
+    if(id==='sleep'){ line.addTo(map); gSleep.addTo(map); return map.fitBounds(line.getBounds().pad(.12)); }
+    if(id==='spot'){ gSpot.addTo(map); return map.fitBounds(L.latLngBounds(SPOTS.map(p=>p.c)).pad(.15)); }
+    if(id==='ecl'){ gEcl.addTo(map); return map.fitBounds(L.latLngBounds(ECLIPSE.map(p=>p.c)).pad(.4)); }
+    const days = id==='d9' ? ['d9','d10','d13'] : [id];
+    const sel = [], g = L.layerGroup().addTo(map);
+    [[SLEEP,'sleep'],[SPOTS,'spot'],[ECLIPSE,'ecl']].forEach(([arr,cls])=>{
+      arr.filter(p=>days.includes(p.k)).forEach(p=>{ sel.push(p.c); L.marker(p.c,{icon:icon(cls)}).bindPopup(pop(p)).addTo(g); });
+    });
+    if(sel.length) map.fitBounds(L.latLngBounds(sel).pad(.25));
+    apply.tmp = g;
+  }
+  map.on('click',()=>map.scrollWheelZoom.enable());
+  map.on('mouseout',()=>map.scrollWheelZoom.disable());
+} else {
+  document.getElementById('map').innerHTML =
+    '<div style="padding:28px;color:#9199BE;font-family:var(--mono);font-size:13px">Mappa non disponibile offline: serve una connessione per caricare Leaflet e le tile.</div>';
+}
+</script>
+</body>
+</html>
