@@ -72,6 +72,8 @@ nav .wrap::-webkit-scrollbar{display:none}
 nav a{border:0;color:var(--muted);font-size:13px;letter-spacing:.04em;text-transform:uppercase;
   font-family:var(--mono);padding:6px 10px;border-radius:99px;white-space:nowrap}
 nav a:hover{color:var(--text);background:rgba(255,255,255,.06)}
+nav a.on{color:#1a1204;background:var(--corona)}
+nav a.on:hover{background:var(--corona)}
 nav .brand{font-family:var(--display);font-weight:800;color:var(--text);text-transform:none;
   font-size:15px;letter-spacing:-.01em;padding-left:0;margin-right:8px}
 
@@ -1033,6 +1035,55 @@ if (window.L) {
   document.getElementById('map').innerHTML =
     '<div style="padding:28px;color:#9199BE;font-family:var(--mono);font-size:13px">Mappa non disponibile offline: serve una connessione per caricare Leaflet e le tile.</div>';
 }
+</script>
+
+<script>
+/* ---------- scroll-spy: evidenzia nella nav la sezione corrente ---------- */
+(function(){
+  const wrap = document.querySelector('nav .wrap');
+  if(!wrap) return;
+  const links = [...wrap.querySelectorAll('a[href^="#"]')];
+  // Coppie link → sezione, nell'ordine del documento
+  const items = links
+    .map(a => ({ a, el: document.getElementById(a.getAttribute('href').slice(1)) }))
+    .filter(x => x.el);
+  if(!items.length) return;
+
+  const navH = () => document.querySelector('nav').offsetHeight || 54;
+  let current = null;
+
+  function setActive(a){
+    if(a === current) return;
+    current = a;
+    links.forEach(l => l.classList.toggle('on', l === a));
+    // Centra il link attivo nella nav scrollabile (mobile)
+    const target = a.offsetLeft - wrap.clientWidth/2 + a.offsetWidth/2;
+    wrap.scrollTo({ left: Math.max(0, target), behavior: 'smooth' });
+  }
+
+  function spy(){
+    const line = navH() + 12;              // riferimento appena sotto la nav
+    let active = items[0].a;
+    for(const { a, el } of items){
+      if(el.getBoundingClientRect().top <= line) active = a; else break;
+    }
+    // In fondo alla pagina, forza l'ultima sezione
+    if(window.innerHeight + window.scrollY >= document.body.scrollHeight - 2){
+      active = items[items.length - 1].a;
+    }
+    setActive(active);
+  }
+
+  let ticking = false;
+  function onScroll(){
+    if(ticking) return;
+    ticking = true;
+    requestAnimationFrame(() => { spy(); ticking = false; });
+  }
+  addEventListener('scroll', onScroll, { passive:true });
+  addEventListener('resize', onScroll);
+  spy();
+})();
 </script>
 </body>
 </html>
