@@ -294,6 +294,9 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .leaflet-popup-content b{font-family:var(--display);font-size:16px;display:block;margin-bottom:3px}
 .leaflet-popup-content .d{font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--corona)}
 .leaflet-popup-content .t{font-family:var(--mono);font-size:12px;color:var(--sea);display:block;margin-top:5px}
+.leaflet-popup-content a.gmaps{display:inline-flex;align-items:center;gap:5px;background:var(--corona);color:#1a1204;
+  font-weight:600;text-decoration:none;padding:7px 11px;border-radius:9px;font-size:12.5px}
+.leaflet-popup-content a.gmaps:hover{background:var(--corona-hot)}
 .leaflet-popup-close-button{color:var(--muted)!important}
 .leaflet-control-zoom a{background:var(--card-2)!important;color:var(--text)!important;border-color:var(--line)!important}
 .leaflet-control-attribution{background:rgba(6,9,23,.75)!important;color:var(--muted)!important;font-size:10px}
@@ -968,7 +971,8 @@ if (window.L) {
   }).addTo(map);
 
   const icon = cls => L.divIcon({className:'', html:`<span class="mk ${cls}" style="display:block;width:14px;height:14px"></span>`, iconSize:[14,14], iconAnchor:[7,7]});
-  const pop = p => () => `${p.img?`<img src="${p.img}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px">`:''}<b>${p.n}</b><span class="d">${p.d}${p.p?' · '+p.p:''}</span>${p.note?`<div style="margin-top:6px">${p.note}</div>`:''}${p.t?`<span class="t">${p.t}</span>`:''}${p.u?`<div style="margin-top:6px"><a href="${p.u}" target="_blank" rel="noopener">apri il link</a></div>`:''}`;
+  const gmaps = p => `https://www.google.com/maps/search/?api=1&query=${p.c[0]},${p.c[1]}`;
+  const pop = p => () => `${p.img?`<img src="${p.img}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px">`:''}<b>${p.n}</b><span class="d">${p.d}${p.p?' · '+p.p:''}</span>${p.note?`<div style="margin-top:6px">${p.note}</div>`:''}${p.t?`<span class="t">${p.t}</span>`:''}${p.u?`<div style="margin-top:6px"><a href="${p.u}" target="_blank" rel="noopener">apri il link</a></div>`:''}<div style="margin-top:8px"><a class="gmaps" href="${gmaps(p)}" target="_blank" rel="noopener">📍 Apri in Google Maps</a></div>`;
 
   const gSleep = L.layerGroup(), gSpot = L.layerGroup(), gEcl = L.layerGroup();
   SLEEP.forEach(p=>L.marker(p.c,{icon:icon('sleep')}).bindPopup(pop(p)).addTo(gSleep));
