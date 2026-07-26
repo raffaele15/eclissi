@@ -598,7 +598,6 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <div id="routes"></div>
 </div></section>
 
-
 <section id="eclissi"><div class="wrap">
   <h2><span class="num">12 agosto</span>La totalità</h2>
   <p class="sub">Il motivo per cui il viaggio risale fino al Cantabrico invece di fermarsi in Catalogna.</p>
@@ -856,6 +855,55 @@ function compute(){
 }
 compute();
 
+/* ---------- dati luoghi (mappa + galleria) ---------- */
+const SLEEP = [
+  {n:'Padova',            c:[45.4064,11.8768], d:'31 lug · partenza', t:'', k:'d1'},
+  {n:'Camera Orchidea',   c:[44.9256,8.0747],  d:'31 lug → 1 ago', t:'~2h 50min da Padova', note:'Via Vernetto 5, Castellero (AT), Monferrato astigiano. Bagno privato, 45 € totali.', k:'d1'},
+  {n:'La Ferme de Manon', c:[43.6055,6.4822],  d:'1 → 2 ago', t:'~4h 20min da Castellero', note:'Montferrat, Var. Appartamento intero, parcheggio privato. 76 €.', k:'d1'},
+  {n:"Pensió L'Avi Pep",  c:[42.1259,2.9676],  d:'2 → 4 ago', t:'5h 43min dalla Francia', note:'Camallera (Girona). Base per tutta la Costa Brava. 120 € per 2 notti.', k:'d2'},
+  {n:'Barcellona',        c:[41.3874,2.1686],  d:'4 → 9 ago', t:'~1h 40min da Camallera', note:'Appartamento disponibile, 5 notti a costo zero.', k:'d4'},
+  {n:'Villa Baturra, Saragozza', c:[41.6488,-0.8891], d:'9 → 10 ago', t:'~3h 15min da Barcellona', note:'Una notte, 55 € per due. AP-2 senza pedaggio.', k:'d9'},
+  {n:'Santander',         c:[43.4623,-3.8100], d:'10 → 13 ago', t:'~4h 15min da Saragozza', note:'3 notti, 320 € totali. Dentro la fascia di totalità.', k:'d10'},
+  {n:'Barcellona (ritorno)',c:[41.3874,2.1686],d:'13 ago', t:'8h 24min da Santander', note:'Tappa di passaggio verso casa.', k:'d13'},
+  {n:'Notte di rientro',  c:[43.6,4.0],        d:'14 ago · da prenotare', t:'circa a metà strada', note:'Posizione indicativa: l\'unica notte ancora da scegliere, 70 € a bilancio.', k:'d13'}
+];
+
+const SPOTS = [
+  {n:'Marché des Halles, Mentone', c:[43.7752,7.5062], d:'1 ago · 10:00', k:'d1', p:'~4 € il barbajuan', note:'Quai de Monléon. Padiglione del 1898, una quarantina di produttori. Aperto 8–13 tutti i giorni tranne il lunedì. Barbajuan, socca, pichade, tarte au citron.'},
+  {n:'Sini', c:[43.7754,7.5061], d:'1 ago · 12:00', k:'d1', p:'pranzo', note:'7 Rue des Marins, davanti alle Halles. Mer–dom 9–22. Focacce, pizze, pichade mentonnaise e barbajuan — che nei weekend di mercato finisce presto.'},
+  {n:'La Socca de Mémé', c:[43.7745,7.5008], d:'1 ago · alternativa', k:'d1', p:'street food', note:'23 Place Saint-Roch. Mer–sab 9–13. Socca e barbajuan fatti in casa, posto minuscolo.'},
+  {n:'Barbajuan ou…', c:[43.7811,7.4938], d:'1 ago · alternativa', k:'d1', p:'da asporto', note:'71 Avenue de Sospel, fuori dal centro. Gastronomia di famiglia: barbajuan, sardine ripiene, fougasse, pichade. Orari non pubblicati, meglio telefonare.'},
+  {n:'Mitron Bakery', c:[43.7758,7.5051], d:'1 ago · dolce', k:'d1', p:'forno', note:'8 Rue Pieta. Il forno legato a Mauro Colagreco del Mirazur: fougasse mentonnaise e tarte au citron. Sabato 8–19.'},
+  {n:'Museo Matisse, Nizza', c:[43.7188,7.2761], d:'1 ago · 14:00', k:'d1', p:'12 €', note:'164 avenue des Arènes de Cimiez. Chiude alle 18, biglietteria alle 17:30. Parcheggio in avenue du Monastère e place du Monastère.', u:'https://billetterie-museesnice.tickeasy.com/fr-FR/musee?site=2316454206350400007', w:['fr:Musée Matisse (Nice)','it:Museo Matisse']},
+  {n:'Nizza centro', c:[43.6961,7.2716], d:'1 ago · 16:30', k:'d1', p:'gratis', note:'Vieux Nice, Cours Saleya, Promenade des Anglais. Cena sul lungomare alle 20.', w:['it:Nizza']},
+  {n:'Mentone', c:[43.7749,7.4989], d:'1 ago · 10:00', k:'d1', p:'gratis', note:'Primo paese dopo la frontiera di Ventimiglia. Pranzo alle 12:30, ripartenza alle 13:20.', w:['it:Mentone','fr:Menton (Alpes-Maritimes)']},
+  {n:'Èze', c:[43.7275,7.3617], d:'1 ago · opzionale', k:'d1', p:'borgo gratis', note:'Unica deviazione compatibile con il programma: sosta breve tra Mentone e Nizza. Il Jardin Exotique in cima si paga a parte.', w:['it:Èze','fr:Èze']},
+  {n:'Villa Ephrussi de Rothschild', c:[43.6944,7.3306], d:'fuori programma', k:'d1', p:'~18 €', note:'Chiude alle 19: incompatibile con il Matisse alle 14. Resta come alternativa se cambiate il piano.', u:'https://www.villa-ephrussi.com/en/prepare-your-visit/rates', w:['fr:Villa Ephrussi de Rothschild','it:Villa Ephrussi de Rothschild']},
+  {n:'Saint-Jean-Cap-Ferrat', c:[43.6879,7.3308], d:'fuori programma', k:'d1', p:'gratis', note:'La penisola tra Èze e Nizza. Non entra nella giornata come pianificata.', u:'https://www.explorenicecotedazur.com/it/esplorare/citta-e-villaggi/litorale/saint-jean-cap-ferrat/brochure-da-scaricare/', w:['it:Saint-Jean-Cap-Ferrat','fr:Saint-Jean-Cap-Ferrat']},
+  {n:'Saint-Paul-de-Vence', c:[43.6959,7.1220], d:'2 ago', k:'d2', p:'gratis', note:'~50 min da Montferrat, sulla strada per la Spagna. Borgo murato di gallerie d\'arte.', w:['it:Saint-Paul-de-Vence','fr:Saint-Paul-de-Vence']},
+  {n:'Antibes e Cap d\'Antibes', c:[43.5589,7.1226], d:'2 ago', k:'d2', p:'gratis', note:'30 min da Nizza, verso la Spagna. Baie des Milliardaires.', u:'https://maps.app.goo.gl/hxJrP7qsEMBmtVp8A', w:['it:Antibes','fr:Antibes']},
+  {n:"Platja de s'Alqueria", c:[42.2973,3.2884], d:'2 ago · 16:00', k:'d2', p:'gratis', note:'1h dalla pensione, verso nord. Cala di ciottoli tra le rocce, parcheggio vicino, nessun servizio. Posidonia sott\'acqua. Fuori dalla zona regolata di Roses: nessun vincolo d\'orario.'},
+  {n:'Cadaqués', c:[42.2887,3.2779], d:'2 ago · 19:00', k:'d2', p:'gratis', note:'Il paese bianco di Dalí. Tramonto e cena qui, poi rientro a Camallera.', w:['it:Cadaqués','es:Cadaqués']},
+  {n:'Cala Montjoi', c:[42.2498,3.2285], d:'zona regolata', k:'d2', p:'gratis', note:'Dentro il Parc Natural: accesso auto chiuso 9:30–16:00 dal 1 luglio al 31 agosto. Raggiungibile solo prima delle 9:30 o dopo le 16. Non nel programma.'},
+  {n:'Cala Jóncols · vini del mare', c:[42.2874,3.2277], d:'zona regolata', k:'d2', p:'30 €', note:'Dentro la zona a traffico limitato di Roses (9:30–16:00). Degustazione di vini invecchiati sott\'acqua. Fattibile solo fuori dagli orari di chiusura.', u:'https://www.calajoncols.com/es/experiencias2/degustacion-de-vinos-del-mar/'},
+  {n:'Aiguablava', c:[41.9337,3.2135], d:'3 ago · 08:00', k:'d3', p:'gratis', note:'50 min dall\'hotel. Prima nuotata: acque trasparenti e pesci, ideali per snorkeling. Presto = parcheggio libero.', w:['ca:Aiguablava','es:Aiguablava']},
+  {n:'Tamariu', c:[41.9175,3.2050], d:'3 ago · 10:30', k:'d3', p:'gratis', note:'Cala raccolta a pochi minuti verso sud. Seconda nuotata e caffè.', w:['es:Tamariu','ca:Tamariu']},
+  {n:'Platja de Llafranc', c:[41.8934,3.1930], d:'3 ago · alt.', k:'d3', p:'gratis', note:'Alternativa a Tamariu, poco più a sud.', w:['es:Llafranc','ca:Llafranc']},
+  {n:'Calella de Palafrugell', c:[41.8875,3.1780], d:'3 ago · 13:00', k:'d3', p:'gratis', note:'Pranzo: il borgo di pescatori più fotografato della zona.', w:['es:Calella de Palafrugell','ca:Calella de Palafrugell']},
+  {n:'Cala Estreta', c:[41.8367,3.1633], d:'3 ago · alt.', k:'d3', p:'gratis', note:'Alternativa selvaggia: cala appartata, anche naturista, davanti a una pineta. Solo a piedi.'},
+  {n:'Pals', c:[41.9683,3.1478], d:'3 ago · 18:30', k:'d3', p:'gratis', note:'Borgo murato, Torre de les Hores, riso dei campi allagati. Ruta gòtic 40 min. Cena da El Pedró: arròs a la cassola.', u:'https://www.elxiuletdepals.com/es/Ruta-Pals-gotico', w:['it:Pals','es:Pals','ca:Pals']},
+  {n:'Platja de l\'Almadrava', c:[42.2497,3.1583], d:'4 ago · 08:30', k:'d4', p:'gratis', note:'Ultima nuotata prima di Barcellona. Spiaggia lunga e tranquilla.'},
+  {n:'Peratallada', c:[41.9836,3.0725], d:'4 ago · 10:45', k:'d4', p:'gratis', note:'Borgo medievale scavato nella roccia, tra i più belli della Catalogna.', w:['es:Peratallada','ca:Peratallada']},
+  {n:'Monells', c:[41.9797,2.9714], d:'4 ago · 12:15', k:'d4', p:'gratis', note:'Piazza porticata da cartolina. Pranzo prima di partire per Barcellona.', w:['es:Monells','ca:Monells']},
+  {n:'La Santa Market', c:[41.8133,2.9994], d:'serata alt.', k:'d3', p:'da verificare', note:'Santa Cristina d\'Aro. Concerti e serate, se restate di più.', w:['ca:Santa Cristina d\'Aro','es:Santa Cristina de Aro']}
+];
+
+const ECLIPSE = [
+  {n:'Santander · totalità', c:[43.4623,-3.8100], d:'12 ago', k:'d10', note:'Massimo verso le 20:27, circa 45 min prima del tramonto. Occhiali ISO 12312-2 obbligatori nelle fasi parziali.'},
+  {n:'Saragozza · riserva meteo', c:[41.6488,-0.8891], d:'12 ago', k:'d9', note:'Anche Saragozza è in fascia: ~1min 25s di totalità alle 20:29, con le migliori probabilità di cielo sereno del percorso spagnolo.'},
+  {n:'Barcellona · solo parziale', c:[41.3874,2.1686], d:'12 ago', k:'d4', note:'Oscuramento vicino al 95%, fino al 98–99% in alcune zone, ma fuori dalla fascia di totalità.'}
+];
+
 /* ---------- galleria: foto da Wikipedia + prezzi ---------- */
 const galEl = document.getElementById('gal');
 SPOTS.forEach((p,i)=>{
@@ -912,55 +960,6 @@ async function loadPhotos(){
   });
 }
 loadPhotos();
-
-/* ---------- mappa ---------- */
-const SLEEP = [
-  {n:'Padova',            c:[45.4064,11.8768], d:'31 lug · partenza', t:'', k:'d1'},
-  {n:'Camera Orchidea',   c:[44.9256,8.0747],  d:'31 lug → 1 ago', t:'~2h 50min da Padova', note:'Via Vernetto 5, Castellero (AT), Monferrato astigiano. Bagno privato, 45 € totali.', k:'d1'},
-  {n:'La Ferme de Manon', c:[43.6055,6.4822],  d:'1 → 2 ago', t:'~4h 20min da Castellero', note:'Montferrat, Var. Appartamento intero, parcheggio privato. 76 €.', k:'d1'},
-  {n:"Pensió L'Avi Pep",  c:[42.1259,2.9676],  d:'2 → 4 ago', t:'5h 43min dalla Francia', note:'Camallera (Girona). Base per tutta la Costa Brava. 120 € per 2 notti.', k:'d2'},
-  {n:'Barcellona',        c:[41.3874,2.1686],  d:'4 → 9 ago', t:'~1h 40min da Camallera', note:'Appartamento disponibile, 5 notti a costo zero.', k:'d4'},
-  {n:'Villa Baturra, Saragozza', c:[41.6488,-0.8891], d:'9 → 10 ago', t:'~3h 15min da Barcellona', note:'Una notte, 55 € per due. AP-2 senza pedaggio.', k:'d9'},
-  {n:'Santander',         c:[43.4623,-3.8100], d:'10 → 13 ago', t:'~4h 15min da Saragozza', note:'3 notti, 320 € totali. Dentro la fascia di totalità.', k:'d10'},
-  {n:'Barcellona (ritorno)',c:[41.3874,2.1686],d:'13 ago', t:'8h 24min da Santander', note:'Tappa di passaggio verso casa.', k:'d13'},
-  {n:'Notte di rientro',  c:[43.6,4.0],        d:'14 ago · da prenotare', t:'circa a metà strada', note:'Posizione indicativa: l\'unica notte ancora da scegliere, 70 € a bilancio.', k:'d13'}
-];
-
-const SPOTS = [
-  {n:'Marché des Halles, Mentone', c:[43.7752,7.5062], d:'1 ago · 10:00', k:'d1', p:'~4 € il barbajuan', note:'Quai de Monléon. Padiglione del 1898, una quarantina di produttori. Aperto 8–13 tutti i giorni tranne il lunedì. Barbajuan, socca, pichade, tarte au citron.'},
-  {n:'Sini', c:[43.7754,7.5061], d:'1 ago · 12:00', k:'d1', p:'pranzo', note:'7 Rue des Marins, davanti alle Halles. Mer–dom 9–22. Focacce, pizze, pichade mentonnaise e barbajuan — che nei weekend di mercato finisce presto.'},
-  {n:'La Socca de Mémé', c:[43.7745,7.5008], d:'1 ago · alternativa', k:'d1', p:'street food', note:'23 Place Saint-Roch. Mer–sab 9–13. Socca e barbajuan fatti in casa, posto minuscolo.'},
-  {n:'Barbajuan ou…', c:[43.7811,7.4938], d:'1 ago · alternativa', k:'d1', p:'da asporto', note:'71 Avenue de Sospel, fuori dal centro. Gastronomia di famiglia: barbajuan, sardine ripiene, fougasse, pichade. Orari non pubblicati, meglio telefonare.'},
-  {n:'Mitron Bakery', c:[43.7758,7.5051], d:'1 ago · dolce', k:'d1', p:'forno', note:'8 Rue Pieta. Il forno legato a Mauro Colagreco del Mirazur: fougasse mentonnaise e tarte au citron. Sabato 8–19.'},
-  {n:'Museo Matisse, Nizza', c:[43.7188,7.2761], d:'1 ago · 14:00', k:'d1', p:'12 €', note:'164 avenue des Arènes de Cimiez. Chiude alle 18, biglietteria alle 17:30. Parcheggio in avenue du Monastère e place du Monastère.', u:'https://billetterie-museesnice.tickeasy.com/fr-FR/musee?site=2316454206350400007', w:['fr:Musée Matisse (Nice)','it:Museo Matisse']},
-  {n:'Nizza centro', c:[43.6961,7.2716], d:'1 ago · 16:30', k:'d1', p:'gratis', note:'Vieux Nice, Cours Saleya, Promenade des Anglais. Cena sul lungomare alle 20.', w:['it:Nizza']},
-  {n:'Mentone', c:[43.7749,7.4989], d:'1 ago · 10:00', k:'d1', p:'gratis', note:'Primo paese dopo la frontiera di Ventimiglia. Pranzo alle 12:30, ripartenza alle 13:20.', w:['it:Mentone','fr:Menton (Alpes-Maritimes)']},
-  {n:'Èze', c:[43.7275,7.3617], d:'1 ago · opzionale', k:'d1', p:'borgo gratis', note:'Unica deviazione compatibile con il programma: sosta breve tra Mentone e Nizza. Il Jardin Exotique in cima si paga a parte.', w:['it:Èze','fr:Èze']},
-  {n:'Villa Ephrussi de Rothschild', c:[43.6944,7.3306], d:'fuori programma', k:'d1', p:'~18 €', note:'Chiude alle 19: incompatibile con il Matisse alle 14. Resta come alternativa se cambiate il piano.', u:'https://www.villa-ephrussi.com/en/prepare-your-visit/rates', w:['fr:Villa Ephrussi de Rothschild','it:Villa Ephrussi de Rothschild']},
-  {n:'Saint-Jean-Cap-Ferrat', c:[43.6879,7.3308], d:'fuori programma', k:'d1', p:'gratis', note:'La penisola tra Èze e Nizza. Non entra nella giornata come pianificata.', u:'https://www.explorenicecotedazur.com/it/esplorare/citta-e-villaggi/litorale/saint-jean-cap-ferrat/brochure-da-scaricare/', w:['it:Saint-Jean-Cap-Ferrat','fr:Saint-Jean-Cap-Ferrat']},
-  {n:'Saint-Paul-de-Vence', c:[43.6959,7.1220], d:'2 ago', k:'d2', p:'gratis', note:'~50 min da Montferrat, sulla strada per la Spagna. Borgo murato di gallerie d\'arte.', w:['it:Saint-Paul-de-Vence','fr:Saint-Paul-de-Vence']},
-  {n:'Antibes e Cap d\'Antibes', c:[43.5589,7.1226], d:'2 ago', k:'d2', p:'gratis', note:'30 min da Nizza, verso la Spagna. Baie des Milliardaires.', u:'https://maps.app.goo.gl/hxJrP7qsEMBmtVp8A', w:['it:Antibes','fr:Antibes']},
-  {n:"Platja de s'Alqueria", c:[42.2973,3.2884], d:'2 ago · 16:00', k:'d2', p:'gratis', note:'1h dalla pensione, verso nord. Cala di ciottoli tra le rocce, parcheggio vicino, nessun servizio. Posidonia sott\'acqua. Fuori dalla zona regolata di Roses: nessun vincolo d\'orario.'},
-  {n:'Cadaqués', c:[42.2887,3.2779], d:'2 ago · 19:00', k:'d2', p:'gratis', note:'Il paese bianco di Dalí. Tramonto e cena qui, poi rientro a Camallera.', w:['it:Cadaqués','es:Cadaqués']},
-  {n:'Cala Montjoi', c:[42.2498,3.2285], d:'zona regolata', k:'d2', p:'gratis', note:'Dentro il Parc Natural: accesso auto chiuso 9:30–16:00 dal 1 luglio al 31 agosto. Raggiungibile solo prima delle 9:30 o dopo le 16. Non nel programma.'},
-  {n:'Cala Jóncols · vini del mare', c:[42.2874,3.2277], d:'zona regolata', k:'d2', p:'30 €', note:'Dentro la zona a traffico limitato di Roses (9:30–16:00). Degustazione di vini invecchiati sott\'acqua. Fattibile solo fuori dagli orari di chiusura.', u:'https://www.calajoncols.com/es/experiencias2/degustacion-de-vinos-del-mar/'},
-  {n:'Aiguablava', c:[41.9337,3.2135], d:'3 ago · 08:00', k:'d3', p:'gratis', note:'50 min dall\'hotel. Prima nuotata: acque trasparenti e pesci, ideali per snorkeling. Presto = parcheggio libero.', w:['ca:Aiguablava','es:Aiguablava']},
-  {n:'Tamariu', c:[41.9175,3.2050], d:'3 ago · 10:30', k:'d3', p:'gratis', note:'Cala raccolta a pochi minuti verso sud. Seconda nuotata e caffè.', w:['es:Tamariu','ca:Tamariu']},
-  {n:'Platja de Llafranc', c:[41.8934,3.1930], d:'3 ago · alt.', k:'d3', p:'gratis', note:'Alternativa a Tamariu, poco più a sud.', w:['es:Llafranc','ca:Llafranc']},
-  {n:'Calella de Palafrugell', c:[41.8875,3.1780], d:'3 ago · 13:00', k:'d3', p:'gratis', note:'Pranzo: il borgo di pescatori più fotografato della zona.', w:['es:Calella de Palafrugell','ca:Calella de Palafrugell']},
-  {n:'Cala Estreta', c:[41.8367,3.1633], d:'3 ago · alt.', k:'d3', p:'gratis', note:'Alternativa selvaggia: cala appartata, anche naturista, davanti a una pineta. Solo a piedi.'},
-  {n:'Pals', c:[41.9683,3.1478], d:'3 ago · 18:30', k:'d3', p:'gratis', note:'Borgo murato, Torre de les Hores, riso dei campi allagati. Ruta gòtic 40 min. Cena da El Pedró: arròs a la cassola.', u:'https://www.elxiuletdepals.com/es/Ruta-Pals-gotico', w:['it:Pals','es:Pals','ca:Pals']},
-  {n:'Platja de l\'Almadrava', c:[42.2497,3.1583], d:'4 ago · 08:30', k:'d4', p:'gratis', note:'Ultima nuotata prima di Barcellona. Spiaggia lunga e tranquilla.'},
-  {n:'Peratallada', c:[41.9836,3.0725], d:'4 ago · 10:45', k:'d4', p:'gratis', note:'Borgo medievale scavato nella roccia, tra i più belli della Catalogna.', w:['es:Peratallada','ca:Peratallada']},
-  {n:'Monells', c:[41.9797,2.9714], d:'4 ago · 12:15', k:'d4', p:'gratis', note:'Piazza porticata da cartolina. Pranzo prima di partire per Barcellona.', w:['es:Monells','ca:Monells']},
-  {n:'La Santa Market', c:[41.8133,2.9994], d:'serata alt.', k:'d3', p:'da verificare', note:'Santa Cristina d\'Aro. Concerti e serate, se restate di più.', w:['ca:Santa Cristina d\'Aro','es:Santa Cristina de Aro']}
-];
-
-const ECLIPSE = [
-  {n:'Santander · totalità', c:[43.4623,-3.8100], d:'12 ago', k:'d10', note:'Massimo verso le 20:27, circa 45 min prima del tramonto. Occhiali ISO 12312-2 obbligatori nelle fasi parziali.'},
-  {n:'Saragozza · riserva meteo', c:[41.6488,-0.8891], d:'12 ago', k:'d9', note:'Anche Saragozza è in fascia: ~1min 25s di totalità alle 20:29, con le migliori probabilità di cielo sereno del percorso spagnolo.'},
-  {n:'Barcellona · solo parziale', c:[41.3874,2.1686], d:'12 ago', k:'d4', note:'Oscuramento vicino al 95%, fino al 98–99% in alcune zone, ma fuori dalla fascia di totalità.'}
-];
 
 if (window.L) {
   const map = L.map('map',{scrollWheelZoom:false}).setView([43.0,2.0],5);
