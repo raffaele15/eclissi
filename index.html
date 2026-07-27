@@ -249,8 +249,10 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .total-bar .tb-item{flex:1;min-width:150px;background:linear-gradient(180deg,var(--card-2),var(--card));
   border:1px solid var(--line-2);border-radius:var(--r);padding:16px 18px}
 .total-bar .tl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
-.total-bar .tv{display:block;font-family:var(--mono);font-size:30px;color:var(--corona);line-height:1.1;margin-top:6px;letter-spacing:-.01em}
+.total-bar .tv{display:block;font-family:var(--mono);font-size:clamp(22px,6vw,30px);color:var(--corona);
+  line-height:1.1;margin-top:6px;letter-spacing:-.02em;white-space:nowrap}
 .total-bar .tv.sea{color:var(--sea)}
+@media(max-width:480px){ .total-bar{flex-direction:column} }
 
 /* pulsanti circolari (scorciatoie) */
 .fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
@@ -786,13 +788,13 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
     <tbody id="sp-body"></tbody>
   </table>
   </div>
-  <div class="total-bar">
-    <div class="tb-item"><span class="tl">Totale effettivo</span><span class="tv" id="sp-grand">€ 0,00</span></div>
-    <div class="tb-item"><span class="tl">A testa</span><span class="tv sea" id="sp-grand-pp">€ 0,00</span></div>
-  </div>
   <div class="sp-actions">
     <button class="btn" id="sp-add-row">+ Aggiungi riga</button>
     <button class="btn ghost" id="sp-del-row">− Rimuovi riga</button>
+  </div>
+  <div class="total-bar">
+    <div class="tb-item"><span class="tl">Totale effettivo</span><span class="tv" id="sp-grand">€ 0,00</span></div>
+    <div class="tb-item"><span class="tl">A testa</span><span class="tv sea" id="sp-grand-pp">€ 0,00</span></div>
   </div>
   <details class="sp-sync" id="sp-sync">
     <summary><span class="sp-sync-dot" id="sp-dot"></span><span id="sp-sync-status">Condivisione non attiva</span></summary>
