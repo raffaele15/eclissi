@@ -903,7 +903,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 </div></section>
 
 <div class="fab" role="navigation" aria-label="Scorciatoie">
-  <a href="#itinerario" class="fab-btn" title="Vai all'itinerario" aria-label="Vai all'itinerario">🧭</a>
+  <a href="#itinerario" class="fab-btn" title="Vai all'itinerario" aria-label="Vai all'itinerario">📅</a>
   <a href="#mappa" class="fab-btn" title="Vai alla mappa" aria-label="Vai alla mappa">🗺️</a>
   <a href="#luoghi" class="fab-btn" title="Vai a luoghi e attrazioni" aria-label="Vai a luoghi e attrazioni">🎡</a>
   <a href="#spese" class="fab-btn" title="Vai alle spese effettive" aria-label="Vai alle spese effettive">💰</a>
@@ -1492,11 +1492,28 @@ if (window.L) {
   SPOTS.forEach(p=>L.marker(p.c,{icon:icon(p,'spot')}).bindPopup(pop(p)).addTo(gSpot));
   ECLIPSE.forEach(p=>L.marker(p.c,{icon:icon(p,'ecl')}).bindPopup(pop(p)).addTo(gEcl));
 
-  const line = L.polyline(SLEEP.map(p=>p.c).concat([[45.4064,11.8768]]),
-    {color:'#FFC24A',weight:2,opacity:.65,dashArray:'6 7'});
+  // Tappe notturne in ordine di viaggio + rientro a Padova
+  const routePts = SLEEP.map(p=>p.c).concat([[45.4064,11.8768]]);
+  // All'inizio linea tratteggiata dritta (fallback); poi provo il percorso stradale reale
+  const line = L.polyline(routePts, {color:'#FFC24A',weight:2,opacity:.6,dashArray:'6 7'});
 
   [line,gSleep,gSpot,gEcl].forEach(l=>l.addTo(map));
   map.fitBounds(line.getBounds().pad(.12));
+
+  // Percorso su strada reale tra le basi notturne (OSRM, senza chiave).
+  // Se la rete o il servizio non rispondono, resta il tratteggio dritto.
+  (async function loadRoads(){
+    try{
+      const coords = routePts.map(c=>c[1]+','+c[0]).join(';');   // OSRM vuole lon,lat
+      const url = `https://router.project-osrm.org/route/v1/driving/${coords}?overview=full&geometries=geojson`;
+      const j = await (await fetch(url)).json();
+      const geo = j && j.routes && j.routes[0] && j.routes[0].geometry;
+      if(geo && geo.coordinates && geo.coordinates.length){
+        line.setLatLngs(geo.coordinates.map(c=>[c[1],c[0]]));   // GeoJSON [lon,lat] → [lat,lon]
+        line.setStyle({dashArray:null, weight:3, opacity:.85});
+      }
+    }catch(e){ /* offline o OSRM non disponibile: resta il tratteggio */ }
+  })();
 
   const FILTERS = [
     {id:'all',  lab:'Tutto'},
