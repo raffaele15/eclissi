@@ -275,6 +275,19 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .gprice.paid{border-color:rgba(255,194,74,.45);color:var(--corona)}
 .gbody small{color:var(--muted);font-size:13px;line-height:1.45}
 .gbody a{font-family:var(--mono);font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;margin-top:auto}
+/* gallery: gruppi per giorno (collassabili) */
+.daygroup{border:1px solid var(--line);border-radius:var(--r);background:var(--card);margin-bottom:14px;overflow:hidden}
+.daygroup[open]{border-color:var(--line-2)}
+.daygroup>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:12px;padding:15px 18px;user-select:none}
+.daygroup>summary::-webkit-details-marker{display:none}
+.daygroup>summary:hover{background:rgba(255,255,255,.03)}
+.dg-chev{flex:none;color:var(--corona);transition:transform .2s;font-size:12px}
+.daygroup[open]>summary .dg-chev{transform:rotate(90deg)}
+.dg-txt{display:flex;flex-direction:column;gap:2px;min-width:0}
+.dg-day{font-family:var(--display);font-size:18px;font-weight:700;letter-spacing:-.01em}
+.dg-sub{color:var(--muted);font-size:13px}
+.dg-count{margin-left:auto;font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted);white-space:nowrap}
+.gal-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:16px;padding:0 18px 18px}
 
 /* map */
 #map{height:560px;border-radius:var(--r);border:1px solid var(--line-2);background:var(--ink-2);z-index:1}
@@ -289,6 +302,12 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .mk.sleep{background:var(--corona)}
 .mk.spot{background:var(--sea)}
 .mk.ecl{background:var(--violet)}
+.pin{display:flex;align-items:center;justify-content:center;width:30px;height:30px;border-radius:50%;
+  background:var(--card-2);border:2px solid var(--corona);font-size:16px;line-height:1;box-shadow:0 2px 8px rgba(0,0,0,.5)}
+.pin.sleep{border-color:var(--corona)}
+.pin.spot{border-color:var(--sea)}
+.pin.ecl{border-color:var(--violet)}
+.legend i.house,.legend i.tent,.legend i.hotel,.legend i.spot{background:none;width:auto;height:auto;font-size:13px;border-radius:0;font-style:normal}
 .leaflet-container{font-family:var(--body);background:#0A0F22}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card-2);color:var(--text);
   border:1px solid var(--line-2);box-shadow:0 10px 40px rgba(0,0,0,.5)}
@@ -584,9 +603,11 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <div class="filters" id="filters"></div>
   <div id="map"></div>
   <div class="legend">
-    <span><i style="background:#FFC24A"></i>base notturna</span>
-    <span><i style="background:#3AD1BE"></i>punto turistico</span>
-    <span><i style="background:#9C8CFF"></i>eclissi</span>
+    <span><i class="house">🏠</i>casa (Padova, Barcellona)</span>
+    <span><i class="hotel">🏨</i>hotel / alloggio</span>
+    <span><i class="tent">⛺</i>Santander (base eclissi)</span>
+    <span><i class="spot">📍</i>attrazioni e visite</span>
+    <span><i class="spot">🌑</i>punti osservazione eclissi</span>
     <span>tratto giallo = spostamento in auto</span>
   </div>
 </div></section>
@@ -594,7 +615,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 <section id="luoghi"><div class="wrap">
   <h2><span class="num">Luoghi</span>Foto e biglietti</h2>
   <p class="sub">Ogni tappa con il suo prezzo d'ingresso. Quasi tutto è gratis: si paga solo per i due Dalí, il Matisse, la villa a Cap-Ferrat e la degustazione. Le fotografie arrivano da Wikipedia e Wikimedia Commons.</p>
-  <div class="gal" id="gal"></div>
+  <div id="gal"></div>
 </div></section>
 
 <section id="tratte"><div class="wrap">
@@ -909,22 +930,45 @@ const ECLIPSE = [
   {n:'Barcellona · solo parziale', c:[41.3874,2.1686], d:'12 ago', k:'d4', note:'Oscuramento vicino al 95%, fino al 98–99% in alcune zone, ma fuori dalla fascia di totalità.'}
 ];
 
-/* ---------- galleria: foto da Wikipedia + prezzi ---------- */
+/* ---------- galleria: foto da Wikipedia + prezzi, divisa per giorno ---------- */
 const galEl = document.getElementById('gal');
-SPOTS.forEach((p,i)=>{
+const DAY_LABELS = {
+  d1:{t:'1 agosto', s:'Costa Azzurra — Mentone, Nizza, Matisse'},
+  d2:{t:'2 agosto', s:'Provenza e arrivo in Costa Brava'},
+  d3:{t:'3 agosto', s:'Le cale della Costa Brava'},
+  d4:{t:'4 agosto', s:'Borghi medievali verso Barcellona'}
+};
+function gcardHTML(p, i){
   const paid = p.p && !/gratis/i.test(p.p);
-  const el = document.createElement('article');
-  el.className = 'gcard';
-  el.innerHTML = `
+  return `<article class="gcard">
     <div class="gph"><span class="ph">${p.w?'foto in arrivo':'nessuna foto'}</span><img id="ph-${i}" alt="${p.n}"></div>
     <div class="gbody">
       <div class="gmeta"><span class="gday">${p.d}</span>${p.p?`<span class="gprice${paid?' paid':''}">${p.p}</span>`:''}</div>
       <b>${p.n}</b>
       ${p.note?`<small>${p.note}</small>`:''}
       ${p.u?`<a href="${p.u}" target="_blank" rel="noopener">Biglietti e info →</a>`:''}
-    </div>`;
-  galEl.appendChild(el);
+    </div></article>`;
+}
+// Raggruppa le attrazioni per giorno, preservando l'ordine di SPOTS (l'indice serve a loadPhotos)
+const galGroups = new Map();
+SPOTS.forEach((p,i)=>{
+  if(!galGroups.has(p.k)) galGroups.set(p.k, []);
+  galGroups.get(p.k).push(i);
 });
+let galFirst = true;
+for(const [k, idxs] of galGroups){
+  const meta = DAY_LABELS[k] || {t:k, s:''};
+  const det = document.createElement('details');
+  det.className = 'daygroup';
+  if(galFirst){ det.open = true; galFirst = false; }   // il primo giorno aperto, gli altri collassati
+  det.innerHTML = `<summary>
+      <span class="dg-chev">▸</span>
+      <span class="dg-txt"><span class="dg-day">${meta.t}</span>${meta.s?`<span class="dg-sub">${meta.s}</span>`:''}</span>
+      <span class="dg-count">${idxs.length} ${idxs.length===1?'luogo':'luoghi'}</span>
+    </summary>
+    <div class="gal-grid">${idxs.map(i=>gcardHTML(SPOTS[i], i)).join('')}</div>`;
+  galEl.appendChild(det);
+}
 
 async function loadPhotos(){
   const langs = ['it','es','fr','ca','en'];
@@ -972,7 +1016,23 @@ if (window.L) {
     attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:18
   }).addTo(map);
 
-  const icon = cls => L.divIcon({className:'', html:`<span class="mk ${cls}" style="display:block;width:14px;height:14px"></span>`, iconSize:[14,14], iconAnchor:[7,7]});
+  // Icone dei pernottamenti: casa a Padova/Barcellona, tenda a Santander, hotel per gli altri
+  const sleepEmoji = p => /padova|barcellona/i.test(p.n) ? '🏠' : (/santander/i.test(p.n) ? '⛺' : '🏨');
+  // Icona più adatta per ogni attrazione (fallback per spiagge/cale e generico)
+  const SPOT_EMOJI = {
+    'Marché des Halles, Mentone':'🧺', 'Sini':'🍕', 'La Socca de Mémé':'🫓', 'Barbajuan ou…':'🥟',
+    'Mitron Bakery':'🥐', 'Museo Matisse, Nizza':'🖼️', 'Nizza centro':'🏙️', 'Mentone':'🍋',
+    'Èze':'🏰', 'Villa Ephrussi de Rothschild':'🏛️', 'Saint-Jean-Cap-Ferrat':'🌊',
+    'Saint-Paul-de-Vence':'🎨', "Antibes e Cap d'Antibes":'🏖️', 'Cadaqués':'🏘️',
+    'Cala Jóncols · vini del mare':'🍷', 'Aiguablava':'🤿', 'Calella de Palafrugell':'🎣',
+    'Pals':'🏰', 'Peratallada':'🏰', 'Monells':'🏘️', 'La Santa Market':'🎵'
+  };
+  const spotEmoji = p => SPOT_EMOJI[p.n] || (/platja|playa|cala|beach/i.test(p.n) ? '🏖️' : '📍');
+  const emojiFor = (p, kind) => kind==='sleep' ? sleepEmoji(p) : kind==='ecl' ? '🌑' : spotEmoji(p);
+  const icon = (p, kind) => L.divIcon({
+    className:'', html:`<span class="pin ${kind}">${emojiFor(p, kind)}</span>`,
+    iconSize:[30,30], iconAnchor:[15,15], popupAnchor:[0,-16]
+  });
   const isMapLink = u => /maps\.(app\.)?goo\.gl|google\.[a-z.]+\/maps/i.test(u||'');
   const placeName = p => p.n.split('·')[0].trim();   // toglie suffissi di stato ("· totalità", "· partenza"…)
   const gmaps = p => isMapLink(p.u)
@@ -981,9 +1041,9 @@ if (window.L) {
   const pop = p => () => `${p.img?`<img src="${p.img}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px">`:''}<b>${p.n}</b><span class="d">${p.d}${p.p?' · '+p.p:''}</span>${p.note?`<div style="margin-top:6px">${p.note}</div>`:''}${p.t?`<span class="t">${p.t}</span>`:''}${p.u&&!isMapLink(p.u)?`<div style="margin-top:6px"><a href="${p.u}" target="_blank" rel="noopener">apri il link</a></div>`:''}<div style="margin-top:8px"><a class="gmaps" href="${gmaps(p)}" target="_blank" rel="noopener">📍 Apri in Google Maps</a></div>`;
 
   const gSleep = L.layerGroup(), gSpot = L.layerGroup(), gEcl = L.layerGroup();
-  SLEEP.forEach(p=>L.marker(p.c,{icon:icon('sleep')}).bindPopup(pop(p)).addTo(gSleep));
-  SPOTS.forEach(p=>L.marker(p.c,{icon:icon('spot')}).bindPopup(pop(p)).addTo(gSpot));
-  ECLIPSE.forEach(p=>L.marker(p.c,{icon:icon('ecl')}).bindPopup(pop(p)).addTo(gEcl));
+  SLEEP.forEach(p=>L.marker(p.c,{icon:icon(p,'sleep')}).bindPopup(pop(p)).addTo(gSleep));
+  SPOTS.forEach(p=>L.marker(p.c,{icon:icon(p,'spot')}).bindPopup(pop(p)).addTo(gSpot));
+  ECLIPSE.forEach(p=>L.marker(p.c,{icon:icon(p,'ecl')}).bindPopup(pop(p)).addTo(gEcl));
 
   const line = L.polyline(SLEEP.map(p=>p.c).concat([[45.4064,11.8768]]),
     {color:'#FFC24A',weight:2,opacity:.65,dashArray:'6 7'});
@@ -1024,7 +1084,7 @@ if (window.L) {
     const days = id==='d9' ? ['d9','d10','d13'] : [id];
     const sel = [], g = L.layerGroup().addTo(map);
     [[SLEEP,'sleep'],[SPOTS,'spot'],[ECLIPSE,'ecl']].forEach(([arr,cls])=>{
-      arr.filter(p=>days.includes(p.k)).forEach(p=>{ sel.push(p.c); L.marker(p.c,{icon:icon(cls)}).bindPopup(pop(p)).addTo(g); });
+      arr.filter(p=>days.includes(p.k)).forEach(p=>{ sel.push(p.c); L.marker(p.c,{icon:icon(p,cls)}).bindPopup(pop(p)).addTo(g); });
     });
     if(sel.length) map.fitBounds(L.latLngBounds(sel).pad(.25));
     apply.tmp = g;
