@@ -806,12 +806,24 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 
   <details class="day">
     <summary>
-      <span class="when">13–15 ago<small>Coda</small></span>
-      <span class="tt">Rientro</span>
+      <span class="when">13–17 ago<small>Ritorno in città</small></span>
+      <span class="tt">Barcellona</span>
       <span class="chev" aria-hidden="true"></span>
     </summary>
     <div class="inner">
-<p>Santander → Barcellona (8h 24min, 70 € di solo carburante), poi Barcellona → Padova con una notte intermedia ancora da scegliere.</p>
+<p>Santander → Barcellona (8h 24min, 70 € di solo carburante) il 13, poi altre notti in città fino al 17. Giorni liberi per recuperare quello che è saltato all'andata — le idee sono nel blocco «Barcellona · cose da fare» qui sopra.</p>
+      <span class="tag sun">3 notti · 13–16 ago</span><span class="tag ok">stessa base dell'andata</span>
+    </div>
+  </details>
+
+  <details class="day">
+    <summary>
+      <span class="when">17–18 ago<small>Verso casa</small></span>
+      <span class="tt">Barcellona → Padova</span>
+      <span class="chev" aria-hidden="true"></span>
+    </summary>
+    <div class="inner">
+<p>Il rientro vero e proprio parte il <b>17</b>: Barcellona → Padova con una notte intermedia ancora da scegliere (~a metà strada), arrivo a casa il 18.</p>
       <span class="tag warn">una notte da prenotare</span>
     </div>
   </details>
@@ -1471,8 +1483,8 @@ const SLEEP = [
   {n:'Barcellona',        c:[41.3874,2.1686],  d:'4 → 9 ago', t:'~1h 40min da Camallera', note:'Appartamento disponibile, 5 notti a costo zero.', k:'d4'},
   {n:'Villa Baturra, Saragozza', c:[41.6488,-0.8891], d:'9 → 10 ago', t:'~3h 15min da Barcellona', note:'Una notte, 55 € per due. AP-2 senza pedaggio.', k:'d9'},
   {n:'Santander',         c:[43.4623,-3.8100], d:'10 → 13 ago', t:'~4h 15min da Saragozza', note:'3 notti, 320 € totali. Dentro la fascia di totalità.', k:'d10'},
-  {n:'Barcellona (ritorno)',c:[41.3874,2.1686],d:'13 ago', t:'8h 24min da Santander', note:'Tappa di passaggio verso casa.', k:'d13'},
-  {n:'Notte di rientro',  c:[43.6,4.0],        d:'14 ago · da prenotare', t:'circa a metà strada', note:'Posizione indicativa: l\'unica notte ancora da scegliere, 70 € a bilancio.', k:'d13'}
+  {n:'Barcellona (ritorno)',c:[41.3874,2.1686],d:'13 → 17 ago', t:'8h 24min da Santander', note:'Base al rientro: tre notti in città (13–16) prima di ripartire per casa il 17.', k:'d13'},
+  {n:'Notte di rientro',  c:[43.6,4.0],        d:'17 ago · da prenotare', t:'circa a metà strada', note:'Posizione indicativa: l\'unica notte ancora da scegliere, 70 € a bilancio.', k:'d13'}
 ];
 
 const SPOTS = [
@@ -1503,7 +1515,13 @@ const SPOTS = [
   {n:'Aiguaxelida', c:[41.9245,3.2098], d:'4 ago · spiaggia', k:'d4', p:'gratis', note:'Cala di rocce e pini tra Tamariu e Begur, ~53 min dall\'hotel: acqua trasparente, piccola e appartata. L\'opzione più a nord per l\'ultima nuotata.', w:['ca:Aiguaxelida']},
   {n:'Peratallada', c:[41.9836,3.0725], d:'4 ago · sera', k:'d4', p:'gratis', note:'Borgo medievale scavato nella roccia, tra i più belli della Catalogna. Aperitivo e cena tra vicoli, archi e mura.', w:['es:Peratallada','ca:Peratallada']},
   {n:'Monells', c:[41.9797,2.9714], d:'4 ago · 12:15', k:'d4', p:'gratis', note:'Piazza porticata da cartolina. Pranzo prima di partire per Barcellona.', w:['es:Monells','ca:Monells']},
-  {n:'La Santa Market', c:[41.8133,2.9994], d:'serata alt.', k:'d3', p:'da verificare', note:'Santa Cristina d\'Aro. Concerti e serate, se restate di più.', w:['ca:Santa Cristina d\'Aro','es:Santa Cristina de Aro']}
+  {n:'La Santa Market', c:[41.8133,2.9994], d:'serata alt.', k:'d3', p:'da verificare', note:'Santa Cristina d\'Aro. Concerti e serate, se restate di più.', w:['ca:Santa Cristina d\'Aro','es:Santa Cristina de Aro']},
+  {n:'Sagrada Família', c:[41.4036,2.1744], d:'ven 7 ago', k:'bcn', p:'ingresso a pagamento', note:'Il capolavoro di Gaudí. Ingresso da prenotare in anticipo.', u:'https://sagradafamilia.org/', w:['it:Sagrada Família','es:Templo Expiatorio de la Sagrada Familia']},
+  {n:'Fundació Joan Miró', c:[41.3685,2.1600], d:'gio 6 ago', k:'bcn', p:'~14 €', note:'Il museo di Miró, sulla collina di Montjuïc.', u:'https://www.fmirobcn.org/', w:['ca:Fundació Joan Miró','es:Fundación Joan Miró']},
+  {n:'Museu Nacional d\'Art de Catalunya', c:[41.3684,2.1533], d:'sab 8 ago', k:'bcn', p:'gratis sab dalle 15', note:'MNAC, nel Palau Nacional di Montjuïc. Gratis il primo domenica del mese e il sabato dalle 15:00.', u:'https://www.museunacional.cat/', w:['ca:Museu Nacional d\'Art de Catalunya','es:Museo Nacional de Arte de Cataluña']},
+  {n:'Poble Espanyol', c:[41.3695,2.1470], d:'gio 6 ago', k:'bcn', p:'a pagamento', note:'Villaggio-museo su Montjuïc. Nits en viu: concerti da mercoledì a sabato sera (gio rock).', u:'https://www.poble-espanyol.com/', w:['ca:Poble Espanyol de Barcelona','es:Pueblo Español de Barcelona']},
+  {n:'Sala Montjuïc', c:[41.3629,2.1660], d:'mer 5 ago', k:'bcn', p:'9–12 €', note:'Cinema all\'aperto al Castell de Montjuïc, con picnic: concerto alle 20:45, film alle 22:00.', u:'https://salamontjuic.org/'},
+  {n:'Sitges', c:[41.2351,1.8050], d:'sab 8 ago', k:'bcn', p:'gratis', note:'Spiaggia a ~40 min a sud di Barcellona (anche Garraf, poco prima). Possibilità di windsurf.', w:['it:Sitges','es:Sitges']}
 ];
 
 const ECLIPSE = [
@@ -1518,7 +1536,8 @@ const DAY_LABELS = {
   d1:{t:'1 agosto', s:'Costa Azzurra — Mentone, Nizza, Matisse'},
   d2:{t:'2 agosto', s:'Provenza e arrivo in Costa Brava'},
   d3:{t:'3 agosto', s:'Le cale della Costa Brava'},
-  d4:{t:'4 agosto', s:'Borghi medievali verso Barcellona'}
+  d4:{t:'4 agosto', s:'Borghi medievali verso Barcellona'},
+  bcn:{t:'Barcellona', s:'in città, 5–8 agosto'}
 };
 // slug per collegare itinerario ↔ mappa ↔ foto
 const slugify = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
@@ -1723,7 +1742,9 @@ if (window.L) {
     'Èze':'🏰', 'Villa Ephrussi de Rothschild':'🏛️', 'Saint-Jean-Cap-Ferrat':'🌊',
     'Saint-Paul-de-Vence':'🎨', "Antibes e Cap d'Antibes":'🏖️', 'Cadaqués':'🏘️',
     'Cala Jóncols · vini del mare':'🍷', 'Aiguablava':'🤿', 'Aiguaxelida':'🏖️', 'Calella de Palafrugell':'🎣',
-    'Pals':'🏰', 'Peratallada':'🏰', 'Monells':'🏘️', 'La Santa Market':'🎵'
+    'Pals':'🏰', 'Peratallada':'🏰', 'Monells':'🏘️', 'La Santa Market':'🎵',
+    'Sagrada Família':'⛪', 'Fundació Joan Miró':'🎨', "Museu Nacional d'Art de Catalunya":'🏛️',
+    'Poble Espanyol':'🏘️', 'Sala Montjuïc':'🎬', 'Sitges':'🏖️'
   };
   const spotEmoji = p => SPOT_EMOJI[p.n] || (/platja|playa|cala|beach/i.test(p.n) ? '🏖️' : '📍');
   const emojiFor = (p, kind) => kind==='sleep' ? sleepEmoji(p) : kind==='ecl' ? '🌑' : spotEmoji(p);
