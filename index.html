@@ -214,6 +214,7 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .legs-sum .tot{color:var(--corona)}
 
 /* spese reali: tabella a inserimento manuale */
+.spese-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r)}
 .spese{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
   border-radius:var(--r);overflow:hidden}
 .spese th,.spese td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
@@ -254,9 +255,14 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .sp-sync-body code{font-family:var(--mono);background:var(--ink-2);padding:1px 5px;border-radius:4px}
 .sp-sync-body .sp-actions{margin-top:14px}
 @media(max-width:560px){
-  .spese th:nth-child(2),.spese td.sp-add{white-space:nowrap}
-  .sp-input{width:74px}
-  .sp-total{width:88px}
+  .spese th,.spese td{padding:9px 8px}
+  .spese td.sp-add{white-space:nowrap}
+  .sp-name{min-width:60px;padding:6px 6px}
+  .sp-input{width:52px}
+  .sp-add{gap:5px}
+  .sp-btn{padding:7px 8px;letter-spacing:.02em}
+  .sp-total{width:70px;padding:7px 6px}
+  .sp-del{padding:2px 3px}
 }
 
 /* sticky total */
@@ -756,11 +762,13 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 <section id="spese"><div class="wrap">
   <h2><span class="num">Spese</span>Quanto stiamo spendendo davvero</h2>
   <p class="sub">Aggiungi mano a mano quello che paghi: scrivi l'importo e premi «Aggiungi», si somma alla voce. Il totale a destra resta modificabile se sbagli. Attiva la condivisione qui sotto per tenere la tabella allineata tra più telefoni; altrimenti i dati restano solo su questo dispositivo.</p>
+  <div class="spese-wrap">
   <table class="spese">
     <thead><tr><th>Voce</th><th>Aggiungi spesa</th><th class="r">Totale</th><th aria-label="rimuovi"></th></tr></thead>
     <tbody id="sp-body"></tbody>
     <tfoot><tr><td colspan="2" class="sp-foot-lab">Totale speso</td><td class="r" id="sp-grand">€ 0,00</td><td></td></tr></tfoot>
   </table>
+  </div>
   <div class="sp-actions">
     <button class="btn" id="sp-add-row">+ Aggiungi voce</button>
     <button class="btn ghost" id="sp-reset">Azzera tutto</button>
