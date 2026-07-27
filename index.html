@@ -407,7 +407,7 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .pin.spot{border-color:var(--sea)}
 .pin.ecl{border-color:var(--violet)}
 .legend i.house,.legend i.tent,.legend i.hotel,.legend i.spot{background:none;width:auto;height:auto;font-size:13px;border-radius:0;font-style:normal}
-.leaflet-container{font-family:var(--body);background:#0A0F22}
+.leaflet-container{font-family:var(--body);background:#e8ebf0}
 .leaflet-popup-content-wrapper,.leaflet-popup-tip{background:var(--card-2);color:var(--text);
   border:1px solid var(--line-2);box-shadow:0 10px 40px rgba(0,0,0,.5)}
 .leaflet-popup-content{margin:12px 14px;font-size:13.5px;line-height:1.5}
@@ -1334,7 +1334,7 @@ loadPhotos();
 
 if (window.L) {
   const map = L.map('map',{scrollWheelZoom:false}).setView([43.0,2.0],5);
-  L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',{
+  L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',{
     attribution:'&copy; OpenStreetMap &copy; CARTO', subdomains:'abcd', maxZoom:18
   }).addTo(map);
 
