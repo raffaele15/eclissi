@@ -678,20 +678,19 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <details class="day">
     <summary>
       <span class="when">3 ago<small>Costa Brava · centro</small></span>
-      <span class="tt">Cale di Begur, poi Pals</span>
+      <span class="tt">Aiguablava, Calella, poi Pals</span>
       <span class="chev" aria-hidden="true"></span>
     </summary>
     <div class="inner">
-<p>La giornata bilanciata: mattina in acqua nelle cale più belle per lo snorkeling, prese presto quando i parcheggi sono ancora liberi, pomeriggio di riposo e sera nel borgo. Nessuna di queste cale è dentro la zona regolata di Roses, quindi niente vincoli d'orario — ma i parcheggi si riempiono lo stesso entro le 10.</p>
+<p>Mattina in acqua, pranzo sul mare nel borgo di pescatori, e la sera nel borgo medievale per aperitivo e cena. Nessuna di queste tappe è dentro la zona regolata di Roses, quindi niente vincoli d'orario — ma i parcheggi delle cale si riempiono entro le 10.</p>
       <ul class="sched">
-        <li><span class="h">08:00</span><span class="w"><b>Aiguablava</b><small>50 min dall'hotel. Prima spiaggia della giornata: acque trasparenti e pesci, ideale per lo snorkeling. Arrivare entro le 9 significa parcheggio e acqua vuota.</small></span></li>
-        <li><span class="h">10:30</span><span class="w"><b>Tamariu o Llafranc</b><small>A pochi minuti, verso sud lungo la costa: cale raccolte, buone per una seconda nuotata e per un caffè sul lungomare.</small></span></li>
-        <li><span class="h">13:00</span><span class="w"><b>Pranzo a Calella de Palafrugell</b><small>Il borgo di pescatori più fotografato della zona. Pausa lunga nelle ore calde.</small></span></li>
-        <li><span class="h">16:00</span><span class="w"><b>Rientro e riposo</b><small>Un po' di stacco in pensione prima della serata: le ore di punta del sole si saltano volentieri.</small></span></li>
-        <li><span class="h">18:30</span><span class="w"><b>Pals</b><small>Borgo medievale murato con la Torre de les Hores, tra i campi di riso allagati. La Ruta Pals gòtic è una passeggiata di 40 minuti tra i vicoli — luce migliore nel tardo pomeriggio.</small></span></li>
-        <li><span class="h">20:30</span><span class="w"><b>Cena a Pals</b><small>Arròs a la cassola, il riso locale, e birra artigianale fatta col riso di Pals. Da El Pedró.</small></span></li>
+        <li><span class="h">08:00</span><span class="w"><b>Aiguablava</b><small>45 min dall'hotel. Prima spiaggia della giornata: acque trasparenti e pesci, ideale per lo snorkeling. Arrivare presto significa parcheggio e acqua vuota.</small></span></li>
+        <li><span class="h">12:00</span><span class="w"><b>Calella de Palafrugell</b><small>Il borgo di pescatori più fotografato della zona: bagno e pranzo sul lungomare. Pomeriggio con calma nelle ore più calde.</small></span></li>
+        <li><span class="h">19:00</span><span class="w"><b>Aperitivo a Pals</b><small>Borgo medievale murato con la Torre de les Hores, tra i campi di riso allagati. La Ruta Pals gòtic è una passeggiata di 40 minuti tra i vicoli — luce migliore al tramonto. Aperitivo in piazza o su una terrazza affacciata sui campi.</small></span></li>
+        <li><span class="h">20:30</span><span class="w"><b>Cena a Pals</b><small>Arròs a la cassola, il riso locale, e birra artigianale fatta col riso di Pals. Locali: El Pedró (arròs a la cassola, nel centro storico), Vicus (cucina d'autore) ed Es Portal (gastronomico, in una masia poco fuori). In estate meglio prenotare.</small></span></li>
+        <li><span class="h">23:00</span><span class="w"><b>Rientro all'hotel</b><small>Ritorno a Camallera, ~40 min. Ultima notte di base prima di scendere verso Barcellona.</small></span></li>
       </ul>
-      <p style="margin-top:12px">Riferimenti: <a href="https://www.elxiuletdepals.com/es/Ruta-Pals-gotico" target="_blank" rel="noopener">Ruta Pals gòtic</a> · <a href="https://elpedropals.com/ca/menu/" target="_blank" rel="noopener">El Pedró, Pals</a>. Se volete una cala più selvaggia al posto di Tamariu, <b>Cala Estreta</b> è appartata, anche naturista, davanti a una pineta: si raggiunge solo a piedi.</p>
+      <p style="margin-top:12px">Riferimenti: <a href="https://www.elxiuletdepals.com/es/Ruta-Pals-gotico" target="_blank" rel="noopener">Ruta Pals gòtic</a> · <a href="https://elpedropals.com/ca/menu/" target="_blank" rel="noopener">El Pedró, Pals</a> · <a href="https://www.thefork.es/restaurantes/pals-c412646" target="_blank" rel="noopener">altri ristoranti a Pals</a>. Se volete una cala in più al mattino, <b>Tamariu</b> è a pochi minuti a sud di Aiguablava.</p>
     </div>
   </details>
 
@@ -1470,6 +1469,9 @@ const DAY_LABELS = {
 const slugify = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
 const SLUG_OF = SPOTS.map(p=>slugify(p.n));
 const slugToIndex = {}; SLUG_OF.forEach((s,i)=>{ if(slugToIndex[s]===undefined) slugToIndex[s]=i; });
+// URL Google Maps del luogo (scheda curata se presente, altrimenti ricerca nome+coordinate)
+const isGmapLink = u => /maps\.(app\.)?goo\.gl|google\.[a-z.]+\/maps/i.test(u||'');
+const gmapsUrl = p => isGmapLink(p.u) ? p.u : `https://www.google.com/maps/search/${encodeURIComponent(p.n.split('·')[0].trim())}/@${p.c[0]},${p.c[1]},15z`;
 
 function gcardHTML(p, i){
   const paid = p.p && !/gratis/i.test(p.p);
@@ -1482,6 +1484,7 @@ function gcardHTML(p, i){
       ${p.u?`<a href="${p.u}" target="_blank" rel="noopener">Biglietti e info →</a>`:''}
       <div class="pl-links">
         <a class="pl-lnk" href="#mappa" data-map="${i}">🗺️ Mappa</a>
+        <a class="pl-lnk" href="${gmapsUrl(p)}" target="_blank" rel="noopener">📍 Google Maps</a>
         <a class="pl-lnk" href="#itinerario">📅 Programma</a>
       </div>
     </div></article>`;
@@ -1540,7 +1543,7 @@ document.addEventListener('click', e=>{
       const idx = low.indexOf(e.n);
       if(idx >= 0){
         const before = raw.slice(0, idx), match = raw.slice(idx, idx+e.name.length), after = raw.slice(idx+e.name.length);
-        b.innerHTML = `${esc(before)}<a class="pl" href="#place-${e.slug}">${esc(match)}</a><a class="pl-pin" href="#mappa" data-map="${e.i}" title="Sulla mappa" aria-label="Sulla mappa">🗺️</a>${esc(after)}`;
+        b.innerHTML = `${esc(before)}<a class="pl" href="#place-${e.slug}">${esc(match)}</a><a class="pl-pin" href="#mappa" data-map="${e.i}" title="Sulla mappa" aria-label="Sulla mappa">🗺️</a><a class="pl-pin" href="${gmapsUrl(SPOTS[e.i])}" target="_blank" rel="noopener" title="Apri su Google Maps" aria-label="Apri su Google Maps">📍</a>${esc(after)}`;
         break;
       }
     }
