@@ -245,6 +245,37 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .btn.on{border-color:var(--corona);color:var(--corona);background:rgba(255,194,74,.1)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn.ghost:disabled:hover{border-color:var(--line-2);color:var(--muted)}
+
+/* checklist "da portare" */
+.pk-progress{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.pk-bar{flex:1;height:8px;border-radius:99px;background:var(--card-2);border:1px solid var(--line);overflow:hidden}
+.pk-bar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--sea),var(--corona));transition:width .3s}
+.pk-count{font-family:var(--mono);font-size:12px;color:var(--muted);white-space:nowrap}
+#pk-body{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;align-items:start;margin-bottom:16px}
+.pk-cat{background:var(--card);border:1px solid var(--line);border-radius:var(--r);overflow:hidden}
+.pk-cat-head{display:flex;align-items:center;gap:10px;padding:12px 14px;background:var(--card-2);border-bottom:1px solid var(--line)}
+.pk-cat-name-s{font-family:var(--display);font-size:16px;font-weight:700;letter-spacing:-.01em;flex:1;min-width:0}
+.pk-cat-name{flex:1;min-width:0;height:34px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
+  font-family:var(--display);font-weight:700;font-size:15px;padding:0 8px;border-radius:8px}
+.pk-cat-count{font-family:var(--mono);font-size:11px;color:var(--muted);white-space:nowrap}
+.pk-cat-del{flex:none;border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 4px}
+.pk-cat-del:hover{color:var(--warn)}
+.pk-list{list-style:none;margin:0;padding:6px 6px}
+.pk-item{display:flex;align-items:center;gap:8px;padding:4px 8px;border-radius:8px}
+.pk-item:hover{background:rgba(255,255,255,.03)}
+.pk-check{display:flex;align-items:center;gap:10px;flex:1;min-width:0;cursor:pointer}
+.pk-check input{width:18px;height:18px;flex:none;accent-color:var(--sea)}
+.pk-t{font-size:14.5px;line-height:1.3}
+.pk-item.done .pk-t{color:var(--muted);text-decoration:line-through}
+.pk-item-del{flex:none;width:30px;height:30px;border-radius:8px;border:1px solid rgba(255,107,107,.5);background:transparent;
+  color:var(--warn);cursor:pointer;font-size:18px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.pk-item-del:hover{background:rgba(255,107,107,.12)}
+.pk-additem{display:flex;gap:8px;padding:6px 8px 10px}
+.pk-newitem{flex:1;min-width:0;height:34px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
+  font-family:var(--body);font-size:14px;padding:0 9px;border-radius:8px}
+.pk-item-add{flex:none;width:34px;height:34px;border-radius:8px;border:1px solid var(--sea);background:transparent;
+  color:var(--sea);cursor:pointer;font-size:20px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
+.pk-item-add:hover{background:rgba(58,209,190,.12)}
 .sp-total{width:100%;min-width:0;height:38px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:0 9px;border-radius:8px;text-align:right}
 .sp-actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -470,6 +501,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <a href="#extra">Extra</a>
   <a href="#budget">Spese stimate</a>
   <a href="#spese">Spese effettive</a>
+  <a href="#daportare">Da portare</a>
   <a href="#fonti">Fonti</a>
 </div></nav>
 
@@ -821,6 +853,30 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
         <button class="btn" id="sp-sync-on">Attiva sincronizzazione</button>
         <button class="btn" id="sp-sync-pull">Aggiorna ora</button>
         <button class="btn ghost" id="sp-sync-off">Disattiva</button>
+      </div>
+    </div>
+  </details>
+</div></section>
+
+<section id="daportare"><div class="wrap">
+  <h2><span class="num">Valigia</span>Da portare</h2>
+  <p class="sub">Checklist condivisa, divisa per categoria: spunta man mano. Con «Modifica lista» aggiungi o togli voci e categorie. Attiva la condivisione qui sotto per allinearla tra più telefoni.</p>
+  <div class="pk-progress"><div class="pk-bar"><i id="pk-bar-fill"></i></div><span class="pk-count" id="pk-count">0 / 0</span></div>
+  <div class="sp-actions">
+    <button class="btn" id="pk-edit-toggle" aria-pressed="false">Modifica lista</button>
+    <button class="btn" id="pk-add-cat" style="display:none">+ Aggiungi categoria</button>
+  </div>
+  <div id="pk-body"></div>
+  <details class="sp-sync" id="pk-sync">
+    <summary><span class="sp-sync-dot" id="pk-dot"></span><span id="pk-sync-status">Condivisione non attiva</span></summary>
+    <div class="sp-sync-body">
+      <p class="src">Crea un <b>secondo bin</b> su <a href="https://jsonbin.io" target="_blank" rel="noopener">jsonbin.io</a> per la lista: puoi <b>riusare la stessa chiave</b> delle spese, ti basta incollare qui il nuovo Bin ID. La chiave viene precompilata da quella delle spese, se già impostata.</p>
+      <label class="sp-field">ID del bin (lista)<input id="pk-bin" placeholder="es. 66a1b2c3e41b4d34e4..." autocomplete="off" spellcheck="false"></label>
+      <label class="sp-field">Master Key o Access Key<input id="pk-key" placeholder="$2a$10$..." autocomplete="off" spellcheck="false"></label>
+      <div class="sp-actions">
+        <button class="btn" id="pk-sync-on">Attiva sincronizzazione</button>
+        <button class="btn" id="pk-sync-pull">Aggiorna ora</button>
+        <button class="btn ghost" id="pk-sync-off">Disattiva</button>
       </div>
     </div>
   </details>
@@ -1484,6 +1540,185 @@ if (window.L) {
   document.getElementById('map').innerHTML =
     '<div style="padding:28px;color:#9199BE;font-family:var(--mono);font-size:13px">Mappa non disponibile offline: serve una connessione per caricare Leaflet e le tile.</div>';
 }
+
+/* ---------- "Da portare": checklist per categoria, salvata sul dispositivo e condivisibile via JSONBin ---------- */
+(function(){
+  const KEY = 'eclissi-daportare-v1';     // {cats:[{name,items:[{t,done}]}], updatedAt}
+  const CFG = 'eclissi-daportare-sync';    // {bin, key, hdr}
+  const body = document.getElementById('pk-body');
+  if(!body) return;
+  const esc = s => (s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+
+  const DEFAULT = [
+    {name:'Documenti', items:['Carta d\'identità','Patente','Tessera sanitaria (TEAM)','Assicurazione e libretto auto','Prenotazioni e biglietti']},
+    {name:'Eclissi', items:['Occhiali eclissi ISO 12312-2','Fotocamera','Treppiede','Binocolo','Power bank']},
+    {name:'Mare', items:['Costume','Telo mare','Crema solare','Maschera da snorkeling','Ciabatte']},
+    {name:'Vestiti', items:['Felpa per la sera','Maglette','Pantaloni lunghi','Cappellino','Pigiama']},
+    {name:'Bagno', items:['Spazzolino e dentifricio','Bagnoschiuma','Deodorante','Farmaci personali']},
+    {name:'Auto', items:['Caricabatterie da auto','Supporto telefono','Adattatore/ciabatta','Snack e acqua']}
+  ];
+
+  function loadStore(){
+    let d=null; try{ d=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
+    if(d && Array.isArray(d.cats)) return {cats:d.cats, updatedAt:+d.updatedAt||0};
+    return {cats: DEFAULT.map(c=>({name:c.name, items:c.items.map(t=>({t, done:false}))})), updatedAt:0};
+  }
+  let store = loadStore();
+  const cats = () => store.cats;
+  const persist = () => { try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} };
+  function touched(){ store.updatedAt = Date.now(); persist(); schedulePush(); }
+
+  let editing = false;
+  const catBtn = document.getElementById('pk-add-cat');
+
+  function counts(){ let t=0,d=0; cats().forEach(c=>c.items.forEach(i=>{t++; if(i.done)d++;})); return {t,d}; }
+  function updateProgress(){
+    const {t,d}=counts();
+    document.getElementById('pk-count').textContent = `${d} / ${t}`;
+    document.getElementById('pk-bar-fill').style.width = t? (d/t*100)+'%' : '0';
+  }
+
+  function render(){
+    body.innerHTML = cats().map((c,ci)=>{
+      const t=c.items.length, d=c.items.filter(i=>i.done).length;
+      const rows = c.items.map((it,ii)=>`
+        <li class="pk-item${it.done?' done':''}" data-ci="${ci}" data-ii="${ii}">
+          <label class="pk-check"><input type="checkbox" ${it.done?'checked':''} ${editing?'disabled':''}><span class="pk-t">${esc(it.t)}</span></label>
+          ${editing?`<button class="pk-item-del" type="button" title="Rimuovi voce" aria-label="rimuovi voce">−</button>`:''}
+        </li>`).join('');
+      return `<div class="pk-cat" data-ci="${ci}">
+        <div class="pk-cat-head">
+          ${editing?`<input class="pk-cat-name" value="${esc(c.name)}" aria-label="nome categoria">`:`<span class="pk-cat-name-s">${esc(c.name)}</span>`}
+          <span class="pk-cat-count">${d}/${t}</span>
+          ${editing?`<button class="pk-cat-del" type="button" title="Rimuovi categoria" aria-label="rimuovi categoria">×</button>`:''}
+        </div>
+        <ul class="pk-list">${rows}</ul>
+        ${editing?`<div class="pk-additem"><input class="pk-newitem" placeholder="Nuova voce" aria-label="nuova voce"><button class="pk-item-add" type="button" title="Aggiungi voce">+</button></div>`:''}
+      </div>`;
+    }).join('');
+    updateProgress();
+  }
+
+  // spunta
+  body.addEventListener('change', e=>{
+    if(e.target.type!=='checkbox') return;
+    const li=e.target.closest('.pk-item'); if(!li) return;
+    cats()[+li.dataset.ci].items[+li.dataset.ii].done = e.target.checked;
+    li.classList.toggle('done', e.target.checked);
+    const cat=cats()[+li.dataset.ci];
+    li.closest('.pk-cat').querySelector('.pk-cat-count').textContent = `${cat.items.filter(i=>i.done).length}/${cat.items.length}`;
+    updateProgress(); touched();
+  });
+  // click: rimuovi voce / aggiungi voce / rimuovi categoria
+  body.addEventListener('click', e=>{
+    const cat = e.target.closest('.pk-cat'); if(!cat) return;
+    const ci = +cat.dataset.ci;
+    if(e.target.classList.contains('pk-item-del')){
+      const ii=+e.target.closest('.pk-item').dataset.ii;
+      cats()[ci].items.splice(ii,1); render(); touched();
+    } else if(e.target.classList.contains('pk-item-add')){
+      const inp=cat.querySelector('.pk-newitem'); const v=inp.value.trim();
+      if(v){ cats()[ci].items.push({t:v, done:false}); render(); touched();
+        const ni=body.querySelector(`.pk-cat[data-ci="${ci}"] .pk-newitem`); if(ni) ni.focus(); }
+    } else if(e.target.classList.contains('pk-cat-del')){
+      if(cats()[ci].items.length && !confirm(`Rimuovere la categoria "${cats()[ci].name}" e le sue ${cats()[ci].items.length} voci?`)) return;
+      cats().splice(ci,1); render(); touched();
+    }
+  });
+  body.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && e.target.classList.contains('pk-newitem')){
+      e.preventDefault(); e.target.closest('.pk-cat').querySelector('.pk-item-add').click();
+    }
+  });
+  // rinomina categoria
+  body.addEventListener('input', e=>{
+    if(e.target.classList.contains('pk-cat-name')){
+      cats()[+e.target.closest('.pk-cat').dataset.ci].name = e.target.value; touched();
+    }
+  });
+
+  document.getElementById('pk-edit-toggle').addEventListener('click', e=>{
+    editing=!editing;
+    e.target.classList.toggle('on', editing);
+    e.target.setAttribute('aria-pressed', editing);
+    e.target.textContent = editing ? 'Fine modifica' : 'Modifica lista';
+    catBtn.style.display = editing ? '' : 'none';
+    render();
+  });
+  catBtn.addEventListener('click', ()=>{
+    cats().push({name:'Nuova categoria', items:[]}); render(); touched();
+    const last=body.querySelector('.pk-cat:last-child .pk-cat-name'); if(last) last.focus();
+  });
+
+  render();
+
+  /* ---------- sincronizzazione (secondo bin JSONBin) ---------- */
+  const dot=document.getElementById('pk-dot'), statusEl=document.getElementById('pk-sync-status');
+  const binIn=document.getElementById('pk-bin'), keyIn=document.getElementById('pk-key');
+  let cfg=null; try{ cfg=JSON.parse(localStorage.getItem(CFG)); }catch(e){}
+  // precompila la chiave da quella delle spese, se presente
+  if(!cfg){ try{ const sp=JSON.parse(localStorage.getItem('eclissi-spese-sync')); if(sp&&sp.key) keyIn.value=sp.key; }catch(e){} }
+  let pushTimer=null, pollTimer=null;
+
+  function setStatus(kind, extra){
+    dot.className='sp-sync-dot'+(kind==='ok'?' on':kind==='busy'?' busy':kind==='err'?' err':'');
+    const t=new Date().toLocaleTimeString('it-IT',{hour:'2-digit',minute:'2-digit'});
+    statusEl.textContent = kind==='ok'?`Condivisione attiva · aggiornato ${t}`:kind==='busy'?'Sincronizzo…':kind==='err'?`Errore di sincronizzazione${extra?': '+extra:''}`:'Condivisione non attiva';
+  }
+  const api = () => `https://api.jsonbin.io/v3/b/${cfg.bin}`;
+  async function authFetch(url, opts){
+    opts=opts||{};
+    const hdrs = cfg.hdr ? [cfg.hdr] : ['X-Master-Key','X-Access-Key'];
+    let last;
+    for(const h of hdrs){
+      const r=await fetch(url,{...opts, headers:{...(opts.headers||{}), [h]:cfg.key}});
+      if(r.status!==401 && r.status!==403){ if(cfg.hdr!==h){ cfg.hdr=h; try{localStorage.setItem(CFG,JSON.stringify(cfg));}catch(e){} } return r; }
+      last=r;
+    }
+    return last;
+  }
+  const authErr = s => 'HTTP '+s+(s===401||s===403?' — chiave o permessi non validi (servono Read e Update)':'');
+
+  async function pull(){
+    if(!cfg) return;
+    setStatus('busy');
+    try{
+      const r=await authFetch(api()+'/latest'); if(!r.ok) throw new Error(authErr(r.status));
+      const rec=(await r.json()).record;
+      if(rec && Array.isArray(rec.cats) && (+rec.updatedAt||0) > (store.updatedAt||0)){
+        store={cats:rec.cats, updatedAt:+rec.updatedAt||Date.now()}; persist(); render();
+      }
+      setStatus('ok');
+    }catch(e){ setStatus('err', e.message); }
+  }
+  async function push(){
+    if(!cfg) return;
+    setStatus('busy');
+    try{
+      const r=await authFetch(api(),{method:'PUT',headers:{'Content-Type':'application/json','X-Bin-Versioning':'false'},body:JSON.stringify(store)});
+      if(!r.ok) throw new Error(authErr(r.status));
+      setStatus('ok');
+    }catch(e){ setStatus('err', e.message); }
+  }
+  function schedulePush(){ if(!cfg) return; clearTimeout(pushTimer); pushTimer=setTimeout(push,700); }
+  function startPolling(){ stopPolling(); if(cfg) pollTimer=setInterval(pull,30000); }
+  function stopPolling(){ if(pollTimer){ clearInterval(pollTimer); pollTimer=null; } }
+
+  if(cfg){ binIn.value=cfg.bin||''; keyIn.value=cfg.key||''; setStatus('ok'); startPolling(); pull(); }
+  else setStatus('off');
+
+  document.getElementById('pk-sync-on').addEventListener('click', async ()=>{
+    const bin=binIn.value.trim(), key=keyIn.value.trim();
+    if(!bin||!key){ alert('Inserisci sia l\'ID del bin sia la chiave.'); return; }
+    cfg={bin,key}; try{ localStorage.setItem(CFG,JSON.stringify(cfg)); }catch(e){}
+    document.getElementById('pk-sync').open=true;
+    await pull(); if(cfg) await push(); startPolling();
+  });
+  document.getElementById('pk-sync-pull').addEventListener('click', ()=>{ if(!cfg){ alert('Prima attiva la sincronizzazione.'); return; } pull(); });
+  document.getElementById('pk-sync-off').addEventListener('click', ()=>{
+    cfg=null; try{ localStorage.removeItem(CFG); }catch(e){} stopPolling(); setStatus('off');
+  });
+})();
 </script>
 
 <script>
