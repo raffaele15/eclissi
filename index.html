@@ -765,7 +765,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <ul class="sched">
         <li><span class="h">giorno</span><span class="w"><b>Sagrada Família</b><small>Ingresso da prenotare in anticipo.</small></span></li>
         <li><span class="h">giorno</span><span class="w"><b>Taller de ceràmica</b><small>Laboratorio di ceramica.</small></span></li>
-        <li><span class="h">sera</span><span class="w"><b>Rooftop (da prenotare)</b><small>Tope, il rooftop dell'Hoxton Hotel a Poblenou; oppure La Terraza de Anna a Gràcia, con vista su Casa Batlló.</small></span></li>
+        <li><span class="h">sera</span><span class="w"><b>Rooftop (da prenotare)</b><small><b>Tope</b>, il rooftop dell'Hoxton Hotel a Poblenou; oppure <b>La Terraza de Anna</b>, con vista su Casa Batlló.</small></span></li>
       </ul>
 
       <h4 class="bcn-d">Sabato 8</h4>
@@ -799,8 +799,8 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <span class="chev" aria-hidden="true"></span>
     </summary>
     <div class="inner">
-<p>Tre notti prenotate, 320 € totali. La fase totale raggiunge la costa di Santander la sera del 12 agosto.</p>
-      <span class="tag sun">12 agosto · totalità ~20:27</span><span class="tag ok">alloggio confermato</span><span class="tag warn">AP-68 ancora a pedaggio</span>
+<p>Tre notti al <b>Kampaoh Somo Playa</b>, glamping in tenda a Somo (di fronte a Santander, dall'altra parte della baia), a due passi dalla spiaggia. 320 € totali. La fase totale raggiunge la costa la sera del 12 agosto.</p>
+      <span class="tag sun">12 agosto · totalità ~20:27</span><span class="tag ok">Kampaoh Somo Playa</span><span class="tag warn">AP-68 ancora a pedaggio</span>
     </div>
   </details>
 
@@ -1123,7 +1123,7 @@ const STAYS = [
   {id:'cb',   lab:'Camallera, 2 notti', note:'2–4 ago · Pensió L\'Avi Pep, prenotata', v:120},
   {id:'bcn',  lab:'Barcellona, 5 notti', note:'4–9 ago · appartamento disponibile', v:0},
   {id:'zgz',  lab:'Saragozza, 1 notte', note:'9 ago · Villa Baturra, prenotata', v:55},
-  {id:'ecl',  lab:'Santander, 3 notti', note:'10–13 ago · prenotata, 320 € totali', v:320},
+  {id:'ecl',  lab:'Kampaoh Somo Playa, 3 notti', note:'10–13 ago · Somo (Santander), glamping in tenda · 320 € totali', v:320},
   {id:'ret',  lab:'Notte di rientro', note:'14 ago · posto da scegliere', v:70}
 ];
 
@@ -1482,7 +1482,7 @@ const SLEEP = [
   {n:"Pensió L'Avi Pep",  c:[42.1259,2.9676],  d:'2 → 4 ago', t:'5h 43min dalla Francia', note:'Camallera (Girona). Base per tutta la Costa Brava. 120 € per 2 notti.', k:'d2'},
   {n:'Barcellona',        c:[41.3874,2.1686],  d:'4 → 9 ago', t:'~1h 40min da Camallera', note:'Appartamento disponibile, 5 notti a costo zero.', k:'d4'},
   {n:'Villa Baturra, Saragozza', c:[41.6488,-0.8891], d:'9 → 10 ago', t:'~3h 15min da Barcellona', note:'Una notte, 55 € per due. AP-2 senza pedaggio.', k:'d9'},
-  {n:'Santander',         c:[43.4623,-3.8100], d:'10 → 13 ago', t:'~4h 15min da Saragozza', note:'3 notti, 320 € totali. Dentro la fascia di totalità.', k:'d10'},
+  {n:'Kampaoh Somo Playa', c:[43.4685,-3.7480], d:'10 → 13 ago', t:'~4h 15min da Saragozza', note:'Glamping in tenda a Somo, di fronte a Santander attraverso la baia, a due passi dalla spiaggia. 3 notti, 320 € totali. Dentro la fascia di totalità.', k:'d10', u:'https://kampaoh.com/es/somo-playa/'},
   {n:'Barcellona (ritorno)',c:[41.3874,2.1686],d:'13 → 17 ago', t:'8h 24min da Santander', note:'Base al rientro: tre notti in città (13–16) prima di ripartire per casa il 17.', k:'d13'},
   {n:'Notte di rientro',  c:[43.6,4.0],        d:'17 ago · da prenotare', t:'circa a metà strada', note:'Posizione indicativa: l\'unica notte ancora da scegliere, 70 € a bilancio.', k:'d13'}
 ];
@@ -1521,7 +1521,11 @@ const SPOTS = [
   {n:'Museu Nacional d\'Art de Catalunya', c:[41.3684,2.1533], d:'sab 8 ago', k:'bcn', p:'gratis sab dalle 15', note:'MNAC, nel Palau Nacional di Montjuïc. Gratis il primo domenica del mese e il sabato dalle 15:00.', u:'https://www.museunacional.cat/', w:['ca:Museu Nacional d\'Art de Catalunya','es:Museo Nacional de Arte de Cataluña']},
   {n:'Poble Espanyol', c:[41.3695,2.1470], d:'gio 6 ago', k:'bcn', p:'a pagamento', note:'Villaggio-museo su Montjuïc. Nits en viu: concerti da mercoledì a sabato sera (gio rock).', u:'https://www.poble-espanyol.com/', w:['ca:Poble Espanyol de Barcelona','es:Pueblo Español de Barcelona']},
   {n:'Sala Montjuïc', c:[41.3629,2.1660], d:'mer 5 ago', k:'bcn', p:'9–12 €', note:'Cinema all\'aperto al Castell de Montjuïc, con picnic: concerto alle 20:45, film alle 22:00.', u:'https://salamontjuic.org/'},
-  {n:'Sitges', c:[41.2351,1.8050], d:'sab 8 ago', k:'bcn', p:'gratis', note:'Spiaggia a ~40 min a sud di Barcellona (anche Garraf, poco prima). Possibilità di windsurf.', w:['it:Sitges','es:Sitges']}
+  {n:'Sitges', c:[41.2351,1.8050], d:'sab 8 ago', k:'bcn', p:'gratis', note:'Spiaggia a ~40 min a sud di Barcellona. Possibilità di windsurf.', w:['it:Sitges','es:Sitges']},
+  {n:'Garraf', c:[41.2647,1.9028], d:'sab 8 ago · alt.', k:'bcn', p:'gratis', note:'Spiaggia con le caratteristiche casette bianche a strisce, poco prima di Sitges scendendo da Barcellona.', w:['ca:Garraf (les Botigues de Sitges)','es:Garraf']},
+  {n:'Tope', c:[41.4038,2.1952], d:'ven 7 ago · rooftop', k:'bcn', p:'drink', note:'Rooftop dell\'Hoxton Hotel a Poblenou: piscina, cocktail e vista sulla città. Meglio prenotare.', u:'https://thehoxton.com/es/barcelona/tope-restaurant/'},
+  {n:'La Terraza de Anna', c:[41.3917,2.1649], d:'ven 7 ago · rooftop', k:'bcn', p:'drink', note:'Rooftop nella zona di Gràcia/Eixample con vista sulla Casa Batlló. Meglio prenotare.'},
+  {n:'Cinema Lliure a la platja', c:[41.3736,2.1893], d:'gio 6 ago', k:'bcn', p:'gratis', note:'Cinema gratuito in spiaggia alla Platja de Sant Sebastià (Barceloneta). Giovedì 6: «La misteriosa mirada del flamenco».'}
 ];
 
 const ECLIPSE = [
@@ -1636,17 +1640,28 @@ addEventListener('resize', hidePop);
   const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const entries = SPOTS.map((p,i)=>({name:p.n, i, slug:SLUG_OF[i], n:norm(p.n)}))
     .sort((a,b)=>b.name.length-a.name.length);   // match più lungo prima
+  const alnum = c => c!==undefined && /[a-z0-9]/.test(c);
   document.querySelectorAll('#itinerario .sched .w b, #itinerario .spots li b').forEach(b=>{
-    if(b.querySelector('a')) return;
+    if(b.children.length) return;                 // salta i <b> con elementi dentro (già linkati o annidati)
     const raw = b.textContent, low = norm(raw);
+    const spans = [];
     for(const e of entries){
-      const idx = low.indexOf(e.n);
-      if(idx >= 0){
-        const before = raw.slice(0, idx), match = raw.slice(idx, idx+e.name.length), after = raw.slice(idx+e.name.length);
-        b.innerHTML = `${esc(before)}<a class="pl" href="#place-${e.slug}" data-i="${e.i}">${esc(match)}</a>${esc(after)}`;
-        break;
+      let from = 0, idx;
+      while((idx = low.indexOf(e.n, from)) >= 0){
+        const end = idx + e.n.length; from = end;
+        if(alnum(low[idx-1]) || alnum(low[end])) continue;            // confine di parola
+        if(spans.some(s => idx < s.end && end > s.start)) continue;    // niente sovrapposizioni
+        spans.push({start: idx, end, e});
       }
     }
+    if(!spans.length) return;
+    spans.sort((x,y)=>x.start-y.start);
+    let html = '', pos = 0;
+    for(const s of spans){
+      html += esc(raw.slice(pos, s.start)) + `<a class="pl" href="#place-${s.e.slug}" data-i="${s.e.i}">${esc(raw.slice(s.start, s.end))}</a>`;
+      pos = s.end;
+    }
+    b.innerHTML = html + esc(raw.slice(pos));
   });
 })();
 
@@ -1734,7 +1749,7 @@ if (window.L) {
   L.control.layers({'Satellite': satellite, 'Strade': streets}, null, {position:'topright'}).addTo(map);
 
   // Icone dei pernottamenti: casa a Padova/Barcellona, tenda a Santander, hotel per gli altri
-  const sleepEmoji = p => /padova|barcellona/i.test(p.n) ? '🏠' : (/santander/i.test(p.n) ? '⛺' : '🏨');
+  const sleepEmoji = p => /padova|barcellona/i.test(p.n) ? '🏠' : (/santander|somo|kampaoh/i.test(p.n) ? '⛺' : '🏨');
   // Icona più adatta per ogni attrazione (fallback per spiagge/cale e generico)
   const SPOT_EMOJI = {
     'Marché des Halles, Mentone':'🧺', 'Sini':'🍕', 'La Socca de Mémé':'🫓', 'Barbajuan ou…':'🥟',
@@ -1744,7 +1759,8 @@ if (window.L) {
     'Cala Jóncols · vini del mare':'🍷', 'Aiguablava':'🤿', 'Aiguaxelida':'🏖️', 'Calella de Palafrugell':'🎣',
     'Pals':'🏰', 'Peratallada':'🏰', 'Monells':'🏘️', 'La Santa Market':'🎵',
     'Sagrada Família':'⛪', 'Fundació Joan Miró':'🎨', "Museu Nacional d'Art de Catalunya":'🏛️',
-    'Poble Espanyol':'🏘️', 'Sala Montjuïc':'🎬', 'Sitges':'🏖️'
+    'Poble Espanyol':'🏘️', 'Sala Montjuïc':'🎬', 'Sitges':'🏖️',
+    'Garraf':'🏖️', 'Tope':'🍸', 'La Terraza de Anna':'🍸', 'Cinema Lliure a la platja':'🎬'
   };
   const spotEmoji = p => SPOT_EMOJI[p.n] || (/platja|playa|cala|beach/i.test(p.n) ? '🏖️' : '📍');
   const emojiFor = (p, kind) => kind==='sleep' ? sleepEmoji(p) : kind==='ecl' ? '🌑' : spotEmoji(p);
