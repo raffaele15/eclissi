@@ -301,6 +301,18 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .ecl-spots li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:99px;background:var(--corona)}
 .ecl-spots li span{color:var(--muted)}
 @media(max-width:560px){ .ecl-cmp-row{grid-template-columns:1fr} }
+
+/* collegamenti incrociati itinerario ↔ mappa ↔ foto */
+.pl{color:var(--sea);text-decoration:none;border-bottom:1px dotted rgba(58,209,190,.6)}
+.pl:hover{color:var(--text);border-bottom-color:var(--text)}
+.pl-pin{text-decoration:none;margin-left:4px;font-size:.82em;opacity:.75;vertical-align:1px}
+.pl-pin:hover{opacity:1}
+.pl-links{display:flex;gap:8px;flex-wrap:wrap;margin-top:10px}
+.pl-lnk{font-family:var(--mono);font-size:11px;letter-spacing:.04em;text-transform:uppercase;
+  padding:5px 9px;border:1px solid var(--line-2);border-radius:99px;color:var(--muted);text-decoration:none;white-space:nowrap}
+.pl-lnk:hover{border-color:var(--corona);color:var(--corona)}
+@keyframes plflash{0%{box-shadow:0 0 0 2px var(--corona)}100%{box-shadow:0 0 0 2px transparent}}
+.pl-flash{animation:plflash 1.5s ease-out}
 .sp-total{width:100%;min-width:0;height:38px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:0 9px;border-radius:8px;text-align:right}
 .sp-actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -635,13 +647,13 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <span class="chev" aria-hidden="true"></span>
     </summary>
     <div class="inner">
-<p>Quello che resta della Costa Azzurra sta tutto a ovest di Nizza, cioè già sulla strada per la Spagna: si vede la mattina e si riparte. 5h 43min dalla Francia alla Costa Brava — conviene farla di seguito, perché partendo da Barcellona la Costa Brava sarebbe comunque a 2h 30min di macchina.</p>
+<p>Niente più tappe francesi: la mattina si parte dritti verso la Spagna, saltando Saint-Paul-de-Vence e Antibes. Sono 5h 43min dal Var alla Costa Brava, meglio farle di seguito. A metà strada solo una sosta per sgranchirsi e mangiare un panino.</p>
       <span class="tag sea">Pensió L'Avi Pep, 120 € per 2 notti</span>
-      <ul class="spots">
-        <li><b>Saint-Paul-de-Vence</b> <span>· borgo dell'entroterra, ~50 min da Montferrat, 30 min da Nizza</span></li>
-        <li><b>Antibes</b> e <b>Cap d'Antibes</b> <span>· 30 min da Nizza, in direzione Spagna</span> — <a href="https://maps.app.goo.gl/hxJrP7qsEMBmtVp8A" target="_blank" rel="noopener">Baie des Milliardaires</a></li>
+      <ul class="sched">
+        <li><span class="h">mattina</span><span class="w"><b>Partenza dal Var</b><small>Si lascia Montferrat presto e si prende l'autostrada verso ovest (A8 → A9), direzione Perpignan e frontiera.</small></span></li>
+        <li><span class="h">~metà</span><span class="w"><b>Sosta panino a Narbonne</b><small>Circa a metà viaggio, per riposare e mangiare qualcosa al volo: Les Halles di Narbonne sono perfette per un panino o una tapa. In alternativa Béziers, o una qualsiasi aire sull'A9 se preferite non uscire.</small></span></li>
       </ul>
-      <p style="margin-top:10px">Il pomeriggio prosegue sulla Costa Brava: il programma dettagliato del nord (s'Alqueria, Cadaqués) è nel blocco qui sotto, perché la sera del 2 apre le tre giornate di mare.</p>
+      <p style="margin-top:10px">Il pomeriggio e la sera del 2 sono già sulla Costa Brava: check-in, spiaggia e cena a Cadaqués nel blocco qui sotto.</p>
     </div>
   </details>
 
@@ -652,14 +664,14 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <span class="chev" aria-hidden="true"></span>
     </summary>
     <div class="inner">
-<p>Giornata di trasferimento: si arriva nel primo pomeriggio e la serata va al nord, dove il tramonto su Cap de Creus vale il viaggio. Le cale di s'Alqueria si toccano prima del check-in, poi Cadaqués per cena.</p>
+<p>Si arriva nel primo pomeriggio. Prima cosa: alla pensione a lasciare le valigie, poi su verso il Cap de Creus per una nuotata e la sera a Cadaqués — cena e un calice al tramonto.</p>
       <ul class="sched">
-        <li><span class="h">~15:00</span><span class="w"><b>Arrivo sulla Costa Brava</b><small>5h 43min dalla Francia. Se arrivate stanchi, si salta direttamente al check-in e Cadaqués; la cala è opzionale.</small></span></li>
-        <li><span class="h">16:00</span><span class="w"><b>Platja de s'Alqueria</b><small>1h dalla pensione, verso nord. Cala di ciottoli tra le rocce, parcheggio vicino, nessun servizio: posidonia e acqua limpida. Fuori dalla zona a traffico regolato di Roses, quindi nessun vincolo d'orario.</small></span></li>
-        <li><span class="h">19:00</span><span class="w"><b>Cadaqués</b><small>Il paese bianco di Dalí, vicoli e lungomare. Tramonto e cena qui.</small></span></li>
-        <li><span class="h">21:00</span><span class="w"><b>Check-in a Camallera</b><small>Pensió L'Avi Pep. Rientro comodo per due notti di base.</small></span></li>
+        <li><span class="h">~15:00</span><span class="w"><b>Arrivo e check-in a Camallera</b><small>Pensió L'Avi Pep: si lasciano subito le cose, così il resto della giornata resta leggero.</small></span></li>
+        <li><span class="h">16:30</span><span class="w"><b>Spiaggia sul Cap de Creus</b><small>Platja de s'Alqueria, cala di ciottoli tra le rocce vicino a Cadaqués: acqua limpida, posidonia, parcheggio vicino. Fuori dalla zona a traffico regolato di Roses, nessun vincolo d'orario.</small></span></li>
+        <li><span class="h">19:00</span><span class="w"><b>Cadaqués</b><small>Il paese bianco di Dalí: vicoli, lungomare e tramonto sulla baia.</small></span></li>
+        <li><span class="h">20:30</span><span class="w"><b>Cena a Cadaqués</b><small>Cucina di mare — suquet de peix, gambas, riso. Locali consigliati: La Sirena (marinara tradizionale), Nord Est (terrazza sul mare), Talla (tapas di mercato), o i più gettonati L'Hostal e Toc de Mar. In alta stagione meglio prenotare. <a href="https://www.turismocadaques.com/comer/" target="_blank" rel="noopener">Guida ai locali di Cadaqués</a>.</small></span></li>
       </ul>
-      <p style="margin-top:12px"><b>A tavola:</b> mar i muntanya — suquet di pesce, oca con rape, brunyols dell'Empordà, butifarra dolce, acciughe de L'Escala, vini DO Empordà. Carta del <a href="https://www.hotelmaslazuli.es/wp-content/uploads/2026/05/2026-Carta_Mas-Lazuli_Restaurant.pdf" target="_blank" rel="noopener">Mas Lazuli</a> a Roses. Cantine bio della <a href="https://costabrava.org/es/blog/bodegas-ecologicas-de-la-ruta-del-vino-do-emporda/" target="_blank" rel="noopener">ruta del vino DO Empordà</a>.</p>
+      <p style="margin-top:12px"><b>Vini della sera:</b> il vino invecchiato in mare è proprio qui — a <b>Cala Jóncols</b>, sul Cap de Creus (baia di Roses). Il <i>Vino del Mar</i> matura 6 mesi a 17 m di profondità, con degustazione guidata da sommelier nell'aula del hotel (Blanc, Rosat e Cava del Mar). Attenzione: Cala Jóncols è dentro la <b>zona a traffico regolato di Roses</b>, con accesso in auto chiuso 9:30–16:00 — meglio per la sera, dopo le 16. In alternativa, un calice di DO Empordà in uno dei bar di Cadaqués. <a href="https://www.calajoncols.com/es/experiencias2/degustacion-de-vinos-del-mar/" target="_blank" rel="noopener">Degustazione Vinos del Mar</a>.</p>
     </div>
   </details>
 
@@ -1422,8 +1434,8 @@ const SPOTS = [
   {n:'Èze', c:[43.7275,7.3617], d:'1 ago · opzionale', k:'d1', p:'borgo gratis', note:'Unica deviazione compatibile con il programma: sosta breve tra Mentone e Nizza. Il Jardin Exotique in cima si paga a parte.', w:['it:Èze','fr:Èze']},
   {n:'Villa Ephrussi de Rothschild', c:[43.6944,7.3306], d:'fuori programma', k:'d1', p:'~18 €', note:'Chiude alle 19: incompatibile con il Matisse alle 14. Resta come alternativa se cambiate il piano.', u:'https://www.villa-ephrussi.com/en/prepare-your-visit/rates', w:['fr:Villa Ephrussi de Rothschild','it:Villa Ephrussi de Rothschild']},
   {n:'Saint-Jean-Cap-Ferrat', c:[43.6879,7.3308], d:'fuori programma', k:'d1', p:'gratis', note:'La penisola tra Èze e Nizza. Non entra nella giornata come pianificata.', u:'https://www.explorenicecotedazur.com/it/esplorare/citta-e-villaggi/litorale/saint-jean-cap-ferrat/brochure-da-scaricare/', w:['it:Saint-Jean-Cap-Ferrat','fr:Saint-Jean-Cap-Ferrat']},
-  {n:'Saint-Paul-de-Vence', c:[43.6959,7.1220], d:'2 ago', k:'d2', p:'gratis', note:'~50 min da Montferrat, sulla strada per la Spagna. Borgo murato di gallerie d\'arte.', w:['it:Saint-Paul-de-Vence','fr:Saint-Paul-de-Vence']},
-  {n:'Antibes e Cap d\'Antibes', c:[43.5589,7.1226], d:'2 ago', k:'d2', p:'gratis', note:'30 min da Nizza, verso la Spagna. Baie des Milliardaires.', u:'https://maps.app.goo.gl/hxJrP7qsEMBmtVp8A', w:['it:Antibes','fr:Antibes']},
+  {n:'Saint-Paul-de-Vence', c:[43.6959,7.1220], d:'fuori programma', k:'d2', p:'gratis', note:'Borgo murato di gallerie d\'arte, ~50 min da Montferrat. Saltato: il 2 si va dritti verso la Costa Brava.', w:['it:Saint-Paul-de-Vence','fr:Saint-Paul-de-Vence']},
+  {n:'Antibes e Cap d\'Antibes', c:[43.5589,7.1226], d:'fuori programma', k:'d2', p:'gratis', note:'Baie des Milliardaires, 30 min da Nizza. Saltato: il 2 si va dritti verso la Costa Brava.', u:'https://maps.app.goo.gl/hxJrP7qsEMBmtVp8A', w:['it:Antibes','fr:Antibes']},
   {n:"Platja de s'Alqueria", c:[42.2973,3.2884], d:'2 ago · 16:00', k:'d2', p:'gratis', note:'1h dalla pensione, verso nord. Cala di ciottoli tra le rocce, parcheggio vicino, nessun servizio. Posidonia sott\'acqua. Fuori dalla zona regolata di Roses: nessun vincolo d\'orario.'},
   {n:'Cadaqués', c:[42.2887,3.2779], d:'2 ago · 19:00', k:'d2', p:'gratis', note:'Il paese bianco di Dalí. Tramonto e cena qui, poi rientro a Camallera.', w:['it:Cadaqués','es:Cadaqués']},
   {n:'Cala Montjoi', c:[42.2498,3.2285], d:'zona regolata', k:'d2', p:'gratis', note:'Dentro il Parc Natural: accesso auto chiuso 9:30–16:00 dal 1 luglio al 31 agosto. Raggiungibile solo prima delle 9:30 o dopo le 16. Non nel programma.'},
@@ -1454,15 +1466,24 @@ const DAY_LABELS = {
   d3:{t:'3 agosto', s:'Le cale della Costa Brava'},
   d4:{t:'4 agosto', s:'Borghi medievali verso Barcellona'}
 };
+// slug per collegare itinerario ↔ mappa ↔ foto
+const slugify = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[^a-z0-9]+/g,'-').replace(/^-+|-+$/g,'');
+const SLUG_OF = SPOTS.map(p=>slugify(p.n));
+const slugToIndex = {}; SLUG_OF.forEach((s,i)=>{ if(slugToIndex[s]===undefined) slugToIndex[s]=i; });
+
 function gcardHTML(p, i){
   const paid = p.p && !/gratis/i.test(p.p);
-  return `<article class="gcard">
+  return `<article class="gcard" id="place-${SLUG_OF[i]}">
     <div class="gph"><span class="ph">${p.w?'foto in arrivo':'nessuna foto'}</span><img id="ph-${i}" alt="${p.n}"></div>
     <div class="gbody">
       <div class="gmeta"><span class="gday">${p.d}</span>${p.p?`<span class="gprice${paid?' paid':''}">${p.p}</span>`:''}</div>
       <b>${p.n}</b>
       ${p.note?`<small>${p.note}</small>`:''}
       ${p.u?`<a href="${p.u}" target="_blank" rel="noopener">Biglietti e info →</a>`:''}
+      <div class="pl-links">
+        <a class="pl-lnk" href="#mappa" data-map="${i}">🗺️ Mappa</a>
+        <a class="pl-lnk" href="#itinerario">📅 Programma</a>
+      </div>
     </div></article>`;
 }
 // Raggruppa le attrazioni per giorno, preservando l'ordine di SPOTS (l'indice serve a loadPhotos)
@@ -1483,6 +1504,48 @@ for(const [k, idxs] of galGroups){
     <div class="gal-grid">${idxs.map(i=>gcardHTML(SPOTS[i], i)).join('')}</div>`;
   galEl.appendChild(det);
 }
+
+/* ---------- collegamenti incrociati: itinerario ↔ mappa ↔ foto ---------- */
+function openFotoCard(slug){
+  const card = document.getElementById('place-'+slug);
+  if(!card) return false;
+  const det = card.closest('details.daygroup'); if(det) det.open = true;
+  card.scrollIntoView({behavior:'smooth', block:'center'});
+  card.classList.remove('pl-flash'); void card.offsetWidth; card.classList.add('pl-flash');
+  return true;
+}
+document.addEventListener('click', e=>{
+  const a = e.target.closest('a'); if(!a) return;
+  const href = a.getAttribute('href') || '';
+  if(href.startsWith('#place-')){                     // → card foto
+    if(openFotoCard(href.slice(7))) e.preventDefault();
+  } else if(a.dataset.map !== undefined){             // → marker sulla mappa
+    e.preventDefault();
+    const el = document.getElementById('mappa'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+    const i = +a.dataset.map;
+    if(window.__openSpotOnMap) setTimeout(()=>window.__openSpotOnMap(i), 450);
+  }
+});
+
+// Rende cliccabili i nomi dei luoghi citati nell'itinerario (→ foto, con pin verso la mappa)
+(function(){
+  const norm = s => s.toLowerCase().normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+  const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const entries = SPOTS.map((p,i)=>({name:p.n, i, slug:SLUG_OF[i], n:norm(p.n)}))
+    .sort((a,b)=>b.name.length-a.name.length);   // match più lungo prima
+  document.querySelectorAll('#itinerario .sched .w > b, #itinerario .spots li > b').forEach(b=>{
+    if(b.querySelector('a')) return;
+    const raw = b.textContent, low = norm(raw);
+    for(const e of entries){
+      const idx = low.indexOf(e.n);
+      if(idx >= 0){
+        const before = raw.slice(0, idx), match = raw.slice(idx, idx+e.name.length), after = raw.slice(idx+e.name.length);
+        b.innerHTML = `${esc(before)}<a class="pl" href="#place-${e.slug}">${esc(match)}</a><a class="pl-pin" href="#mappa" data-map="${e.i}" title="Sulla mappa" aria-label="Sulla mappa">🗺️</a>${esc(after)}`;
+        break;
+      }
+    }
+  });
+})();
 
 async function loadPhotos(){
   const langs = ['it','es','fr','ca','en'];
@@ -1562,12 +1625,23 @@ if (window.L) {
   const gmaps = p => isMapLink(p.u)
     ? p.u                                            // link alla scheda del luogo già curato
     : `https://www.google.com/maps/search/${encodeURIComponent(placeName(p))}/@${p.c[0]},${p.c[1]},15z`;
-  const pop = p => () => `${p.img?`<img src="${p.img}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px">`:''}<b>${p.n}</b><span class="d">${p.d}${p.p?' · '+p.p:''}</span>${p.note?`<div style="margin-top:6px">${p.note}</div>`:''}${p.t?`<span class="t">${p.t}</span>`:''}${p.u&&!isMapLink(p.u)?`<div style="margin-top:6px"><a href="${p.u}" target="_blank" rel="noopener">apri il link</a></div>`:''}<div style="margin-top:8px"><a class="gmaps" href="${gmaps(p)}" target="_blank" rel="noopener">📍 Apri in Google Maps</a></div>`;
+  const pop = p => () => {
+    const s = slugify(p.n), hasCard = slugToIndex[s]!==undefined;
+    return `${p.img?`<img src="${p.img}" alt="" style="width:100%;height:110px;object-fit:cover;border-radius:8px;margin-bottom:8px">`:''}<b>${p.n}</b><span class="d">${p.d}${p.p?' · '+p.p:''}</span>${p.note?`<div style="margin-top:6px">${p.note}</div>`:''}${p.t?`<span class="t">${p.t}</span>`:''}${p.u&&!isMapLink(p.u)?`<div style="margin-top:6px"><a href="${p.u}" target="_blank" rel="noopener">apri il link</a></div>`:''}<div class="pl-links">${hasCard?`<a class="pl-lnk" href="#place-${s}">📷 Foto</a>`:''}<a class="pl-lnk" href="#itinerario">📅 Programma</a></div><div style="margin-top:8px"><a class="gmaps" href="${gmaps(p)}" target="_blank" rel="noopener">📍 Apri in Google Maps</a></div>`;
+  };
 
   const gSleep = L.layerGroup(), gSpot = L.layerGroup(), gEcl = L.layerGroup();
+  const spotMarkers = [];
   SLEEP.forEach(p=>L.marker(p.c,{icon:icon(p,'sleep')}).bindPopup(pop(p)).addTo(gSleep));
-  SPOTS.forEach(p=>L.marker(p.c,{icon:icon(p,'spot')}).bindPopup(pop(p)).addTo(gSpot));
+  SPOTS.forEach((p,i)=>{ const m=L.marker(p.c,{icon:icon(p,'spot')}).bindPopup(pop(p)); spotMarkers[i]=m; m.addTo(gSpot); });
   ECLIPSE.forEach(p=>L.marker(p.c,{icon:icon(p,'ecl')}).bindPopup(pop(p)).addTo(gEcl));
+  // apre un'attrazione sulla mappa (chiamata dai link "Mappa" di foto e itinerario)
+  window.__openSpotOnMap = i => {
+    const m = spotMarkers[i]; if(!m) return;
+    if(!map.hasLayer(gSpot)) gSpot.addTo(map);
+    map.setView(m.getLatLng(), Math.max(map.getZoom(), 12), {animate:true});
+    m.openPopup();
+  };
 
   // Tappe notturne in ordine di viaggio + rientro a Padova
   const routePts = SLEEP.map(p=>p.c).concat([[45.4064,11.8768]]);
