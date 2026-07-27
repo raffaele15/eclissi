@@ -243,6 +243,8 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .sp-row-ins{color:var(--sea);border-color:var(--sea)}
 .sp-row-ins:hover{background:rgba(58,209,190,.12)}
 .btn.on{border-color:var(--corona);color:var(--corona);background:rgba(255,194,74,.1)}
+.btn:disabled{opacity:.4;cursor:not-allowed}
+.btn.ghost:disabled:hover{border-color:var(--line-2);color:var(--muted)}
 .sp-total{width:100%;min-width:0;height:38px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:0 9px;border-radius:8px;text-align:right}
 .sp-actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -802,7 +804,8 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   </table>
   </div>
   <div class="sp-actions">
-    <button class="btn" id="sp-edit-toggle" aria-pressed="false">Modifiche tabella</button>
+    <button class="btn" id="sp-edit-toggle" aria-pressed="false">Modifica tabella</button>
+    <button class="btn ghost" id="sp-undo" disabled>↶ Annulla</button>
   </div>
   <div class="total-bar">
     <div class="tb-item"><span class="tl">Totale effettivo</span><span class="tv" id="sp-grand">€ 0,00</span></div>
@@ -1054,6 +1057,18 @@ compute();
   // marca una modifica locale: nuovo timestamp, salva su disco e programma il push
   function touched(){ store.updatedAt = Date.now(); persist(); schedulePush(); }
 
+  // --- cronologia per "Annulla" ---
+  const undoStack = [];
+  const UNDO_MAX = 40;
+  const snapshot = () => items().map(r=>({name:r.name, total:+r.total||0}));
+  function pushUndo(){ undoStack.push(snapshot()); if(undoStack.length>UNDO_MAX) undoStack.shift(); updateUndoBtn(); }
+  function updateUndoBtn(){ const b=document.getElementById('sp-undo'); if(b) b.disabled = undoStack.length===0; }
+  function undo(){
+    if(!undoStack.length) return;
+    store.items = undoStack.pop();
+    render(); touched(); updateUndoBtn();
+  }
+
   function grand(){
     const g = items().reduce((a,r)=>a+(+r.total||0),0);
     grandEl.textContent = EUR2(g);
@@ -1087,6 +1102,7 @@ compute();
       const inp = tr.querySelector('.sp-input');
       const add = +inp.value || 0;
       if(add){
+        pushUndo();
         items()[i].total = (+items()[i].total||0) + add;
         tr.querySelector('.sp-total').value = items()[i].total;
         inp.value = '';
@@ -1096,11 +1112,27 @@ compute();
     } else if(e.target.classList.contains('sp-row-del')){
       const r = items()[i];
       if((+r.total||0) > 0 && !confirm(`Rimuovere la riga "${r.name||'senza nome'}" (${EUR2(r.total)})?`)) return;
+      pushUndo();
       items().splice(i,1); render(); touched();
     } else if(e.target.classList.contains('sp-row-ins')){
+      pushUndo();
       items().splice(i+1, 0, {name:'Nuova voce', total:0}); render(); touched();
       const nr = body.querySelector(`tr[data-i="${i+1}"] .sp-name`); if(nr) nr.focus();
     }
+  });
+
+  // Per la digitazione (nome/totale) salva lo stato pre-modifica una sola volta per campo
+  let preEdit = null, preEditVal = null;
+  body.addEventListener('focusin', e=>{
+    if(e.target.classList.contains('sp-name') || e.target.classList.contains('sp-total')){
+      preEdit = snapshot(); preEditVal = e.target.value;
+    }
+  });
+  body.addEventListener('focusout', e=>{
+    if(preEdit && (e.target.classList.contains('sp-name') || e.target.classList.contains('sp-total')) && e.target.value !== preEditVal){
+      undoStack.push(preEdit); if(undoStack.length>UNDO_MAX) undoStack.shift(); updateUndoBtn();
+    }
+    preEdit = null;
   });
   body.addEventListener('keydown', e=>{
     if(e.key==='Enter' && e.target.classList.contains('sp-input')){
@@ -1120,9 +1152,11 @@ compute();
     editing = !editing;
     editBtn.classList.toggle('on', editing);
     editBtn.setAttribute('aria-pressed', editing);
-    editBtn.textContent = editing ? 'Fine modifiche' : 'Modifiche tabella';
+    editBtn.textContent = editing ? 'Fine modifica' : 'Modifica tabella';
     render();
   });
+  document.getElementById('sp-undo').addEventListener('click', undo);
+  updateUndoBtn();
 
   render();
   // aggiorna il "a testa" effettivo quando cambia il numero di persone nella stima
