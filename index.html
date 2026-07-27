@@ -296,9 +296,9 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 
 /* pulsanti circolari (scorciatoie) */
 .fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
-  display:flex;flex-direction:column;gap:12px}
-.fab-btn{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-size:24px;text-decoration:none;border:1px solid var(--line-2);
+  display:flex;flex-direction:column;gap:10px}
+.fab-btn{width:50px;height:50px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:22px;text-decoration:none;border:1px solid var(--line-2);
   background:rgba(17,25,53,.92);backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.5);
   transition:transform .15s,border-color .15s}
 .fab-btn:hover{transform:translateY(-2px);border-color:var(--corona)}
@@ -903,7 +903,9 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 </div></section>
 
 <div class="fab" role="navigation" aria-label="Scorciatoie">
+  <a href="#itinerario" class="fab-btn" title="Vai all'itinerario" aria-label="Vai all'itinerario">🧭</a>
   <a href="#mappa" class="fab-btn" title="Vai alla mappa" aria-label="Vai alla mappa">🗺️</a>
+  <a href="#luoghi" class="fab-btn" title="Vai a luoghi e attrazioni" aria-label="Vai a luoghi e attrazioni">🎡</a>
   <a href="#spese" class="fab-btn" title="Vai alle spese effettive" aria-label="Vai alle spese effettive">💰</a>
 </div>
 
