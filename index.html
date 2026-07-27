@@ -239,6 +239,28 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .sp-total{width:100%;min-width:0;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:7px 9px;border-radius:8px;text-align:right}
 .sp-actions{display:flex;gap:10px;flex-wrap:wrap}
+/* controlli stima + barra totale di sezione */
+.est-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:16px}
+.est-controls label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.est-controls input[type=number]{width:76px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
+  font-family:var(--mono);font-size:15px;padding:7px 9px;border-radius:8px}
+.est-controls .btn{margin-top:0}
+.total-bar{display:flex;gap:14px;flex-wrap:wrap;margin-top:16px}
+.total-bar .tb-item{flex:1;min-width:150px;background:linear-gradient(180deg,var(--card-2),var(--card));
+  border:1px solid var(--line-2);border-radius:var(--r);padding:16px 18px}
+.total-bar .tl{display:block;font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)}
+.total-bar .tv{display:block;font-family:var(--mono);font-size:30px;color:var(--corona);line-height:1.1;margin-top:6px;letter-spacing:-.01em}
+.total-bar .tv.sea{color:var(--sea)}
+
+/* pulsanti circolari (scorciatoie) */
+.fab{position:fixed;right:16px;bottom:calc(16px + env(safe-area-inset-bottom));z-index:60;
+  display:flex;flex-direction:column;gap:12px}
+.fab-btn{width:54px;height:54px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:24px;text-decoration:none;border:1px solid var(--line-2);
+  background:rgba(17,25,53,.92);backdrop-filter:blur(8px);box-shadow:0 6px 20px rgba(0,0,0,.5);
+  transition:transform .15s,border-color .15s}
+.fab-btn:hover{transform:translateY(-2px);border-color:var(--corona)}
+.fab-btn:active{transform:scale(.94)}
 .sp-sync{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
 .sp-sync>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px;
   font-family:var(--mono);font-size:12px;letter-spacing:.06em;color:var(--muted);user-select:none}
@@ -428,8 +450,8 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <a href="#foto">Foto e biglietti</a>
   <a href="#eclissi">Eclissi</a>
   <a href="#extra">Extra</a>
-  <a href="#budget">Budget</a>
-  <a href="#spese">Spese</a>
+  <a href="#budget">Spese stimate</a>
+  <a href="#spese">Spese effettive</a>
   <a href="#fonti">Fonti</a>
 </div></nav>
 
@@ -738,36 +760,34 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 </div></section>
 
 <section id="budget"><div class="wrap">
-  <h2><span class="num">Numeri</span>Budget</h2>
-  <p class="sub">Valori di partenza dal foglio di calcolo, con le tratte in versione autostrada. Tutti i campi sono modificabili.</p>
-  <div class="budget">
-    <div>
-      <div class="rows" id="rows"></div>
-      <p class="src" style="margin-top:14px">Il foglio originale chiudeva a 1.544 € per due. Il piano aggiornato — Saragozza al posto della tratta diretta, Santander a 320 € invece di 300 — parte da un totale più alto, e le cinque giornate di Barcellona restano ancora senza vitto a bilancio. Le tratte Barcellona–Saragozza–Santander sono stime, non calcoli ViaMichelin come le altre.</p>
-    </div>
-    <div class="panel">
-      <div class="l" style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">Totale viaggio</div>
-      <div class="big" id="tot">–</div>
-      <div class="divider"></div>
-      <div class="l" style="font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:var(--muted)">A testa</div>
-      <div class="sm" id="pp">–</div>
-      <label for="people">Persone</label>
-      <input type="number" id="people" min="1" max="6" value="2">
-      <button class="btn" id="reset">Ripristina valori del foglio</button>
-    </div>
+  <h2><span class="num">Stima</span>Spese stimate</h2>
+  <p class="sub">Il preventivo del viaggio, dal foglio di calcolo e con le tratte in autostrada. Tutti i campi sono modificabili.</p>
+  <div class="rows" id="rows"></div>
+  <div class="est-controls">
+    <label for="people">Persone</label>
+    <input type="number" id="people" min="1" max="6" value="2">
+    <button class="btn ghost" id="reset">Ripristina valori del foglio</button>
   </div>
+  <div class="total-bar">
+    <div class="tb-item"><span class="tl">Totale stimato</span><span class="tv" id="tot">–</span></div>
+    <div class="tb-item"><span class="tl">A testa</span><span class="tv sea" id="pp">–</span></div>
+  </div>
+  <p class="src" style="margin-top:14px">Il foglio originale chiudeva a 1.544 € per due. Il piano aggiornato — Saragozza al posto della tratta diretta, Santander a 320 € invece di 300 — parte da un totale più alto, e le cinque giornate di Barcellona restano ancora senza vitto a bilancio. Le tratte Barcellona–Saragozza–Santander sono stime, non calcoli ViaMichelin come le altre.</p>
 </div></section>
 
 <section id="spese"><div class="wrap">
-  <h2><span class="num">Spese</span>Quanto stiamo spendendo davvero</h2>
-  <p class="sub">Aggiungi mano a mano quello che paghi: scrivi l'importo e premi «Aggiungi», si somma alla voce. Il totale a destra resta modificabile se sbagli. Attiva la condivisione qui sotto per tenere la tabella allineata tra più telefoni; altrimenti i dati restano solo su questo dispositivo.</p>
+  <h2><span class="num">Reali</span>Spese effettive</h2>
+  <p class="sub">Aggiungi mano a mano quello che paghi: scrivi l'importo e premi «+», si somma alla voce. Il totale a destra resta modificabile se sbagli. Attiva la condivisione qui sotto per tenere la tabella allineata tra più telefoni; altrimenti i dati restano solo su questo dispositivo.</p>
   <div class="spese-wrap">
   <table class="spese">
     <colgroup><col class="c-voce"><col class="c-add"><col class="c-tot"></colgroup>
     <thead><tr><th>Voce</th><th>Aggiungi</th><th class="r">Totale</th></tr></thead>
     <tbody id="sp-body"></tbody>
-    <tfoot><tr><td colspan="2" class="sp-foot-lab">Totale speso</td><td class="r" id="sp-grand">€ 0,00</td></tr></tfoot>
   </table>
+  </div>
+  <div class="total-bar">
+    <div class="tb-item"><span class="tl">Totale effettivo</span><span class="tv" id="sp-grand">€ 0,00</span></div>
+    <div class="tb-item"><span class="tl">A testa</span><span class="tv sea" id="sp-grand-pp">€ 0,00</span></div>
   </div>
   <div class="sp-actions">
     <button class="btn" id="sp-add-row">+ Aggiungi voce</button>
@@ -808,11 +828,10 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <footer>Prospetto generato il 26 luglio 2026 · verifica sempre prezzi e orari sui siti ufficiali prima di partire.</footer>
 </div></section>
 
-<div class="sticky"><div class="wrap">
-  <div><div class="l">Totale</div><div class="v" id="tot2">–</div></div>
-  <div><div class="l">A testa</div><div class="v sea" id="pp2">–</div></div>
-  <div><a href="#budget" class="btn" style="margin:0">Vedi dettaglio</a></div>
-</div></div>
+<div class="fab" role="navigation" aria-label="Scorciatoie">
+  <a href="#mappa" class="fab-btn" title="Vai alla mappa" aria-label="Vai alla mappa">🗺️</a>
+  <a href="#budget" class="fab-btn" title="Vai alle spese" aria-label="Vai alle spese">💰</a>
+</div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
 <script>
@@ -991,8 +1010,8 @@ function compute(){
 
   const tot = routes+stays+food+acts;
   const pp  = tot/state.people;
-  ['tot','tot2'].forEach(i=>document.getElementById(i).textContent = EUR2(tot));
-  ['pp','pp2'].forEach(i=>document.getElementById(i).textContent = EUR2(pp));
+  document.getElementById('tot').textContent = EUR2(tot);
+  document.getElementById('pp').textContent  = EUR2(pp);
 }
 compute();
 
@@ -1003,6 +1022,7 @@ compute();
   const DEFAULT = ['Benzina','Pedaggi','Alloggi','Cibo','Musei ed extra','Varie'];
   const body = document.getElementById('sp-body');
   const grandEl = document.getElementById('sp-grand');
+  const grandPpEl = document.getElementById('sp-grand-pp');
   if(!body) return;
 
   // --- stato locale ---
@@ -1019,7 +1039,12 @@ compute();
   // marca una modifica locale: nuovo timestamp, salva su disco e programma il push
   function touched(){ store.updatedAt = Date.now(); persist(); schedulePush(); }
 
-  function grand(){ grandEl.textContent = EUR2(items().reduce((a,r)=>a+(+r.total||0),0)); }
+  function grand(){
+    const g = items().reduce((a,r)=>a+(+r.total||0),0);
+    grandEl.textContent = EUR2(g);
+    const ppl = Math.max(1, +(document.getElementById('people')||{}).value || 1);
+    if(grandPpEl) grandPpEl.textContent = EUR2(g/ppl);
+  }
 
   function render(){
     body.innerHTML = items().map((r,i)=>`
@@ -1073,6 +1098,9 @@ compute();
   });
 
   render();
+  // aggiorna il "a testa" effettivo quando cambia il numero di persone nella stima
+  const peopleEl = document.getElementById('people');
+  if(peopleEl) peopleEl.addEventListener('input', grand);
 
   /* ---------- sincronizzazione condivisa (JSONBin) ---------- */
   const dot = document.getElementById('sp-dot');
