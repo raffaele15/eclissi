@@ -776,9 +776,9 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <details class="sp-sync" id="sp-sync">
     <summary><span class="sp-sync-dot" id="sp-dot"></span><span id="sp-sync-status">Condivisione non attiva</span></summary>
     <div class="sp-sync-body">
-      <p class="src">Per condividere la tabella: crea gratis un account su <a href="https://jsonbin.io" target="_blank" rel="noopener">jsonbin.io</a>, crea un <b>bin</b> (con contenuto <code>[]</code>) e poi, in <i>API Keys → Access Keys</i>, una chiave con permessi <b>Read</b> e <b>Update</b>. Incolla qui l'ID del bin e la Access Key, e condividili in privato con i compagni di viaggio. Non vengono salvati nella pagina pubblica: restano solo su questo dispositivo.</p>
+      <p class="src">Per condividere la tabella: crea gratis un account su <a href="https://jsonbin.io" target="_blank" rel="noopener">jsonbin.io</a> e crea un <b>bin</b>. Come chiave puoi usare la tua <b>Master Key</b> (in <i>API Keys</i>) oppure una <b>Access Key</b> con i permessi <b>Read</b> e <b>Update</b> attivi: la pagina riconosce da sola il tipo. Incolla l'ID del bin e la chiave e condividili in privato con i compagni di viaggio. Non vengono salvati nella pagina pubblica: restano solo su questo dispositivo.</p>
       <label class="sp-field">ID del bin<input id="sp-bin" placeholder="es. 66a1b2c3e41b4d34e4..." autocomplete="off" spellcheck="false"></label>
-      <label class="sp-field">Access Key<input id="sp-key" placeholder="$2a$10$..." autocomplete="off" spellcheck="false"></label>
+      <label class="sp-field">Master Key o Access Key<input id="sp-key" placeholder="$2a$10$..." autocomplete="off" spellcheck="false"></label>
       <div class="sp-actions">
         <button class="btn" id="sp-sync-on">Attiva sincronizzazione</button>
         <button class="btn" id="sp-sync-pull">Aggiorna ora</button>
@@ -1096,12 +1096,30 @@ compute();
   }
   const api = () => `https://api.jsonbin.io/v3/b/${cfg.bin}`;
 
+  // Invia la chiave provando l'header giusto: prima Master Key, poi Access Key.
+  // Memorizza quello che funziona in cfg.hdr per non riprovare ogni volta.
+  async function authFetch(url, opts){
+    opts = opts || {};
+    const hdrs = cfg.hdr ? [cfg.hdr] : ['X-Master-Key','X-Access-Key'];
+    let last;
+    for(const h of hdrs){
+      const r = await fetch(url, {...opts, headers:{...(opts.headers||{}), [h]:cfg.key}});
+      if(r.status!==401 && r.status!==403){
+        if(cfg.hdr!==h){ cfg.hdr = h; try{ localStorage.setItem(CFG, JSON.stringify(cfg)); }catch(e){} }
+        return r;
+      }
+      last = r;
+    }
+    return last;   // nessun header autorizzato
+  }
+  const authErr = s => 'HTTP '+s+(s===401||s===403?' — chiave o permessi non validi (servono Read e Update)':'');
+
   async function pull(){
     if(!cfg) return;
     setStatus('busy');
     try{
-      const r = await fetch(api()+'/latest', {headers:{'X-Access-Key':cfg.key}});
-      if(!r.ok) throw new Error('HTTP '+r.status);
+      const r = await authFetch(api()+'/latest');
+      if(!r.ok) throw new Error(authErr(r.status));
       const rec = (await r.json()).record;
       if(rec && Array.isArray(rec.items) && (+rec.updatedAt||0) > (store.updatedAt||0)){
         store = {items:rec.items, updatedAt:+rec.updatedAt||Date.now()};
@@ -1114,10 +1132,10 @@ compute();
     if(!cfg) return;
     setStatus('busy');
     try{
-      const r = await fetch(api(), {method:'PUT',
-        headers:{'Content-Type':'application/json','X-Access-Key':cfg.key,'X-Bin-Versioning':'false'},
+      const r = await authFetch(api(), {method:'PUT',
+        headers:{'Content-Type':'application/json','X-Bin-Versioning':'false'},
         body: JSON.stringify(store)});
-      if(!r.ok) throw new Error('HTTP '+r.status);
+      if(!r.ok) throw new Error(authErr(r.status));
       setStatus('ok');
     }catch(e){ setStatus('err', e.message); }
   }
