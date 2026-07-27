@@ -520,9 +520,8 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <a href="#dettaglio">Giorno per giorno</a>
   <a href="#mappa">Mappa</a>
   <a href="#luoghi">Luoghi</a>
-  <a href="#tratte">Tratte</a>
-  <a href="#foto">Foto e biglietti</a>
   <a href="#eclissi">Eclissi</a>
+  <a href="#tratte">Tratte</a>
   <a href="#extra">Extra</a>
   <a href="#budget">Spese stimate</a>
   <a href="#spese">Spese effettive</a>
@@ -773,17 +772,6 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <div id="gal"></div>
 </div></section>
 
-<section id="tratte"><div class="wrap">
-  <h2><span class="num">Tratte</span>Sempre in autostrada</h2>
-  <div class="fuelbar">
-    <label for="fuel">Prezzo carburante</label>
-    <input type="range" id="fuel" min="1.40" max="2.20" step="0.01" value="1.75">
-    <output id="fuel-out">1,75 €/L</output>
-  </div>
-  <ol class="legs" id="routes"></ol>
-  <div class="legs-sum" id="legs-sum"></div>
-</div></section>
-
 <section id="eclissi"><div class="wrap">
   <h2><span class="num">12 agosto</span>La totalità</h2>
   <div class="grid g3">
@@ -885,6 +873,17 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
     <p>Occhiali certificati <b>ISO 12312-2</b> obbligatori per tutte le fasi parziali; si tolgono solo durante la totalità. L'ultima eclissi totale in Spagna è del 1905, e la Spagna ne avrà un'altra il 2 agosto 2027 — la domanda di alloggi sulla fascia è concentrata su questa data.</p>
     <p style="margin-top:8px">Dati e orari dall'<a href="https://eclipses.ign.es/eclipse-total-sol-de-12-de-agosto-2026.html" target="_blank" rel="noopener">Istituto Geografico Nazionale (IGN)</a>; luoghi di osservazione da <a href="https://turismodecantabria.com/eclipse-total-de-sol-del-dia-12-de-agosto-de-2026/" target="_blank" rel="noopener">Turismo de Cantabria</a>. Verifica la tua posizione esatta sulla mappa interattiva dell'IGN.</p>
   </div>
+</div></section>
+
+<section id="tratte"><div class="wrap">
+  <h2><span class="num">Tratte</span>Sempre in autostrada</h2>
+  <div class="fuelbar">
+    <label for="fuel">Prezzo carburante</label>
+    <input type="range" id="fuel" min="1.40" max="2.20" step="0.01" value="1.75">
+    <output id="fuel-out">1,75 €/L</output>
+  </div>
+  <ol class="legs" id="routes"></ol>
+  <div class="legs-sum" id="legs-sum"></div>
 </div></section>
 
 <section id="extra"><div class="wrap">
