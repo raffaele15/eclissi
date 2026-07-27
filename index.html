@@ -982,7 +982,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 </div></section>
 
 <div class="fab" role="navigation" aria-label="Scorciatoie">
-  <a href="#itinerario" class="fab-btn" title="Vai all'itinerario" aria-label="Vai all'itinerario">📅</a>
+  <a href="#itinerario" id="fab-cal" class="fab-btn" title="Vai al giorno di oggi" aria-label="Vai al giorno di oggi">📅</a>
   <a href="#mappa" class="fab-btn" title="Vai alla mappa" aria-label="Vai alla mappa">🗺️</a>
   <a href="#luoghi" class="fab-btn" title="Vai a luoghi e attrazioni" aria-label="Vai a luoghi e attrazioni">🎡</a>
   <a href="#spese" class="fab-btn" title="Vai alle spese effettive" aria-label="Vai alle spese effettive">💰</a>
@@ -1863,6 +1863,48 @@ if (window.L) {
   addEventListener('scroll', onScroll, { passive:true });
   addEventListener('resize', onScroll);
   spy();
+})();
+
+/* ---------- pulsante calendario: vai al giorno di oggi (se è nel viaggio) ---------- */
+(function(){
+  const btn = document.getElementById('fab-cal');
+  if(!btn) return;
+  const MESI = {gen:0,feb:1,mar:2,apr:3,mag:4,giu:5,lug:6,ago:7,set:8,ott:9,nov:10,dic:11};
+  const YEAR = 2026;
+  // Estrae from/to (in giorni) da un'etichetta tipo "31 lug", "4–9 ago", "10–13 ago"
+  function parseWhen(txt){
+    const mese = (txt.match(/gen|feb|mar|apr|mag|giu|lug|ago|set|ott|nov|dic/)||[])[0];
+    if(mese==null) return null;
+    const nums = txt.match(/\d+/g);
+    if(!nums) return null;
+    const m = MESI[mese];
+    const from = new Date(YEAR, m, +nums[0], 0,0,0,0);
+    const to   = new Date(YEAR, m, +(nums[1]||nums[0]), 23,59,59,999);
+    return {from, to};
+  }
+  function todayDay(){
+    const days = [...document.querySelectorAll('details.day')];
+    const now = new Date();
+    let best = null, bestLen = Infinity;
+    for(const d of days){
+      const when = d.querySelector('.when');
+      const txt = when && when.firstChild ? when.firstChild.textContent : '';
+      const r = parseWhen(txt||'');
+      if(!r) continue;
+      if(now >= r.from && now <= r.to){
+        const len = r.to - r.from;            // preferisci il giorno più specifico (intervallo più corto)
+        if(len < bestLen){ best = d; bestLen = len; }
+      }
+    }
+    return best;
+  }
+  btn.addEventListener('click', e=>{
+    const d = todayDay();
+    if(!d) return;                            // oggi fuori dal viaggio: comportamento normale (#itinerario)
+    e.preventDefault();
+    d.open = true;
+    d.scrollIntoView({behavior:'smooth', block:'start'});
+  });
 })();
 </script>
 </body>
