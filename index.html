@@ -328,6 +328,8 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .note h4{color:var(--corona)}
 .note p{color:var(--muted)}
 .note a{color:var(--sea)}
+.bcn-d{font-family:var(--display);font-size:17px;font-weight:700;letter-spacing:-.01em;color:var(--corona);
+  margin:20px 0 4px;padding-top:14px;border-top:1px solid var(--line)}
 .sp-total{width:100%;min-width:0;height:38px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:0 9px;border-radius:8px;text-align:right}
 .sp-actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -739,12 +741,41 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <details class="day">
     <summary>
       <span class="when">4–9 ago<small>La base</small></span>
-      <span class="tt">Barcellona</span>
+      <span class="tt">Barcellona · cose da fare</span>
       <span class="chev" aria-hidden="true"></span>
     </summary>
     <div class="inner">
-<p>Cinque notti con appartamento disponibile. Nel foglio costi questi giorni non hanno né alloggio né vitto a bilancio: è il margine più grande dell'intero budget, e il ritmo è libero — città, non tabella oraria.</p>
+<p>Cinque notti con appartamento a costo zero (più altre al rientro, 14–16 agosto). Ritmo libero: qui le idee raccolte giorno per giorno.</p>
       <span class="tag ok">alloggio a costo zero</span><span class="tag warn">vitto non stimato</span>
+
+      <h4 class="bcn-d">Mercoledì 5</h4>
+      <ul class="sched">
+        <li><span class="h">giorno</span><span class="w"><b>Coca in pasticceria</b><small>La coca è il dolce/focaccia catalana da forno: da prendere in una pastisseria.</small></span></li>
+        <li><span class="h">sera</span><span class="w"><b>Sala Montjuïc — cinema all'aperto</b><small>Cinema sotto le stelle al Castell de Montjuïc, con picnic. Concerto alle 20:45, film alle 22:00. Ingresso 9 € (12 € con sdraio). Il 5 agosto è l'ultima serata: film a sorpresa e band blues in apertura — da prenotare. <a href="https://www.codetickets.com/portal/salamontjuic/online/35220/90822" target="_blank" rel="noopener">Biglietti</a></small></span></li>
+      </ul>
+
+      <h4 class="bcn-d">Giovedì 6</h4>
+      <ul class="sched">
+        <li><span class="h">giorno</span><span class="w"><b>Fundació Joan Miró</b><small>Il museo di Miró, a Montjuïc.</small></span></li>
+        <li><span class="h">sera</span><span class="w"><b>Nits en viu · Poble Espanyol</b><small>Concerti da mercoledì a sabato sera: giovedì è la serata rock (mer caraibica, ven pop anni '90, sab rumba).</small></span></li>
+        <li><span class="h">sera</span><span class="w"><b>Cinema Lliure a la platja</b><small>Cinema gratuito in spiaggia: giovedì 6 alla Platja de Sant Sebastià, «La misteriosa mirada del flamenco».</small></span></li>
+      </ul>
+
+      <h4 class="bcn-d">Venerdì 7</h4>
+      <ul class="sched">
+        <li><span class="h">giorno</span><span class="w"><b>Sagrada Família</b><small>Ingresso da prenotare in anticipo.</small></span></li>
+        <li><span class="h">giorno</span><span class="w"><b>Taller de ceràmica</b><small>Laboratorio di ceramica.</small></span></li>
+        <li><span class="h">sera</span><span class="w"><b>Rooftop (da prenotare)</b><small>Tope, il rooftop dell'Hoxton Hotel a Poblenou; oppure La Terraza de Anna a Gràcia, con vista su Casa Batlló.</small></span></li>
+      </ul>
+
+      <h4 class="bcn-d">Sabato 8</h4>
+      <ul class="sched">
+        <li><span class="h">giorno</span><span class="w"><b>Spiaggia: Sitges o Garraf</b><small>Fuori città verso sud — con possibilità di windsurf.</small></span></li>
+        <li><span class="h">15:00</span><span class="w"><b>MNAC — Museu Nacional d'Art de Catalunya</b><small>Gratis il primo domenica del mese e il sabato dalle 15:00.</small></span></li>
+        <li><span class="h">sera</span><span class="w"><b>Cena catalana</b><small>Il ristorante consigliato da Edo.</small></span></li>
+      </ul>
+
+      <p style="margin-top:12px">Al <b>rientro (14–16 agosto)</b> altre notti a Barcellona: giorni liberi per recuperare quello che è saltato.</p>
     </div>
   </details>
 
@@ -1638,7 +1669,34 @@ async function loadPhotos(){
     }
   });
 }
-loadPhotos();
+
+// Fallback per i luoghi senza pagina Wikipedia propria (ristoranti, cale…):
+// cerca l'immagine della pagina più vicina alle coordinate (geosearch).
+async function loadPhotosNearby(){
+  const missing = SPOTS.filter(p=>!p.img && Array.isArray(p.c));
+  await Promise.all(missing.map(async p=>{
+    const [lat, lon] = p.c;
+    const lang = lon > 5 ? 'fr' : (lon > 1 ? 'ca' : 'es');   // Costa Azzurra → fr, Costa Brava → ca
+    const url = `https://${lang}.wikipedia.org/w/api.php?action=query&format=json&origin=*`
+      + `&generator=geosearch&ggscoord=${lat}%7C${lon}&ggsradius=2000&ggslimit=8`
+      + `&prop=pageimages&piprop=thumbnail&pithumbsize=640`;
+    try{
+      const j = await (await fetch(url)).json();
+      const pages = Object.values((j.query && j.query.pages) || {});
+      pages.sort((a,b)=>(a.index||0)-(b.index||0));   // ordine geosearch = distanza crescente
+      const hit = pages.find(pg => pg.thumbnail && pg.thumbnail.source);
+      if(hit){
+        p.img = hit.thumbnail.source;
+        const img = document.getElementById('ph-'+SPOTS.indexOf(p));
+        if(img){
+          img.onload = ()=>{ img.classList.add('in'); const ph=img.parentElement.querySelector('.ph'); if(ph) ph.remove(); };
+          img.src = p.img;
+        }
+      }
+    }catch(e){ /* nessuna rete o nessun risultato: resta il segnaposto */ }
+  }));
+}
+loadPhotos().then(loadPhotosNearby);
 
 if (window.L) {
   const map = L.map('map',{scrollWheelZoom:false}).setView([43.0,2.0],5);
