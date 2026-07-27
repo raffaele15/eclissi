@@ -189,6 +189,60 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
   padding:9px 14px;border-radius:99px;border:1px solid var(--line-2);color:var(--text);background:transparent;
   cursor:pointer;margin-top:14px}
 .btn:hover{border-color:var(--corona);color:var(--corona)}
+.btn.ghost{color:var(--muted)}
+.btn.ghost:hover{border-color:var(--warn);color:var(--warn)}
+
+/* tratte: slider carburante + lista ordinata */
+.fuelbar{display:flex;align-items:center;gap:14px;flex-wrap:wrap;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);padding:14px 18px;margin-bottom:16px}
+.fuelbar label{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+.fuelbar input[type=range]{flex:1;min-width:160px;accent-color:var(--corona);height:4px}
+.fuelbar output{font-family:var(--mono);font-size:18px;color:var(--corona);min-width:90px;text-align:right}
+.legs{list-style:none;counter-reset:leg;margin:0;padding:0;display:grid;gap:10px}
+.legs .leg-item{counter-increment:leg;display:flex;align-items:center;gap:14px;background:var(--card);
+  border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+.legs .leg-item::before{content:counter(leg);font-family:var(--mono);font-size:13px;color:var(--corona);
+  width:26px;height:26px;flex:none;display:flex;align-items:center;justify-content:center;
+  border:1px solid var(--line-2);border-radius:99px}
+.leg-main{flex:1;min-width:0}
+.leg-name{font-family:var(--display);font-size:16px;letter-spacing:-.01em;display:block}
+.leg-meta{font-family:var(--mono);font-size:11.5px;color:var(--muted);display:block;margin-top:3px}
+.leg-cost{font-family:var(--mono);font-size:17px;color:var(--corona);flex:none}
+.legs-sum{display:flex;justify-content:flex-end;gap:18px;flex-wrap:wrap;margin-top:14px;
+  font-family:var(--mono);font-size:12.5px;color:var(--muted)}
+.legs-sum b{color:var(--text)}
+.legs-sum .tot{color:var(--corona)}
+
+/* spese reali: tabella a inserimento manuale */
+.spese{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
+  border-radius:var(--r);overflow:hidden}
+.spese th,.spese td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+.spese thead th{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--muted);background:var(--card-2);font-weight:400}
+.spese .r{text-align:right}
+.spese tbody tr:last-child td{border-bottom:1px solid var(--line)}
+.spese tfoot td{font-family:var(--mono);border-bottom:0;background:var(--card-2)}
+.sp-foot-lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+#sp-grand{font-size:18px;color:var(--corona)}
+.sp-name{width:100%;min-width:110px;background:transparent;border:1px solid transparent;color:var(--text);
+  font-family:var(--body);font-size:14.5px;padding:6px 8px;border-radius:8px}
+.sp-name:hover,.sp-name:focus{border-color:var(--line-2);background:var(--ink-2);outline:none}
+.sp-add{display:flex;gap:8px;align-items:center}
+.sp-input{width:96px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
+  font-family:var(--mono);font-size:14px;padding:7px 9px;border-radius:8px;text-align:right}
+.sp-btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
+  padding:7px 11px;border-radius:8px;border:1px solid var(--sea);color:var(--sea);background:transparent;cursor:pointer;white-space:nowrap}
+.sp-btn:hover{background:rgba(58,209,190,.12)}
+.sp-total{width:110px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
+  font-family:var(--mono);font-size:15px;padding:7px 9px;border-radius:8px;text-align:right}
+.sp-del{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 6px}
+.sp-del:hover{color:var(--warn)}
+.sp-actions{display:flex;gap:10px;flex-wrap:wrap}
+@media(max-width:560px){
+  .spese th:nth-child(2),.spese td.sp-add{white-space:nowrap}
+  .sp-input{width:74px}
+  .sp-total{width:88px}
+}
 
 /* sticky total */
 .sticky{position:fixed;left:0;right:0;bottom:0;z-index:60;background:rgba(6,9,23,.9);
@@ -355,6 +409,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <a href="#eclissi">Eclissi</a>
   <a href="#extra">Extra</a>
   <a href="#budget">Budget</a>
+  <a href="#spese">Spese</a>
   <a href="#fonti">Fonti</a>
 </div></nav>
 
@@ -619,9 +674,15 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 </div></section>
 
 <section id="tratte"><div class="wrap">
-  <h2><span class="num">Opzioni</span>Autostrada o statali</h2>
-  <p class="sub">L'andata è fissata in autostrada. Restano aperte due scelte: come salire da Saragozza a Santander, e come tornare da Barcellona. Cambia la selezione e il budget in fondo si aggiorna.</p>
-  <div id="routes"></div>
+  <h2><span class="num">Tratte</span>Sempre in autostrada</h2>
+  <p class="sub">I percorsi più veloci, in ordine di viaggio. Il carburante è una stima e si aggiorna con il prezzo alla pompa; i pedaggi sono fissi. Il budget in fondo si aggiorna di conseguenza.</p>
+  <div class="fuelbar">
+    <label for="fuel">Prezzo carburante</label>
+    <input type="range" id="fuel" min="1.40" max="2.20" step="0.01" value="1.75">
+    <output id="fuel-out">1,75 €/L</output>
+  </div>
+  <ol class="legs" id="routes"></ol>
+  <div class="legs-sum" id="legs-sum"></div>
 </div></section>
 
 <section id="eclissi"><div class="wrap">
@@ -674,6 +735,20 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <input type="number" id="people" min="1" max="6" value="2">
       <button class="btn" id="reset">Ripristina valori del foglio</button>
     </div>
+  </div>
+</div></section>
+
+<section id="spese"><div class="wrap">
+  <h2><span class="num">Spese</span>Quanto stiamo spendendo davvero</h2>
+  <p class="sub">Aggiungi mano a mano quello che paghi: scrivi l'importo e premi «Aggiungi», si somma alla voce. Il totale a destra resta modificabile se sbagli. I dati restano salvati su questo dispositivo.</p>
+  <table class="spese">
+    <thead><tr><th>Voce</th><th>Aggiungi spesa</th><th class="r">Totale</th><th aria-label="rimuovi"></th></tr></thead>
+    <tbody id="sp-body"></tbody>
+    <tfoot><tr><td colspan="2" class="sp-foot-lab">Totale speso</td><td class="r" id="sp-grand">€ 0,00</td><td></td></tr></tfoot>
+  </table>
+  <div class="sp-actions">
+    <button class="btn" id="sp-add-row">+ Aggiungi voce</button>
+    <button class="btn ghost" id="sp-reset">Azzera tutto</button>
   </div>
 </div></section>
 
@@ -743,21 +818,16 @@ const EUR = n => new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',
 const EUR2 = n => new Intl.NumberFormat('it-IT',{style:'currency',currency:'EUR',minimumFractionDigits:2}).format(n);
 
 /* ---------- dati ---------- */
-const ROUTES = [
-  {id:'pd_nice', name:'Padova → Montferrat, con sosta a Castellero', opts:[
-    {k:'fast', label:'Autostrada', cost:107, meta:'5h 24min · 55 carburante + 51 pedaggi'}], def:'fast'},
-  {id:'nice_bcn', name:'Nizza → Costa Brava → Barcellona', opts:[
-    {k:'fast', label:'Autostrada', cost:125, meta:'6h 40min · 67 carburante + 57 pedaggi'}], def:'fast'},
-  {id:'bcn_zgz', name:'Barcellona → Saragozza (9 ago)', opts:[
-    {k:'one', label:'AP-2, senza pedaggio dal 2021', cost:35, meta:'~3h 15min · ~310 km · stima carburante'}], def:'one'},
-  {id:'zgz_san', name:'Saragozza → Santander (10 ago)', opts:[
-    {k:'free', label:'N-232 e A-67 via Burgos', cost:45, meta:'~5h · nessun pedaggio · stima'},
-    {k:'ap68', label:'AP-68',                    cost:62, meta:'~4h 15min · ~40 carburante + ~22 pedaggi · stima'}], def:'ap68'},
-  {id:'san_bcn', name:'Santander → Barcellona (13 ago)', opts:[
-    {k:'one', label:'Ritorno diretto', cost:70, meta:'8h 24min · 70 carburante, zero pedaggi'}], def:'one'},
-  {id:'bcn_pd', name:'Barcellona → Padova (rientro)', opts:[
-    {k:'eco',  label:'Statali',    cost:142, meta:'~20h · 80 + 62'},
-    {k:'fast', label:'Autostrada', cost:232, meta:'~12h · 125 + 107'}], def:'fast'}
+// Tratte più veloci (autostrada), in ordine di viaggio. `fuel` è la stima
+// carburante al prezzo base FUEL_BASE; `toll` è il pedaggio (fisso).
+const FUEL_BASE = 1.75;   // €/L di riferimento delle stime
+const LEGS = [
+  {id:'pd_nice', name:'Padova → Castellero → Montferrat', time:'5h 24min', fuel:55, toll:51},
+  {id:'nice_bcn', name:'Nizza → Costa Brava → Barcellona', time:'6h 40min', fuel:67, toll:57},
+  {id:'bcn_zgz', name:'Barcellona → Saragozza', time:'~3h 15min · AP-2 senza pedaggio', fuel:35, toll:0},
+  {id:'zgz_san', name:'Saragozza → Santander (AP-68)', time:'~4h 15min', fuel:40, toll:22},
+  {id:'san_bcn', name:'Santander → Barcellona', time:'8h 24min', fuel:70, toll:0},
+  {id:'bcn_pd', name:'Barcellona → Padova (rientro)', time:'~12h', fuel:125, toll:107}
 ];
 
 const STAYS = [
@@ -785,33 +855,42 @@ const ACTS = [
   {id:'pals',   lab:'Ruta Pals gòtic', note:'3 ago · passeggiata 40 min · prenotazione da chiarire', v:0}
 ];
 
-const state = {routes:{}, stays:{}, food:{}, acts:{}, actsOn:{}, people:2};
-ROUTES.forEach(r=>state.routes[r.id]=r.def);
+const state = {fuelPrice:FUEL_BASE, stays:{}, food:{}, acts:{}, actsOn:{}, people:2};
 STAYS.forEach(s=>state.stays[s.id]=s.v);
 FOOD.forEach(f=>state.food[f.id]=f.v);
 ACTS.forEach(a=>{state.acts[a.id]=a.v; state.actsOn[a.id]=false;});
 
-/* ---------- render tratte ---------- */
-const routesEl = document.getElementById('routes');
-ROUTES.forEach(r=>{
-  const box = document.createElement('div');
-  box.className = 'route';
-  box.innerHTML = `<div class="rt-head"><b>${r.name}</b></div>
-    <div class="opts">${r.opts.map(o=>`
-      <label class="opt${o.k===r.def?' sel':''}${r.opts.length===1?' single':''}">
-        <input type="radio" name="${r.id}" value="${o.k}" ${o.k===r.def?'checked':''}>
-        <span class="ol"><span class="name">${o.label}</span><span class="price">${EUR(o.cost)}</span></span>
-        <span class="meta">${o.meta}</span>
-      </label>`).join('')}</div>`;
-  routesEl.appendChild(box);
-  box.querySelectorAll('input[type=radio]').forEach(inp=>{
-    inp.addEventListener('change',()=>{
-      box.querySelectorAll('.opt').forEach(l=>l.classList.remove('sel'));
-      inp.closest('.opt').classList.add('sel');
-      state.routes[r.id]=inp.value; compute();
-    });
-  });
+/* ---------- render tratte (lista ordinata + slider carburante) ---------- */
+const legsEl = document.getElementById('routes');
+const fuelInput = document.getElementById('fuel');
+const fuelOut = document.getElementById('fuel-out');
+const legsSumEl = document.getElementById('legs-sum');
+
+const fuelFactor = () => state.fuelPrice / FUEL_BASE;
+const legFuel = l => Math.round(l.fuel * fuelFactor());   // € carburante al prezzo attuale
+const legCost = l => legFuel(l) + l.toll;
+
+function renderLegs(){
+  legsEl.innerHTML = LEGS.map(l=>`
+    <li class="leg-item">
+      <span class="leg-main">
+        <span class="leg-name">${l.name}</span>
+        <span class="leg-meta">${l.time} · ${legFuel(l)} € carburante${l.toll?` + ${l.toll} € pedaggi`:' · nessun pedaggio'}</span>
+      </span>
+      <span class="leg-cost">${EUR(legCost(l))}</span>
+    </li>`).join('');
+  const fuel = LEGS.reduce((a,l)=>a+legFuel(l),0);
+  const toll = LEGS.reduce((a,l)=>a+l.toll,0);
+  legsSumEl.innerHTML = `<span>Carburante <b>${EUR(fuel)}</b></span><span>Pedaggi <b>${EUR(toll)}</b></span><span class="tot">Totale tratte <b>${EUR(fuel+toll)}</b></span>`;
+}
+
+fuelInput.addEventListener('input', e=>{
+  state.fuelPrice = +e.target.value;
+  fuelOut.textContent = state.fuelPrice.toFixed(2).replace('.', ',') + ' €/L';
+  renderLegs();
+  compute();
 });
+renderLegs();
 
 /* ---------- render attività ---------- */
 const actsEl = document.getElementById('acts');
@@ -832,8 +911,8 @@ function money(id,val,group,pp){
   return `<span class="money"><input type="number" min="0" step="${pp?1:5}" value="${val}" data-g="${group}" data-id="${id}"><span>${pp?'€/pers.':'€'}</span></span>`;
 }
 rowsEl.innerHTML = `
-  <div class="row head"><span>Tratte</span><span class="val" id="sum-routes"></span></div>
-  ${ROUTES.map(r=>`<div class="row"><span class="lab">${r.name}<small id="m-${r.id}"></small></span><span class="val" id="v-${r.id}"></span></div>`).join('')}
+  <div class="row head"><span>Tratte · autostrada</span><span class="val" id="sum-routes"></span></div>
+  ${LEGS.map(l=>`<div class="row"><span class="lab">${l.name}<small id="m-${l.id}"></small></span><span class="val" id="v-${l.id}"></span></div>`).join('')}
   <div class="row head"><span>Alloggi</span><span class="val" id="sum-stays"></span></div>
   ${STAYS.map(s=>`<div class="row"><span class="lab">${s.lab}<small>${s.note}</small></span>${money(s.id,s.v,'stays',s.pp)}</div>`).join('')}
   <div class="row head"><span>Cibo e varie</span><span class="val" id="sum-food"></span></div>
@@ -854,11 +933,11 @@ document.getElementById('reset').addEventListener('click',()=>location.reload())
 /* ---------- calcolo ---------- */
 function compute(){
   let routes=0;
-  ROUTES.forEach(r=>{
-    const o = r.opts.find(x=>x.k===state.routes[r.id]);
-    routes += o.cost;
-    document.getElementById('v-'+r.id).textContent = EUR(o.cost);
-    document.getElementById('m-'+r.id).textContent = o.label.toLowerCase()+' · '+o.meta.split('·')[0].trim();
+  LEGS.forEach(l=>{
+    const c = legCost(l);
+    routes += c;
+    document.getElementById('v-'+l.id).textContent = EUR(c);
+    document.getElementById('m-'+l.id).textContent = `${l.time.split('·')[0].trim()} · ${legFuel(l)} € benzina${l.toll?' + '+l.toll+' € pedaggi':''}`;
   });
   const stays = STAYS.reduce((a,s)=>a+state.stays[s.id]*(s.pp?state.people:1),0);
   const food  = Object.values(state.food).reduce((a,b)=>a+b,0);
@@ -880,6 +959,86 @@ function compute(){
   ['pp','pp2'].forEach(i=>document.getElementById(i).textContent = EUR2(pp));
 }
 compute();
+
+/* ---------- spese reali: tabella a inserimento manuale, salvata sul dispositivo ---------- */
+(function(){
+  const KEY = 'eclissi-spese-v1';
+  const DEFAULT = ['Benzina','Pedaggi','Alloggi','Cibo','Musei ed extra','Varie'];
+  const body = document.getElementById('sp-body');
+  const grandEl = document.getElementById('sp-grand');
+  if(!body) return;
+
+  let data;
+  try { data = JSON.parse(localStorage.getItem(KEY)); } catch(e){ data = null; }
+  if(!Array.isArray(data) || !data.length) data = DEFAULT.map(n=>({name:n, total:0}));
+
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify(data)); } catch(e){} };
+  const fmt  = n => EUR2(n||0);
+
+  function grand(){
+    const g = data.reduce((a,r)=>a+(+r.total||0),0);
+    grandEl.textContent = fmt(g);
+  }
+
+  function render(){
+    body.innerHTML = data.map((r,i)=>`
+      <tr data-i="${i}">
+        <td><input class="sp-name" value="${(r.name||'').replace(/"/g,'&quot;')}" aria-label="voce"></td>
+        <td class="sp-add">
+          <input class="sp-input" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" aria-label="importo da aggiungere">
+          <button class="sp-btn" type="button">Aggiungi</button>
+        </td>
+        <td class="r"><input class="sp-total" type="number" min="0" step="0.01" value="${+r.total||0}" aria-label="totale voce"></td>
+        <td class="r"><button class="sp-del" type="button" title="Rimuovi voce" aria-label="rimuovi voce">×</button></td>
+      </tr>`).join('');
+    grand();
+  }
+
+  // Delegazione eventi sul corpo tabella
+  body.addEventListener('click', e=>{
+    const tr = e.target.closest('tr'); if(!tr) return;
+    const i = +tr.dataset.i;
+    if(e.target.classList.contains('sp-btn')){
+      const inp = tr.querySelector('.sp-input');
+      const add = +inp.value || 0;
+      if(add){
+        data[i].total = (+data[i].total||0) + add;
+        tr.querySelector('.sp-total').value = data[i].total;
+        inp.value = '';
+        save(); grand();
+      }
+      inp.focus();
+    } else if(e.target.classList.contains('sp-del')){
+      data.splice(i,1); save(); render();
+    }
+  });
+  // Invio nell'input importo = Aggiungi
+  body.addEventListener('keydown', e=>{
+    if(e.key==='Enter' && e.target.classList.contains('sp-input')){
+      e.preventDefault();
+      e.target.closest('tr').querySelector('.sp-btn').click();
+    }
+  });
+  // Modifiche manuali a totale e nome voce
+  body.addEventListener('input', e=>{
+    const tr = e.target.closest('tr'); if(!tr) return;
+    const i = +tr.dataset.i;
+    if(e.target.classList.contains('sp-total')){ data[i].total = +e.target.value||0; save(); grand(); }
+    else if(e.target.classList.contains('sp-name')){ data[i].name = e.target.value; save(); }
+  });
+
+  document.getElementById('sp-add-row').addEventListener('click', ()=>{
+    data.push({name:'Nuova voce', total:0}); save(); render();
+    const last = body.querySelector('tr:last-child .sp-name'); if(last) last.focus();
+  });
+  document.getElementById('sp-reset').addEventListener('click', ()=>{
+    if(confirm('Azzerare tutte le spese inserite?')){
+      data = DEFAULT.map(n=>({name:n, total:0})); save(); render();
+    }
+  });
+
+  render();
+})();
 
 /* ---------- dati luoghi (mappa + galleria) ---------- */
 const SLEEP = [
