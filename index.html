@@ -313,6 +313,21 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .pl-lnk:hover{border-color:var(--corona);color:var(--corona)}
 @keyframes plflash{0%{box-shadow:0 0 0 2px var(--corona)}100%{box-shadow:0 0 0 2px transparent}}
 .pl-flash{animation:plflash 1.5s ease-out}
+.pl-pop{position:fixed;z-index:70;width:min(280px,calc(100vw - 16px));background:var(--card-2);
+  border:1px solid var(--line-2);border-radius:12px;box-shadow:0 14px 44px rgba(0,0,0,.6);overflow:hidden}
+.pl-pop[hidden]{display:none}
+.pl-pop-ph{height:120px;background:linear-gradient(135deg,#16203F,#0B1128);display:flex;align-items:center;justify-content:center}
+.pl-pop-ph img{width:100%;height:100%;object-fit:cover;display:block}
+.pl-pop-noimg{font-family:var(--mono);font-size:11px;color:var(--muted);letter-spacing:.1em;text-transform:uppercase}
+.pl-pop-body{padding:12px 14px}
+.pl-pop-body b{font-family:var(--display);font-size:16px;display:block;letter-spacing:-.01em;line-height:1.2}
+.pl-pop-meta{font-family:var(--mono);font-size:11px;color:var(--corona);display:block;margin-top:3px;letter-spacing:.06em}
+.pl-pop-actions{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
+.note{background:var(--card);border:1px solid var(--line-2);border-left:3px solid var(--corona);
+  border-radius:12px;padding:14px 16px;font-size:14px;color:var(--text)}
+.note h4{color:var(--corona)}
+.note p{color:var(--muted)}
+.note a{color:var(--sea)}
 .sp-total{width:100%;min-width:0;height:38px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:0 9px;border-radius:8px;text-align:right}
 .sp-actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -697,19 +712,27 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <details class="day">
     <summary>
       <span class="when">4 ago<small>Costa Brava · entroterra</small></span>
-      <span class="tt">Ultima cala, borghi e Barcellona</span>
+      <span class="tt">Ultima spiaggia, Peratallada, poi Barcellona</span>
       <span class="chev" aria-hidden="true"></span>
     </summary>
     <div class="inner">
-<p>Check-out e discesa verso Barcellona, ma senza fretta: una nuotata di prima mattina, i due borghi di pietra dell'entroterra, poi l'autostrada. Sono ~1h 40min fino a Barcellona, quindi il pomeriggio basta.</p>
+<p>Check-out la mattina, un'ultima giornata di mare, aperitivo e cena a Peratallada, poi la discesa serale su Barcellona (~1h 45min). In città l'auto resta ferma per cinque giorni: la parte più delicata è dove lasciarla (occhio alla ZBE, sotto).</p>
       <ul class="sched">
-        <li><span class="h">08:30</span><span class="w"><b>Platja de l'Almadrava</b><small>Ultima nuotata prima di lasciare la costa: spiaggia lunga e tranquilla, comoda con l'auto già carica.</small></span></li>
-        <li><span class="h">10:00</span><span class="w"><b>Check-out da Camallera</b><small>Si lascia la pensione e si punta verso l'interno.</small></span></li>
-        <li><span class="h">10:45</span><span class="w"><b>Peratallada</b><small>Borgo medievale scavato nella roccia, tra i più belli della Catalogna: vicoli, archi e mura. Un'ora a piedi basta.</small></span></li>
-        <li><span class="h">12:15</span><span class="w"><b>Monells</b><small>30 min dall'hotel. Piazza porticata da cartolina, tranquillo. Buono per il pranzo prima di mettersi in strada.</small></span></li>
-        <li><span class="h">14:30</span><span class="w"><b>Partenza per Barcellona</b><small>~1h 40min in autostrada. Arrivo nel pomeriggio, primo giorno in città.</small></span></li>
+        <li><span class="h">09:00</span><span class="w"><b>Check-out da Camallera</b><small>Subito la mattina, si liberano le valigie e si carica l'auto prima di partire.</small></span></li>
+        <li><span class="h">10:00</span><span class="w"><b>Ultima spiaggia — a scelta</b><small>Due opzioni: <b>Aiguaxelida</b>, più a nord tra Tamariu e Begur (~53 min dall'hotel), cala di rocce e pini, acqua trasparente; oppure <b>Cala Estreta</b>, appartata e selvaggia, davanti a una pineta e raggiungibile solo a piedi.</small></span></li>
+        <li><span class="h">19:00</span><span class="w"><b>Peratallada — aperitivo e cena</b><small>~30 min dalla spiaggia. Borgo medievale scavato nella roccia, tra i più belli della Catalogna: aperitivo tra i vicoli e cena in una delle terrazze dentro le mura. In estate meglio prenotare.</small></span></li>
+        <li><span class="h">~22:00</span><span class="w"><b>Partenza per Barcellona</b><small>~1h 45min in autostrada, arrivo in nottata: comodo perché la ZBE di giorno è più restrittiva e di sera/notte non è attiva.</small></span></li>
       </ul>
-      <p style="margin-top:12px">Serata alternativa in zona, se restate un po' di più: <a href="https://lasantamarket.com/" target="_blank" rel="noopener">La Santa Market</a> a Santa Cristina d'Aro, con concerti e serate.</p>
+      <div class="note" style="margin-top:14px">
+        <h4 style="margin:0 0 8px;font-family:var(--display);font-size:16px">Parcheggio e ZBE a Barcellona</h4>
+        <p style="margin:0 0 8px">L'auto con <b>targa estera</b> deve registrarsi nel registro metropolitano della <b>ZBE «Rondes de Barcelona»</b> (gratis, su <a href="https://zberegistre.ambmobilitat.cat/es" target="_blank" rel="noopener">zberegistre.ambmobilitat.cat</a>) per poter circolare — la zona è attiva <b>lun–ven 7:00–20:00</b>; di notte e nei weekend no. Avere un ospite o il padrón a Barcellona <b>non cambia nulla</b>: l'autorizzazione è legata al veicolo, non alla persona. Senza registrazione la multa è di 200 €.</p>
+        <p style="margin:0">Dove lasciarla (in città non serve per 5 giorni):</p>
+        <ul class="spots" style="margin-top:6px">
+          <li><b>Montjuïc</b> <span>· qualche posto libero in strada, ma guarda i colori dell'Àrea: <b>blu</b> = a pagamento, <b>verde</b> = residenti (permesso non trasferibile all'ospite), <b>bianco/senza strisce</b> = gratis. I posti gratis si riempiono presto, e per arrivarci di giorno serve comunque la ZBE.</span></li>
+          <li><b>Fuori dalla ZBE + treno</b> <span>· lasciare l'auto verso Castelldefels (zona ICFO/UPC) o un'altra fermata delle Rodalies e entrare in città in treno (R2, ~30 min): eviti del tutto la ZBE.</span></li>
+          <li><b>Parcheggio a pagamento</b> <span>· la soluzione senza pensieri, ~20–30 € a notte in un garage (BSM/SABA). Cinque notti ≈ 120–150 €.</span></li>
+        </ul>
+      </div>
     </div>
   </details>
 
@@ -1446,7 +1469,8 @@ const SPOTS = [
   {n:'Cala Estreta', c:[41.8367,3.1633], d:'3 ago · alt.', k:'d3', p:'gratis', note:'Alternativa selvaggia: cala appartata, anche naturista, davanti a una pineta. Solo a piedi.'},
   {n:'Pals', c:[41.9683,3.1478], d:'3 ago · 18:30', k:'d3', p:'gratis', note:'Borgo murato, Torre de les Hores, riso dei campi allagati. Ruta gòtic 40 min. Cena da El Pedró: arròs a la cassola.', u:'https://www.elxiuletdepals.com/es/Ruta-Pals-gotico', w:['it:Pals','es:Pals','ca:Pals']},
   {n:'Platja de l\'Almadrava', c:[42.2497,3.1583], d:'4 ago · 08:30', k:'d4', p:'gratis', note:'Ultima nuotata prima di Barcellona. Spiaggia lunga e tranquilla.'},
-  {n:'Peratallada', c:[41.9836,3.0725], d:'4 ago · 10:45', k:'d4', p:'gratis', note:'Borgo medievale scavato nella roccia, tra i più belli della Catalogna.', w:['es:Peratallada','ca:Peratallada']},
+  {n:'Aiguaxelida', c:[41.9245,3.2098], d:'4 ago · spiaggia', k:'d4', p:'gratis', note:'Cala di rocce e pini tra Tamariu e Begur, ~53 min dall\'hotel: acqua trasparente, piccola e appartata. L\'opzione più a nord per l\'ultima nuotata.', w:['ca:Aiguaxelida']},
+  {n:'Peratallada', c:[41.9836,3.0725], d:'4 ago · sera', k:'d4', p:'gratis', note:'Borgo medievale scavato nella roccia, tra i più belli della Catalogna. Aperitivo e cena tra vicoli, archi e mura.', w:['es:Peratallada','ca:Peratallada']},
   {n:'Monells', c:[41.9797,2.9714], d:'4 ago · 12:15', k:'d4', p:'gratis', note:'Piazza porticata da cartolina. Pranzo prima di partire per Barcellona.', w:['es:Monells','ca:Monells']},
   {n:'La Santa Market', c:[41.8133,2.9994], d:'serata alt.', k:'d3', p:'da verificare', note:'Santa Cristina d\'Aro. Concerti e serate, se restate di più.', w:['ca:Santa Cristina d\'Aro','es:Santa Cristina de Aro']}
 ];
@@ -1517,18 +1541,44 @@ function openFotoCard(slug){
   card.classList.remove('pl-flash'); void card.offsetWidth; card.classList.add('pl-flash');
   return true;
 }
+// Popover ancorato al nome del luogo: foto + azioni (mappa, Google Maps, sito, Luoghi)
+const plPop = document.createElement('div');
+plPop.className = 'pl-pop'; plPop.hidden = true;
+document.body.appendChild(plPop);
+function buildPop(i){
+  const p = SPOTS[i];
+  const img = p.img ? `<img src="${p.img}" alt="">` : `<span class="pl-pop-noimg">${p.w?'foto in arrivo':'nessuna foto'}</span>`;
+  const site = (p.u && !isGmapLink(p.u)) ? `<a class="pl-lnk" href="${p.u}" target="_blank" rel="noopener">🔗 Sito</a>` : '';
+  return `<div class="pl-pop-ph">${img}</div><div class="pl-pop-body"><b>${p.n}</b><span class="pl-pop-meta">${p.d||''}${p.p?' · '+p.p:''}</span><div class="pl-pop-actions"><a class="pl-lnk" href="#mappa" data-map="${i}">🗺️ Mappa</a><a class="pl-lnk" href="${gmapsUrl(p)}" target="_blank" rel="noopener">📍 Google Maps</a>${site}<a class="pl-lnk" href="#place-${SLUG_OF[i]}">📷 Luoghi</a></div></div>`;
+}
+function showPop(link){
+  const i = +link.dataset.i; if(isNaN(i)) return;
+  plPop.innerHTML = buildPop(i);
+  plPop.style.visibility = 'hidden'; plPop.hidden = false;
+  const r = link.getBoundingClientRect(), pw = plPop.offsetWidth, ph = plPop.offsetHeight;
+  const left = Math.max(8, Math.min(r.left + r.width/2 - pw/2, innerWidth - pw - 8));
+  let top = r.bottom + 8; if(top + ph > innerHeight - 8) top = Math.max(8, r.top - ph - 8);
+  plPop.style.left = left+'px'; plPop.style.top = top+'px'; plPop.style.visibility = 'visible';
+}
+function hidePop(){ plPop.hidden = true; }
+
 document.addEventListener('click', e=>{
-  const a = e.target.closest('a'); if(!a) return;
+  const a = e.target.closest('a');
+  if(a && a.classList.contains('pl')){ e.preventDefault(); showPop(a); return; }   // apre il popover
+  if(!e.target.closest('.pl-pop')) hidePop();                                       // clic fuori: chiude
+  if(!a) return;
   const href = a.getAttribute('href') || '';
-  if(href.startsWith('#place-')){                     // → card foto
-    if(openFotoCard(href.slice(7))) e.preventDefault();
-  } else if(a.dataset.map !== undefined){             // → marker sulla mappa
-    e.preventDefault();
+  if(href.startsWith('#place-')){ if(openFotoCard(href.slice(7))) e.preventDefault(); hidePop(); }
+  else if(a.dataset.map !== undefined){
+    e.preventDefault(); hidePop();
     const el = document.getElementById('mappa'); if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
     const i = +a.dataset.map;
     if(window.__openSpotOnMap) setTimeout(()=>window.__openSpotOnMap(i), 450);
   }
 });
+addEventListener('keydown', e=>{ if(e.key==='Escape') hidePop(); });
+addEventListener('scroll', hidePop, {passive:true});
+addEventListener('resize', hidePop);
 
 // Rende cliccabili i nomi dei luoghi citati nell'itinerario (→ foto, con pin verso la mappa)
 (function(){
@@ -1536,14 +1586,14 @@ document.addEventListener('click', e=>{
   const esc = s => s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
   const entries = SPOTS.map((p,i)=>({name:p.n, i, slug:SLUG_OF[i], n:norm(p.n)}))
     .sort((a,b)=>b.name.length-a.name.length);   // match più lungo prima
-  document.querySelectorAll('#itinerario .sched .w > b, #itinerario .spots li > b').forEach(b=>{
+  document.querySelectorAll('#itinerario .sched .w b, #itinerario .spots li b').forEach(b=>{
     if(b.querySelector('a')) return;
     const raw = b.textContent, low = norm(raw);
     for(const e of entries){
       const idx = low.indexOf(e.n);
       if(idx >= 0){
         const before = raw.slice(0, idx), match = raw.slice(idx, idx+e.name.length), after = raw.slice(idx+e.name.length);
-        b.innerHTML = `${esc(before)}<a class="pl" href="#place-${e.slug}">${esc(match)}</a><a class="pl-pin" href="#mappa" data-map="${e.i}" title="Sulla mappa" aria-label="Sulla mappa">🗺️</a><a class="pl-pin" href="${gmapsUrl(SPOTS[e.i])}" target="_blank" rel="noopener" title="Apri su Google Maps" aria-label="Apri su Google Maps">📍</a>${esc(after)}`;
+        b.innerHTML = `${esc(before)}<a class="pl" href="#place-${e.slug}" data-i="${e.i}">${esc(match)}</a>${esc(after)}`;
         break;
       }
     }
@@ -1614,7 +1664,7 @@ if (window.L) {
     'Mitron Bakery':'🥐', 'Museo Matisse, Nizza':'🖼️', 'Nizza centro':'🏙️', 'Mentone':'🍋',
     'Èze':'🏰', 'Villa Ephrussi de Rothschild':'🏛️', 'Saint-Jean-Cap-Ferrat':'🌊',
     'Saint-Paul-de-Vence':'🎨', "Antibes e Cap d'Antibes":'🏖️', 'Cadaqués':'🏘️',
-    'Cala Jóncols · vini del mare':'🍷', 'Aiguablava':'🤿', 'Calella de Palafrugell':'🎣',
+    'Cala Jóncols · vini del mare':'🍷', 'Aiguablava':'🤿', 'Aiguaxelida':'🏖️', 'Calella de Palafrugell':'🎣',
     'Pals':'🏰', 'Peratallada':'🏰', 'Monells':'🏘️', 'La Santa Market':'🎵'
   };
   const spotEmoji = p => SPOT_EMOJI[p.n] || (/platja|playa|cala|beach/i.test(p.n) ? '🏖️' : '📍');
