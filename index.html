@@ -231,8 +231,8 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .sp-add{display:flex;gap:8px;align-items:center}
 .sp-input{width:96px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
   font-family:var(--mono);font-size:14px;padding:7px 9px;border-radius:8px;text-align:right}
-.sp-btn{font-family:var(--mono);font-size:11px;letter-spacing:.08em;text-transform:uppercase;
-  padding:7px 11px;border-radius:8px;border:1px solid var(--sea);color:var(--sea);background:transparent;cursor:pointer;white-space:nowrap}
+.sp-btn{flex:none;width:38px;height:36px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:20px;line-height:1;border-radius:8px;border:1px solid var(--sea);color:var(--sea);background:transparent;cursor:pointer}
 .sp-btn:hover{background:rgba(58,209,190,.12)}
 .sp-total{width:110px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:7px 9px;border-radius:8px;text-align:right}
@@ -257,11 +257,11 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 @media(max-width:560px){
   .spese th,.spese td{padding:9px 8px}
   .spese td.sp-add{white-space:nowrap}
-  .sp-name{min-width:60px;padding:6px 6px}
-  .sp-input{width:52px}
-  .sp-add{gap:5px}
-  .sp-btn{padding:7px 8px;letter-spacing:.02em}
-  .sp-total{width:70px;padding:7px 6px}
+  .sp-name{min-width:96px;padding:6px 6px}
+  .sp-input{width:54px}
+  .sp-add{gap:6px}
+  .sp-btn{width:34px;height:34px;font-size:18px}
+  .sp-total{width:74px;padding:7px 6px}
   .sp-del{padding:2px 3px}
 }
 
@@ -764,7 +764,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <p class="sub">Aggiungi mano a mano quello che paghi: scrivi l'importo e premi «Aggiungi», si somma alla voce. Il totale a destra resta modificabile se sbagli. Attiva la condivisione qui sotto per tenere la tabella allineata tra più telefoni; altrimenti i dati restano solo su questo dispositivo.</p>
   <div class="spese-wrap">
   <table class="spese">
-    <thead><tr><th>Voce</th><th>Aggiungi spesa</th><th class="r">Totale</th><th aria-label="rimuovi"></th></tr></thead>
+    <thead><tr><th>Voce</th><th>Aggiungi</th><th class="r">Totale</th><th aria-label="rimuovi"></th></tr></thead>
     <tbody id="sp-body"></tbody>
     <tfoot><tr><td colspan="2" class="sp-foot-lab">Totale speso</td><td class="r" id="sp-grand">€ 0,00</td><td></td></tr></tfoot>
   </table>
@@ -1027,7 +1027,7 @@ compute();
         <td><input class="sp-name" value="${(r.name||'').replace(/"/g,'&quot;')}" aria-label="voce"></td>
         <td class="sp-add">
           <input class="sp-input" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" aria-label="importo da aggiungere">
-          <button class="sp-btn" type="button">Aggiungi</button>
+          <button class="sp-btn" type="button" title="Aggiungi" aria-label="Aggiungi spesa">+</button>
         </td>
         <td class="r"><input class="sp-total" type="number" min="0" step="0.01" value="${+r.total||0}" aria-label="totale voce"></td>
         <td class="r"><button class="sp-del" type="button" title="Rimuovi voce" aria-label="rimuovi voce">×</button></td>
