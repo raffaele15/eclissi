@@ -215,8 +215,10 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 
 /* spese reali: tabella a inserimento manuale */
 .spese-wrap{overflow-x:auto;-webkit-overflow-scrolling:touch;border-radius:var(--r)}
-.spese{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
+.spese{width:100%;table-layout:fixed;border-collapse:collapse;background:var(--card);border:1px solid var(--line);
   border-radius:var(--r);overflow:hidden}
+.spese .c-add{width:158px}
+.spese .c-tot{width:124px}
 .spese th,.spese td{padding:11px 14px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
 .spese thead th{font-family:var(--mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
   color:var(--muted);background:var(--card-2);font-weight:400}
@@ -225,19 +227,17 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .spese tfoot td{font-family:var(--mono);border-bottom:0;background:var(--card-2)}
 .sp-foot-lab{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
 #sp-grand{font-size:18px;color:var(--corona)}
-.sp-name{width:100%;min-width:110px;background:transparent;border:1px solid transparent;color:var(--text);
+.sp-name{width:100%;min-width:0;background:transparent;border:1px solid transparent;color:var(--text);
   font-family:var(--body);font-size:14.5px;padding:6px 8px;border-radius:8px}
 .sp-name:hover,.sp-name:focus{border-color:var(--line-2);background:var(--ink-2);outline:none}
 .sp-add{display:flex;gap:8px;align-items:center}
-.sp-input{width:96px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
+.sp-input{flex:1;min-width:0;width:auto;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
   font-family:var(--mono);font-size:14px;padding:7px 9px;border-radius:8px;text-align:right}
 .sp-btn{flex:none;width:38px;height:36px;display:inline-flex;align-items:center;justify-content:center;
   font-size:20px;line-height:1;border-radius:8px;border:1px solid var(--sea);color:var(--sea);background:transparent;cursor:pointer}
 .sp-btn:hover{background:rgba(58,209,190,.12)}
-.sp-total{width:110px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
+.sp-total{width:100%;min-width:0;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:7px 9px;border-radius:8px;text-align:right}
-.sp-del{border:0;background:transparent;color:var(--muted);cursor:pointer;font-size:18px;line-height:1;padding:2px 6px}
-.sp-del:hover{color:var(--warn)}
 .sp-actions{display:flex;gap:10px;flex-wrap:wrap}
 .sp-sync{margin-top:16px;border:1px solid var(--line);border-radius:12px;background:var(--card);overflow:hidden}
 .sp-sync>summary{list-style:none;cursor:pointer;display:flex;align-items:center;gap:10px;padding:13px 16px;
@@ -256,13 +256,12 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .sp-sync-body .sp-actions{margin-top:14px}
 @media(max-width:560px){
   .spese th,.spese td{padding:9px 8px}
-  .spese td.sp-add{white-space:nowrap}
-  .sp-name{min-width:96px;padding:6px 6px}
-  .sp-input{width:54px}
+  .spese .c-add{width:118px}
+  .spese .c-tot{width:90px}
+  .sp-name{padding:6px 6px}
   .sp-add{gap:6px}
   .sp-btn{width:34px;height:34px;font-size:18px}
-  .sp-total{width:74px;padding:7px 6px}
-  .sp-del{padding:2px 3px}
+  .sp-total{padding:7px 6px}
 }
 
 /* sticky total */
@@ -764,9 +763,10 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <p class="sub">Aggiungi mano a mano quello che paghi: scrivi l'importo e premi «Aggiungi», si somma alla voce. Il totale a destra resta modificabile se sbagli. Attiva la condivisione qui sotto per tenere la tabella allineata tra più telefoni; altrimenti i dati restano solo su questo dispositivo.</p>
   <div class="spese-wrap">
   <table class="spese">
-    <thead><tr><th>Voce</th><th>Aggiungi</th><th class="r">Totale</th><th aria-label="rimuovi"></th></tr></thead>
+    <colgroup><col class="c-voce"><col class="c-add"><col class="c-tot"></colgroup>
+    <thead><tr><th>Voce</th><th>Aggiungi</th><th class="r">Totale</th></tr></thead>
     <tbody id="sp-body"></tbody>
-    <tfoot><tr><td colspan="2" class="sp-foot-lab">Totale speso</td><td class="r" id="sp-grand">€ 0,00</td><td></td></tr></tfoot>
+    <tfoot><tr><td colspan="2" class="sp-foot-lab">Totale speso</td><td class="r" id="sp-grand">€ 0,00</td></tr></tfoot>
   </table>
   </div>
   <div class="sp-actions">
@@ -1030,7 +1030,6 @@ compute();
           <button class="sp-btn" type="button" title="Aggiungi" aria-label="Aggiungi spesa">+</button>
         </td>
         <td class="r"><input class="sp-total" type="number" min="0" step="0.01" value="${+r.total||0}" aria-label="totale voce"></td>
-        <td class="r"><button class="sp-del" type="button" title="Rimuovi voce" aria-label="rimuovi voce">×</button></td>
       </tr>`).join('');
     grand();
   }
@@ -1048,8 +1047,6 @@ compute();
         grand(); touched();
       }
       inp.focus();
-    } else if(e.target.classList.contains('sp-del')){
-      items().splice(i,1); render(); touched();
     }
   });
   body.addEventListener('keydown', e=>{
