@@ -276,6 +276,31 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .pk-item-add{flex:none;width:34px;height:34px;border-radius:8px;border:1px solid var(--sea);background:transparent;
   color:var(--sea);cursor:pointer;font-size:20px;line-height:1;display:inline-flex;align-items:center;justify-content:center}
 .pk-item-add:hover{background:rgba(58,209,190,.12)}
+
+/* eclissi: infografiche e circostanze */
+.ecl-h{font-family:var(--display);font-size:20px;margin:24px 0 12px;letter-spacing:-.01em}
+.ecl-timeline{display:grid;margin:4px 0 12px}
+.ecl-phase{display:grid;grid-template-columns:104px 1fr;gap:12px;padding:8px 0;border-bottom:1px solid var(--line)}
+.ecl-phase:last-child{border-bottom:0}
+.ecl-phase b{font-family:var(--mono);color:var(--corona);font-size:13px}
+.ecl-phase.hot b{color:var(--corona-hot)}
+.ecl-phase span{color:var(--muted);font-size:13.5px;line-height:1.4}
+.ecl-horizon{width:100%;height:auto;display:block;border-radius:10px;margin-bottom:12px;border:1px solid var(--line)}
+.ecl-cmp{display:grid;gap:14px;margin:14px 0 6px}
+.ecl-cmp-row{display:grid;grid-template-columns:130px 1fr;gap:12px;align-items:center}
+.ecl-cmp-place{font-family:var(--display);font-weight:700;font-size:15px;line-height:1.15}
+.ecl-cmp-place small{display:block;color:var(--muted);font-family:var(--mono);font-size:11px;font-weight:400;margin-top:2px}
+.ecl-metric{display:flex;align-items:center;gap:8px;margin:4px 0;font-family:var(--mono);font-size:11.5px;color:var(--muted)}
+.ecl-metric .lab{width:58px;flex:none}
+.ecl-metric .bar{flex:1;height:7px;background:var(--card-2);border-radius:99px;overflow:hidden}
+.ecl-metric .bar i{display:block;height:100%}
+.ecl-metric .val{width:46px;text-align:right;color:var(--text)}
+.ecl-note{color:var(--muted);font-size:14px;margin-top:12px;line-height:1.5}
+.ecl-spots{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:8px}
+.ecl-spots li{padding-left:16px;position:relative;font-size:14.5px;line-height:1.4}
+.ecl-spots li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:99px;background:var(--corona)}
+.ecl-spots li span{color:var(--muted)}
+@media(max-width:560px){ .ecl-cmp-row{grid-template-columns:1fr} }
 .sp-total{width:100%;min-width:0;height:38px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--corona);
   font-family:var(--mono);font-size:15px;padding:0 9px;border-radius:8px;text-align:right}
 .sp-actions{display:flex;gap:10px;flex-wrap:wrap}
@@ -539,7 +564,6 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 
 <section id="urgente"><div class="wrap">
   <h2><span class="num">Prima di tutto</span>Cose che scadono</h2>
-  <p class="sub">Estratte dal documento di viaggio. Le date di cancellazione sono le uniche voci con una scadenza reale.</p>
   <div class="alert" style="border-color:rgba(255,194,74,.4);background:linear-gradient(180deg,rgba(255,194,74,.10),rgba(255,194,74,.03))">
     <h3 style="color:var(--corona)">Ancora aperto</h3>
     <ul>
@@ -552,7 +576,6 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 
 <section id="itinerario"><div class="wrap">
   <h2 id="dettaglio"><span class="num">Il viaggio</span>Giorno per giorno</h2>
-  <p class="sub">Sedici giorni dal 31 luglio al 15 agosto, perno sull'eclissi del 12. Ogni tappa si apre per il programma ora per ora: tocca quella che ti interessa. Sono tutte chiuse di default.</p>
   <div class="dayctl"><button id="expand-all" class="btn" style="margin-top:0">Apri tutte</button></div>
   <div class="days">
   <details class="day">
@@ -733,7 +756,6 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 
 <section id="mappa"><div class="wrap">
   <h2><span class="num">Mappa</span>Dove si dorme, dove si va</h2>
-  <p class="sub">Ogni punto è cliccabile: giorno, ore di guida dalla tappa precedente e nota. La linea gialla è il percorso in macchina fra le basi notturne; i punti verdi sono le visite, e non seguono per forza l'ordine della linea.</p>
   <div class="filters" id="filters"></div>
   <div id="map"></div>
   <div class="legend">
@@ -748,13 +770,11 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 
 <section id="luoghi"><div class="wrap">
   <h2><span class="num">Luoghi</span>Foto e biglietti</h2>
-  <p class="sub">Ogni tappa con il suo prezzo d'ingresso. Quasi tutto è gratis: si paga solo per i due Dalí, il Matisse, la villa a Cap-Ferrat e la degustazione. Le fotografie arrivano da Wikipedia e Wikimedia Commons.</p>
   <div id="gal"></div>
 </div></section>
 
 <section id="tratte"><div class="wrap">
   <h2><span class="num">Tratte</span>Sempre in autostrada</h2>
-  <p class="sub">I percorsi più veloci, in ordine di viaggio. Il carburante è una stima e si aggiorna con il prezzo alla pompa; i pedaggi sono fissi. Il budget in fondo si aggiorna di conseguenza.</p>
   <div class="fuelbar">
     <label for="fuel">Prezzo carburante</label>
     <input type="range" id="fuel" min="1.40" max="2.20" step="0.01" value="1.75">
@@ -766,7 +786,6 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 
 <section id="eclissi"><div class="wrap">
   <h2><span class="num">12 agosto</span>La totalità</h2>
-  <p class="sub">Il motivo per cui il viaggio risale fino al Cantabrico invece di fermarsi in Catalogna.</p>
   <div class="grid g3">
     <div class="card">
       <h3>Dove</h3>
@@ -784,21 +803,97 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <span class="tag warn">99% ≠ totalità</span>
     </div>
   </div>
+
+  <h3 class="ecl-h">Santander e dintorni</h3>
+  <div class="grid g2">
+    <div class="card">
+      <h3>Le fasi a Santander</h3>
+      <div class="ecl-timeline">
+        <div class="ecl-phase"><b>~19:31</b><span>primo contatto: inizia la fase parziale</span></div>
+        <div class="ecl-phase hot"><b>20:26:51</b><span>inizio della totalità</span></div>
+        <div class="ecl-phase hot"><b>~20:27:24</b><span>massimo dell'eclissi</span></div>
+        <div class="ecl-phase"><b>~20:27:56</b><span>fine della totalità</span></div>
+        <div class="ecl-phase"><b>~21:27</b><span>tramonto del Sole</span></div>
+      </div>
+      <p>Totalità di appena <b>~1 minuto e 5 secondi</b>, un'ora prima del tramonto ma con il Sole già bassissimo sull'orizzonte.</p>
+    </div>
+    <div class="card">
+      <h3>Il Sole sarà bassissimo, verso O-NO</h3>
+      <svg class="ecl-horizon" viewBox="0 0 400 168" role="img" aria-label="Il Sole eclissato basso sull'orizzonte ovest-nordovest, sopra il mare">
+        <defs>
+          <linearGradient id="ecl-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#161a34"/><stop offset="1" stop-color="#3a2836"/></linearGradient>
+          <radialGradient id="ecl-cor" cx="50%" cy="50%" r="50%"><stop offset="42%" stop-color="rgba(255,194,74,.55)"/><stop offset="100%" stop-color="rgba(255,122,61,0)"/></radialGradient>
+        </defs>
+        <rect width="400" height="130" fill="url(#ecl-sky)"/>
+        <rect y="130" width="400" height="38" fill="#0b1428"/>
+        <line x1="0" y1="130" x2="400" y2="130" stroke="#3AD1BE" stroke-opacity=".45"/>
+        <circle cx="128" cy="106" r="36" fill="url(#ecl-cor)"/>
+        <circle cx="128" cy="106" r="15" fill="#FFC24A"/>
+        <circle cx="128" cy="106" r="13" fill="#161a34"/>
+        <line x1="128" y1="121" x2="128" y2="130" stroke="#9199BE" stroke-dasharray="2 2"/>
+        <text x="150" y="110" fill="#E9E9F5" font-size="12" font-family="monospace">~8° sull'orizzonte</text>
+        <text x="10" y="152" fill="#9199BE" font-size="11" font-family="monospace">mare · orizzonte ovest–nordovest</text>
+        <text x="390" y="20" text-anchor="end" fill="#9199BE" font-size="11" font-family="monospace">tramonto ~21:27</text>
+      </svg>
+      <p>Serve un <b>orizzonte libero verso ovest/nord-ovest</b>, meglio sul mare: colline, edifici o foschia bassa possono nascondere del tutto la totalità.</p>
+    </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Conviene spostarsi più a ovest?</h3>
+    <p>Verso Asturie e Galizia il Sole è un po' più alto e — nelle Asturie — la totalità dura quasi il doppio, perché ci si avvicina al centro della fascia. Il prezzo è il meteo: la costa atlantica nord-ovest ha più probabilità di nuvole basse la sera.</p>
+    <div class="ecl-cmp">
+      <div class="ecl-cmp-row">
+        <div class="ecl-cmp-place">Galizia<small>A Coruña</small></div>
+        <div>
+          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:100%;background:var(--corona)"></i></span><span class="val">~12,5°</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:70%;background:var(--sea)"></i></span><span class="val">~76 s</span></div>
+        </div>
+      </div>
+      <div class="ecl-cmp-row">
+        <div class="ecl-cmp-place">Asturie<small>Gijón · Rodiles</small></div>
+        <div>
+          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:82%;background:var(--corona)"></i></span><span class="val">~10°</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:100%;background:var(--sea)"></i></span><span class="val">~108 s</span></div>
+        </div>
+      </div>
+      <div class="ecl-cmp-row">
+        <div class="ecl-cmp-place">Cantabria<small>Santander</small></div>
+        <div>
+          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:64%;background:var(--corona)"></i></span><span class="val">~8°</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:60%;background:var(--sea)"></i></span><span class="val">~65 s</span></div>
+        </div>
+      </div>
+    </div>
+    <p class="ecl-note">In sintesi: le <b>Asturie</b> (Gijón, Villaviciosa, spiaggia di Rodiles) sono il miglior compromesso — totalità più lunga e Sole più alto, a ~1h30–2h da Santander. La Galizia alza ancora il Sole ma accorcia la totalità e rischia più nuvole. Restando a Santander, la cosa più importante è un punto con mare aperto a ovest.</p>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Dove guardarla vicino a Santander</h3>
+    <ul class="ecl-spots">
+      <li><b>Cabo Mayor</b> <span>· Santander, faro e mare aperto: orizzonte ovest libero, il punto più comodo dalla base</span></li>
+      <li><b>Suances — Punta del Dichoso</b> <span>· penisola rocciosa protesa nel Cantabrico, nulla tra te e l'orizzonte ovest</span></li>
+      <li><b>Costa Quebrada / Liencres</b> <span>· scogliere e dune appena a ovest di Santander</span></li>
+      <li><b>Comillas e San Vicente de la Barquera</b> <span>· spiagge aperte all'estremo ovest della Cantabria</span></li>
+      <li><b>Parco naturale di Oyambre</b> <span>· spiagge ampie e orizzonte marino</span></li>
+      <li><b>Peña Cabarga</b> <span>· belvedere in quota sopra la baia, se preferisci guardarla dall'alto</span></li>
+    </ul>
+  </div>
+
   <div class="card" style="margin-top:16px">
     <h3>Sicurezza e logistica</h3>
-    <p>Occhiali certificati <b>ISO 12312-2</b> obbligatori per tutte le fasi parziali; si tolgono solo durante la totalità. L'ultima eclissi totale in Spagna è del 1905, e la Spagna ne avrà un'altra il 2 agosto 2027 — la domanda di alloggi sulla fascia è concentrata su questa data. Verifica la tua posizione esatta sulla mappa dell'<a href="https://astronomia.ign.es/web/guest/eclipses-de-sol-y-luna/eclipse-total-sol-de-12-de-agosto-2026" target="_blank" rel="noopener">Osservatorio Astronomico Nazionale (IGN)</a>.</p>
+    <p>Occhiali certificati <b>ISO 12312-2</b> obbligatori per tutte le fasi parziali; si tolgono solo durante la totalità. L'ultima eclissi totale in Spagna è del 1905, e la Spagna ne avrà un'altra il 2 agosto 2027 — la domanda di alloggi sulla fascia è concentrata su questa data.</p>
+    <p style="margin-top:8px">Dati e orari dall'<a href="https://eclipses.ign.es/eclipse-total-sol-de-12-de-agosto-2026.html" target="_blank" rel="noopener">Istituto Geografico Nazionale (IGN)</a>; luoghi di osservazione da <a href="https://turismodecantabria.com/eclipse-total-de-sol-del-dia-12-de-agosto-de-2026/" target="_blank" rel="noopener">Turismo de Cantabria</a>. Verifica la tua posizione esatta sulla mappa interattiva dell'IGN.</p>
   </div>
 </div></section>
 
 <section id="extra"><div class="wrap">
   <h2><span class="num">Extra</span>Cosa aggiungere al conto</h2>
-  <p class="sub">Spunta quello che vuoi fare: i prezzi sono per persona e modificabili. Entrano subito nel totale.</p>
   <div id="acts"></div>
 </div></section>
 
 <section id="budget"><div class="wrap">
   <h2><span class="num">Stima</span>Spese stimate</h2>
-  <p class="sub">Il preventivo del viaggio, dal foglio di calcolo e con le tratte in autostrada. Tutti i campi sono modificabili.</p>
   <div class="rows" id="rows"></div>
   <div class="est-controls">
     <label for="people">Persone</label>
@@ -814,7 +909,6 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 
 <section id="spese"><div class="wrap">
   <h2><span class="num">Reali</span>Spese effettive</h2>
-  <p class="sub">Aggiungi mano a mano quello che paghi: scrivi l'importo e premi «+», si somma alla voce. Il totale a destra resta modificabile se sbagli. Attiva la condivisione qui sotto per tenere la tabella allineata tra più telefoni; altrimenti i dati restano solo su questo dispositivo.</p>
   <div class="spese-wrap">
   <table class="spese">
     <colgroup><col class="c-voce"><col class="c-add"><col class="c-tot"></colgroup>
@@ -847,7 +941,6 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
 
 <section id="daportare"><div class="wrap">
   <h2><span class="num">Valigia</span>Da portare</h2>
-  <p class="sub">Checklist condivisa, divisa per categoria: spunta man mano. Con «Modifica lista» aggiungi o togli voci e categorie. Attiva la condivisione qui sotto per allinearla tra più telefoni.</p>
   <div class="pk-progress"><div class="pk-bar"><i id="pk-bar-fill"></i></div><span class="pk-count" id="pk-count">0 / 0</span></div>
   <div class="sp-actions">
     <button class="btn" id="pk-edit-toggle" aria-pressed="false">Modifica lista</button>
@@ -1379,12 +1472,10 @@ SPOTS.forEach((p,i)=>{
   if(!galGroups.has(p.k)) galGroups.set(p.k, []);
   galGroups.get(p.k).push(i);
 });
-let galFirst = true;
 for(const [k, idxs] of galGroups){
   const meta = DAY_LABELS[k] || {t:k, s:''};
   const det = document.createElement('details');
-  det.className = 'daygroup';
-  if(galFirst){ det.open = true; galFirst = false; }   // il primo giorno aperto, gli altri collassati
+  det.className = 'daygroup';   // tutti i giorni collassati all'apertura
   det.innerHTML = `<summary>
       <span class="dg-chev">▸</span>
       <span class="dg-txt"><span class="dg-day">${meta.t}</span>${meta.s?`<span class="dg-sub">${meta.s}</span>`:''}</span>
