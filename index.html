@@ -898,15 +898,9 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   </div>
 
   <div class="card" id="ecl-fasi" style="margin-top:16px">
-    <h3>Le fasi a Santander</h3>
-    <div class="ecl-timeline">
-      <div class="ecl-phase"><b>19:31:14</b><span>primo contatto: inizia la fase parziale</span></div>
-      <div class="ecl-phase hot"><b>20:26:50</b><span>inizio della totalità</span></div>
-      <div class="ecl-phase hot"><b>20:27:21</b><span>massimo dell'eclissi</span></div>
-      <div class="ecl-phase"><b>20:27:51</b><span>fine della totalità</span></div>
-      <div class="ecl-phase"><b>21:20:01</b><span>fine della fase parziale (al tramonto)</span></div>
-    </div>
-    <p>Totalità di appena <b>1 minuto e 1 secondo</b>, con il Sole a <b>~9°</b> sull'orizzonte (azimut 282°, ovest-nordovest). Orari e dati dal <a href="https://visualizadores.ign.es/eclipses/" target="_blank" rel="noopener">Visualizador de Eclipses dell'IGN</a>.</p>
+    <h3 id="ecl-fasi-title">Le fasi a Santander</h3>
+    <div class="ecl-timeline" id="ecl-fasi-timeline"></div>
+    <p id="ecl-fasi-note"></p>
   </div>
 
   <div class="card" style="margin-top:16px">
@@ -2146,13 +2140,13 @@ if (window.L) {
      tot:'20:26:50', max:'20:27:21', dur:'1 min 01 s', note:'IGN · la base: comoda, ma totalità breve e Sole basso'},
     {label:'Gijón · Oviedo (Asturie)', lat:43.3534, lon:-5.8801, ps:70275, ts:73620, mx:73674, te:73728, pe:76860,
      tot:'20:27:00', max:'20:27:54', dur:'1 min 48 s', note:'IGN · vicino alla centralità: la totalità più lunga del percorso, Sole un po\' più alto'},
-    {label:'A Coruña (Galizia)', lat:43.3623, lon:-8.4115, ps:70260, ts:73642, mx:73680, te:73718, pe:76920,
-     tot:'~20:27', max:'20:28', dur:'1 min 16 s', note:'IGN · Sole più alto (~12°), ma più rischio di nuvole atlantiche'},
-    {label:'Saragozza (Aragona)', lat:41.6488, lon:-0.8891, ps:70473, ts:73736, mx:73778, te:73819, pe:76065,
-     tot:'20:28:56', max:'20:29:38', dur:'1 min 23 s', note:'IGN · vicino alla centralità e più a est: totalità lunga e cielo più spesso sereno, ma Sole basso'},
-    {label:'Tarragona (Catalogna)', lat:41.1062, lon:1.2303, ps:70532, ts:73765, mx:73798, te:73830, pe:75490,
+    {label:'A Coruña (Galizia)', lat:43.3623, lon:-8.4115, ps:70251, ts:73655, mx:73693, te:73731, pe:76914,
+     tot:'20:27:35', max:'20:28:13', dur:'1 min 16 s', note:'IGN · Sole più alto (~12°), ma più rischio di nuvole atlantiche'},
+    {label:'Saragozza (Aragona)', lat:41.6488, lon:-0.8891, ps:70475, ts:73737, mx:73779, te:73820, pe:76055, peSunset:true,
+     tot:'20:28:57', max:'20:29:39', dur:'1 min 23 s', note:'IGN · vicino alla centralità e più a est: totalità lunga e cielo più spesso sereno, ma Sole basso'},
+    {label:'Tarragona (Catalogna)', lat:41.1062, lon:1.2303, ps:70532, ts:73765, mx:73798, te:73830, pe:75490, peSunset:true,
      tot:'20:29:25', max:'20:29:58', dur:'1 min 05 s', note:'IGN · dentro la fascia! totale a pochi km da Barcellona, ma Sole bassissimo (~4°)'},
-    {label:'Barcellona (Catalogna)', lat:41.3927, lon:2.1593, ps:70499, mx:73752, pe:75291, partial:true, peak:0.9982,
+    {label:'Barcellona (Catalogna)', lat:41.3927, lon:2.1593, ps:70499, mx:73752, pe:75291, partial:true, peak:0.9982, peSunset:true,
      max:'20:29:12', set:'20:54:51', obsc:'99,82%', note:'IGN · fuori dalla fascia: solo parziale, e il Sole tramonta poco dopo il massimo'}
   ];
   sel.innerHTML = ZONE.map((z,i)=>`<option value="${i}">${z.label}</option>`).join('');
@@ -2185,7 +2179,7 @@ if (window.L) {
     let gmst=(280.46061837+360.98564736629*nD)%360;
     const Hr=(((gmst+lon-ra/RAD)%360+540)%360-180)*RAD, la=lat*RAD;
     let alt=Math.asin(Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(Hr))/RAD;
-    if(alt>-1) alt += (1.02/Math.tan((alt+10.3/(alt+5.11))*RAD))/60;
+    if(alt>-4.5) alt += (1.02/Math.tan((alt+10.3/(alt+5.11))*RAD))/60;   // rifrazione continua fin sotto l'orizzonte (niente scalino)
     const az=(Math.atan2(-Math.sin(Hr), Math.tan(dec)*Math.cos(la)-Math.sin(la)*Math.cos(Hr))/RAD+360)%360;
     return {alt, az};
   }
@@ -2211,16 +2205,41 @@ if (window.L) {
     tout.innerHTML = below ? `${fmt(sec)} · tramontato`
       : `${fmt(sec)} · <span class="ot-pct">${pct}%</span><span class="ot-tag">${inTot?' · TOTALE':''}</span>`;
   }
-  const fasi = document.getElementById('ecl-fasi');
+  const fasiTitle = document.getElementById('ecl-fasi-title'),
+        fasiTl = document.getElementById('ecl-fasi-timeline'),
+        fasiNote = document.getElementById('ecl-fasi-note');
+  const IGN_LINK = '<a href="https://visualizadores.ign.es/eclipses/" target="_blank" rel="noopener">Visualizador de Eclipses dell\'IGN</a>';
+  function phaseRow(sec, txt, hot){ return `<div class="ecl-phase${hot?' hot':''}"><b>${fmt(sec)}</b><span>${txt}</span></div>`; }
+  function fillFasi(sp){
+    const city = Z.label.split(/\s*[/(]/)[0].trim();
+    const altR = Math.round(sp.alt).toString().replace('.', ',');
+    const azR = Math.round(sp.az);
+    fasiTitle.textContent = `Le fasi a ${city}`;
+    if(Z.partial){
+      fasiTl.innerHTML = phaseRow(Z.ps, 'primo contatto: inizia la fase parziale')
+        + phaseRow(Z.mx, `massimo dell'eclissi (${Z.obsc})`, true)
+        + phaseRow(Z.pe, 'tramonto: il Sole cala con l\'eclissi ancora in corso');
+      fasiNote.innerHTML = `Da qui l'eclissi è <b>solo parziale</b> (${Z.obsc}), con il Sole a <b>~${altR}°</b> sull'orizzonte (azimut ${azR}°) che tramonta poco dopo il massimo. Orari e dati dal ${IGN_LINK}.`;
+    } else {
+      const lastTxt = Z.peSunset ? 'tramonto: l\'eclissi finisce all\'orizzonte' : 'fine della fase parziale (al tramonto)';
+      fasiTl.innerHTML = phaseRow(Z.ps, 'primo contatto: inizia la fase parziale')
+        + phaseRow(Z.ts, 'inizio della totalità', true)
+        + phaseRow(Z.mx, 'massimo dell\'eclissi', true)
+        + phaseRow(Z.te, 'fine della totalità')
+        + phaseRow(Z.pe, lastTxt);
+      fasiNote.innerHTML = `Totalità di <b>${Z.dur}</b>, con il Sole a <b>~${altR}°</b> sull'orizzonte (azimut ${azR}°, ovest-nordovest). Orari e dati dal ${IGN_LINK}.`;
+    }
+  }
   function apply(i){
     Z = ZONE[i];
-    Z.azRef = sunPos(Z.mx, Z.lat, Z.lon).az;   // azimut al massimo: il Sole è centrato a quell'istante
-    if(fasi) fasi.style.display = (i===0) ? '' : 'none';   // "Le fasi a Santander" solo per Santander
+    const spMax = sunPos(Z.mx, Z.lat, Z.lon);
+    Z.azRef = spMax.az;   // azimut al massimo: il Sole è centrato a quell'istante
     slider.min = Z.ps - 1800; slider.max = Z.pe + 1800; slider.step = 5; slider.value = Z.mx;   // ±30 min oltre l'eclissi
     const line = Z.partial
       ? `<b>Solo parziale</b> ${Z.obsc} · <b>massimo</b> ${Z.max} · <b>tramonto</b> ${Z.set}`
       : `<b>Totalità</b> ${Z.tot} · <b>massimo</b> ${Z.max} · <b>durata</b> ${Z.dur}`;
     times.innerHTML = `${line}<br><span style="color:var(--muted)">${Z.note}</span>`;
+    fillFasi(spMax);
     renderTime(Z.mx);
   }
   sel.addEventListener('change', ()=>apply(+sel.value));
