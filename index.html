@@ -296,6 +296,12 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .ecl-metric .bar i{display:block;height:100%}
 .ecl-metric .val{width:46px;text-align:right;color:var(--text)}
 .ecl-note{color:var(--muted);font-size:14px;margin-top:12px;line-height:1.5}
+.ecl-sel-wrap{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px;
+  font-family:var(--mono);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.ecl-sel{flex:1;min-width:170px;background:var(--ink-2);border:1px solid var(--line-2);color:var(--text);
+  font-family:var(--body);font-size:14px;letter-spacing:0;text-transform:none;padding:8px 10px;border-radius:8px;cursor:pointer}
+.ecl-times{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:12px 0 0}
+.ecl-times b{color:var(--corona);font-weight:400}
 .ecl-spots{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:8px}
 .ecl-spots li{padding-left:16px;position:relative;font-size:14.5px;line-height:1.4}
 .ecl-spots li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:99px;background:var(--corona)}
@@ -884,6 +890,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
     </div>
     <div class="card">
       <h3>Il Sole sarà bassissimo, verso O-NO</h3>
+      <label class="ecl-sel-wrap">Da dove la guardi<select id="ecl-loc" class="ecl-sel" aria-label="Zona di osservazione"></select></label>
       <svg class="ecl-horizon" viewBox="0 0 400 168" role="img" aria-label="Il Sole eclissato basso sull'orizzonte ovest-nordovest, sopra il mare">
         <defs>
           <linearGradient id="ecl-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#161a34"/><stop offset="1" stop-color="#3a2836"/></linearGradient>
@@ -892,14 +899,16 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
         <rect width="400" height="130" fill="url(#ecl-sky)"/>
         <rect y="130" width="400" height="38" fill="#0b1428"/>
         <line x1="0" y1="130" x2="400" y2="130" stroke="#3AD1BE" stroke-opacity=".45"/>
-        <circle cx="128" cy="106" r="36" fill="url(#ecl-cor)"/>
-        <circle cx="128" cy="106" r="15" fill="#FFC24A"/>
-        <circle cx="128" cy="106" r="13" fill="#161a34"/>
-        <line x1="128" y1="121" x2="128" y2="130" stroke="#9199BE" stroke-dasharray="2 2"/>
-        <text x="150" y="110" fill="#E9E9F5" font-size="12" font-family="monospace">~8° sull'orizzonte</text>
+        <line id="ecl-drop" x1="128" y1="121" x2="128" y2="130" stroke="#9199BE" stroke-dasharray="2 2"/>
+        <g id="ecl-sun">
+          <circle cx="128" cy="106" r="36" fill="url(#ecl-cor)"/>
+          <circle cx="128" cy="106" r="15" fill="#FFC24A"/>
+          <circle cx="128" cy="106" r="13" fill="#161a34"/>
+        </g>
+        <text id="ecl-alt" x="150" y="110" fill="#E9E9F5" font-size="12" font-family="monospace">~8° sull'orizzonte</text>
         <text x="10" y="152" fill="#9199BE" font-size="11" font-family="monospace">mare · orizzonte ovest–nordovest</text>
-        <text x="390" y="20" text-anchor="end" fill="#9199BE" font-size="11" font-family="monospace">tramonto ~21:27</text>
       </svg>
+      <p class="ecl-times" id="ecl-times"></p>
       <p>Serve un <b>orizzonte libero verso ovest/nord-ovest</b>, meglio sul mare: colline, edifici o foschia bassa possono nascondere del tutto la totalità.</p>
     </div>
   </div>
@@ -2128,6 +2137,38 @@ if (window.L) {
     d.open = true;
     d.scrollIntoView({behavior:'smooth', block:'start'});
   });
+})();
+
+/* ---------- infografica eclissi: confronto zone (altezza del Sole e orari) ---------- */
+(function(){
+  const sel = document.getElementById('ecl-loc');
+  if(!sel) return;
+  // Zone dove conviene andare, con altezza del Sole alla totalità e orari locali (CEST). Valori stimati.
+  const ZONE = [
+    {label:'Santander / Somo (Cantabria)', alt:8,    tot:'20:26:51', dur:'~1 min 05 s', set:'21:27', note:'la base: comodo, ma totalità corta e Sole basso'},
+    {label:'Gijón · Rodiles (Asturie)',    alt:10,   tot:'~20:26',   dur:'~1 min 48 s', set:'21:33', note:'il miglior compromesso: totalità quasi doppia'},
+    {label:'A Coruña (Galizia)',           alt:12.5, tot:'~20:27',   dur:'~1 min 16 s', set:'21:38', note:'Sole più alto, ma più rischio nuvole atlantiche'},
+    {label:'Saragozza (Aragona)',          alt:4,    tot:'20:29',    dur:'~1 min 25 s', set:'21:10', note:'riserva meteo: cielo più probabilmente sereno, ma Sole quasi al tramonto'}
+  ];
+  sel.innerHTML = ZONE.map((z,i)=>`<option value="${i}">${z.label}</option>`).join('');
+
+  const sun = document.getElementById('ecl-sun');
+  const drop = document.getElementById('ecl-drop');
+  const altT = document.getElementById('ecl-alt');
+  const times = document.getElementById('ecl-times');
+  const BASE_CY = 106, HORIZON = 130, PX_PER_DEG = 3.4;
+
+  function apply(i){
+    const z = ZONE[i];
+    const cy = Math.max(84, Math.min(HORIZON - 6, HORIZON - z.alt * PX_PER_DEG));
+    sun.setAttribute('transform', `translate(0,${(cy - BASE_CY).toFixed(1)})`);
+    drop.setAttribute('y1', (cy + 15).toFixed(1));
+    altT.setAttribute('y', (cy + 4).toFixed(1));
+    altT.textContent = `~${String(z.alt).replace('.', ',')}° sull'orizzonte`;
+    times.innerHTML = `<b>Totalità</b> ${z.tot} · <b>durata</b> ${z.dur} · <b>tramonto</b> ${z.set}<br><span style="color:var(--muted)">${z.note}</span>`;
+  }
+  sel.addEventListener('change', ()=>apply(+sel.value));
+  apply(0);
 })();
 </script>
 </body>
