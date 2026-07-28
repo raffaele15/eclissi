@@ -2186,10 +2186,12 @@ if (window.L) {
     altT.textContent = below ? 'sotto l\'orizzonte' : `~${(Math.round(alt*10)/10).toString().replace('.',',')}°`;
     let f = sec<=Z.mx ? (sec-Z.mx)/(Z.mx-Z.ps) : (sec-Z.mx)/(Z.pe-Z.mx);   // Luna che scorre sul Sole
     f = Math.max(-2.6, Math.min(2.6, f));   // fuori dall'eclissi la Luna è del tutto lontana dal Sole
-    moon.setAttribute('cx', (128 + f*2*SUN_R).toFixed(1));
+    // La Luna si muove verso est: entra dal bordo destro (in alto) ed esce in basso a sinistra
+    moon.setAttribute('cx', (128 - f*2*SUN_R).toFixed(1));
+    moon.setAttribute('cy', (106 + f*5).toFixed(1));
     const inTot = !Z.partial && sec>=Z.ts && sec<=Z.te;
     corona.setAttribute('opacity', inTot && !below ? 1 : 0);
-    const obsc = overlap(Math.abs(f)*2*SUN_R, 15, 15.6) * (Z.peak||1) * 100;
+    const obsc = overlap(Math.hypot(f*2*SUN_R, f*5), 15, 15.6) * (Z.peak||1) * 100;
     const pct = obsc>=99.95 ? '100' : (Math.round(obsc*10)/10).toString().replace('.', ',');
     tout.innerHTML = below ? `${fmt(sec)} · tramontato`
       : `${fmt(sec)} · <span class="ot-pct">${pct}%</span><span class="ot-tag">${inTot?' · TOTALE':''}</span>`;
