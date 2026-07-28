@@ -302,6 +302,9 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
   font-family:var(--body);font-size:14px;letter-spacing:0;text-transform:none;padding:8px 10px;border-radius:8px;cursor:pointer}
 .ecl-times{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:12px 0 0}
 .ecl-times b{color:var(--corona);font-weight:400}
+.ecl-slider{display:flex;align-items:center;gap:12px;margin-top:10px}
+.ecl-slider input[type=range]{flex:1;min-width:120px;accent-color:var(--corona);height:4px}
+.ecl-slider output{font-family:var(--mono);font-size:15px;color:var(--corona);min-width:118px;text-align:right;white-space:nowrap}
 .ecl-phases{display:flex;flex-wrap:wrap;gap:10px 6px;justify-content:center;margin:6px 0 10px}
 .ecl-ph{width:62px;text-align:center}
 .ecl-ph svg{width:56px;height:56px;display:block;margin:0 auto}
@@ -906,13 +909,17 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
         <line x1="0" y1="130" x2="400" y2="130" stroke="#3AD1BE" stroke-opacity=".45"/>
         <line id="ecl-drop" x1="128" y1="121" x2="128" y2="130" stroke="#9199BE" stroke-dasharray="2 2"/>
         <g id="ecl-sun">
-          <circle cx="128" cy="106" r="36" fill="url(#ecl-cor)"/>
+          <circle id="ecl-corona" cx="128" cy="106" r="34" fill="url(#ecl-cor)" opacity="1"/>
           <circle cx="128" cy="106" r="15" fill="#FFC24A"/>
-          <circle cx="128" cy="106" r="13" fill="#161a34"/>
+          <circle id="ecl-moon" cx="128" cy="106" r="15.6" fill="#191d38"/>
         </g>
-        <text id="ecl-alt" x="150" y="110" fill="#E9E9F5" font-size="12" font-family="monospace">~8° sull'orizzonte</text>
+        <text id="ecl-alt" x="150" y="110" fill="#E9E9F5" font-size="12" font-family="monospace">~9°</text>
         <text x="10" y="152" fill="#9199BE" font-size="11" font-family="monospace">mare · orizzonte ovest–nordovest</text>
       </svg>
+      <div class="ecl-slider">
+        <input type="range" id="ecl-time" aria-label="Trascina per cambiare l'orario">
+        <output id="ecl-time-out">20:27:21</output>
+      </div>
       <p class="ecl-times" id="ecl-times"></p>
       <p>Serve un <b>orizzonte libero verso ovest/nord-ovest</b>, meglio sul mare: colline, edifici o foschia bassa possono nascondere del tutto la totalità.</p>
     </div>
@@ -2154,37 +2161,63 @@ if (window.L) {
 (function(){
   const sel = document.getElementById('ecl-loc');
   if(!sel) return;
-  // Zone dove conviene andare, con altezza del Sole alla totalità e orari locali (CEST). Valori stimati.
-  // Altezza del Sole e orari (ora locale CEST) alla totalità (o al massimo, dove è solo parziale). Fonte IGN dove indicato.
+  // Orari (ora locale CEST) in secondi dalla mezzanotte + altezza del Sole al massimo. Fonte IGN dove indicato.
+  // ps=inizio parziale, ts/te=totalità, mx=massimo, pe=fine (parziale o tramonto).
   const ZONE = [
-    {label:'Santander / Somo (Cantabria)', alt:8.96, tot:'20:26:50', max:'20:27:21', dur:'1 min 01 s', note:'IGN · la base: comoda, ma totalità breve e Sole basso'},
-    {label:'Gijón · Oviedo (Asturie)',     alt:10.27, tot:'20:27:00', max:'20:27:54', dur:'1 min 48 s', note:'IGN · vicino alla centralità: la totalità più lunga del percorso, Sole un po\' più alto'},
-    {label:'A Coruña (Galizia)',           alt:12,   tot:'~20:27',   max:'20:28',    dur:'1 min 16 s', note:'IGN · Sole più alto (12°), ma più rischio di nuvole atlantiche'},
-    {label:'Barcellona (Catalogna)',       alt:3.93, max:'20:29:12', set:'20:54:51', obsc:'99,82%', partial:true, note:'IGN · fuori dalla fascia: solo parziale, e il Sole tramonta poco dopo il massimo'},
-    {label:'Tarragona (Catalogna)',        alt:4.40, tot:'20:29:25', max:'20:29:58', dur:'1 min 05 s', note:'IGN · dentro la fascia! totale a pochi km da Barcellona, ma Sole bassissimo (~4°)'},
-    {label:'Saragozza (Aragona)',          alt:6.1,  tot:'20:28:56', max:'20:29:38', dur:'1 min 23 s', note:'IGN · vicino alla centralità e più a est: totalità lunga e cielo più spesso sereno, ma Sole basso'}
+    {label:'Santander / Somo (Cantabria)', alt:8.96, ps:70274, ts:73610, mx:73641, te:73671, pe:76801,
+     tot:'20:26:50', max:'20:27:21', dur:'1 min 01 s', note:'IGN · la base: comoda, ma totalità breve e Sole basso'},
+    {label:'Gijón · Oviedo (Asturie)', alt:10.27, ps:70275, ts:73620, mx:73674, te:73728, pe:76860,
+     tot:'20:27:00', max:'20:27:54', dur:'1 min 48 s', note:'IGN · vicino alla centralità: la totalità più lunga del percorso, Sole un po\' più alto'},
+    {label:'A Coruña (Galizia)', alt:12, ps:70260, ts:73642, mx:73680, te:73718, pe:76920,
+     tot:'~20:27', max:'20:28', dur:'1 min 16 s', note:'IGN · Sole più alto (12°), ma più rischio di nuvole atlantiche'},
+    {label:'Saragozza (Aragona)', alt:6.1, ps:70473, ts:73736, mx:73778, te:73819, pe:76065,
+     tot:'20:28:56', max:'20:29:38', dur:'1 min 23 s', note:'IGN · vicino alla centralità e più a est: totalità lunga e cielo più spesso sereno, ma Sole basso'},
+    {label:'Tarragona (Catalogna)', alt:4.40, ps:70532, ts:73765, mx:73798, te:73830, pe:75490,
+     tot:'20:29:25', max:'20:29:58', dur:'1 min 05 s', note:'IGN · dentro la fascia! totale a pochi km da Barcellona, ma Sole bassissimo (~4°)'},
+    {label:'Barcellona (Catalogna)', alt:3.93, ps:70499, mx:73752, pe:75291, partial:true,
+     max:'20:29:12', set:'20:54:51', obsc:'99,82%', note:'IGN · fuori dalla fascia: solo parziale, e il Sole tramonta poco dopo il massimo'}
   ];
   sel.innerHTML = ZONE.map((z,i)=>`<option value="${i}">${z.label}</option>`).join('');
 
-  const sun = document.getElementById('ecl-sun');
-  const drop = document.getElementById('ecl-drop');
-  const altT = document.getElementById('ecl-alt');
-  const times = document.getElementById('ecl-times');
-  const BASE_CY = 106, HORIZON = 130, PX_PER_DEG = 3.4;
+  const sun=document.getElementById('ecl-sun'), moon=document.getElementById('ecl-moon'),
+        corona=document.getElementById('ecl-corona'), drop=document.getElementById('ecl-drop'),
+        altT=document.getElementById('ecl-alt'), times=document.getElementById('ecl-times'),
+        slider=document.getElementById('ecl-time'), tout=document.getElementById('ecl-time-out');
+  const BASE_CY=106, HORIZON=130, PX_PER_DEG=3.2, SUN_R=15;
+  let Z = ZONE[0];
+  const fmt = s => { s=Math.round(s); const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60;
+    return `${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`; };
 
+  function renderTime(sec){
+    let alt = Z.alt * (Z.pe - sec) / (Z.pe - Z.mx);   // discesa lineare fino a 0 al termine/tramonto
+    alt = Math.max(0, alt);
+    const cy = Math.max(40, Math.min(HORIZON - 4, HORIZON - alt*PX_PER_DEG));
+    sun.setAttribute('transform', `translate(0,${(cy-BASE_CY).toFixed(1)})`);
+    drop.setAttribute('y1', (cy+SUN_R).toFixed(1));
+    altT.setAttribute('y', (cy+4).toFixed(1));
+    altT.textContent = `~${(Math.round(alt*10)/10).toString().replace('.',',')}°`;
+    let f = sec<=Z.mx ? (sec-Z.mx)/(Z.mx-Z.ps) : (sec-Z.mx)/(Z.pe-Z.mx);   // Luna che scorre sul Sole
+    f = Math.max(-1, Math.min(1, f));
+    moon.setAttribute('cx', (128 + f*2*SUN_R).toFixed(1));
+    const inTot = !Z.partial && sec>=Z.ts && sec<=Z.te;
+    corona.setAttribute('opacity', inTot ? 1 : 0);
+    let ph='';
+    if(alt<=0.05) ph=' · tramontato';
+    else if(inTot) ph=' · TOTALE';
+    else if(Z.partial && Math.abs(f)<0.02) ph=' · max 99,8%';
+    tout.textContent = fmt(sec)+ph;
+  }
   function apply(i){
-    const z = ZONE[i];
-    const cy = Math.max(84, Math.min(HORIZON - 6, HORIZON - z.alt * PX_PER_DEG));
-    sun.setAttribute('transform', `translate(0,${(cy - BASE_CY).toFixed(1)})`);
-    drop.setAttribute('y1', (cy + 15).toFixed(1));
-    altT.setAttribute('y', (cy + 4).toFixed(1));
-    altT.textContent = `~${String(Math.round(z.alt*10)/10).replace('.', ',')}° sull'orizzonte`;
-    const line = z.partial
-      ? `<b>Solo parziale</b> ${z.obsc} · <b>massimo</b> ${z.max} · <b>tramonto</b> ${z.set}`
-      : `<b>Totalità</b> ${z.tot} · <b>massimo</b> ${z.max} · <b>durata</b> ${z.dur}`;
-    times.innerHTML = `${line}<br><span style="color:var(--muted)">${z.note}</span>`;
+    Z = ZONE[i];
+    slider.min = Z.ps; slider.max = Z.pe; slider.step = 5; slider.value = Z.mx;
+    const line = Z.partial
+      ? `<b>Solo parziale</b> ${Z.obsc} · <b>massimo</b> ${Z.max} · <b>tramonto</b> ${Z.set}`
+      : `<b>Totalità</b> ${Z.tot} · <b>massimo</b> ${Z.max} · <b>durata</b> ${Z.dur}`;
+    times.innerHTML = `${line}<br><span style="color:var(--muted)">${Z.note}</span>`;
+    renderTime(Z.mx);
   }
   sel.addEventListener('change', ()=>apply(+sel.value));
+  slider.addEventListener('input', ()=>renderTime(+slider.value));
   apply(0);
 })();
 
