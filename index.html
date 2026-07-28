@@ -302,6 +302,11 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
   font-family:var(--body);font-size:14px;letter-spacing:0;text-transform:none;padding:8px 10px;border-radius:8px;cursor:pointer}
 .ecl-times{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:12px 0 0}
 .ecl-times b{color:var(--corona);font-weight:400}
+.ecl-phases{display:flex;flex-wrap:wrap;gap:10px 6px;justify-content:center;margin:6px 0 10px}
+.ecl-ph{width:62px;text-align:center}
+.ecl-ph svg{width:56px;height:56px;display:block;margin:0 auto}
+.ecl-ph span{font-family:var(--mono);font-size:11px;color:var(--muted);display:block;margin-top:3px}
+.ecl-ph.tot span{color:var(--corona-hot)}
 .ecl-spots{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:8px}
 .ecl-spots li{padding-left:16px;position:relative;font-size:14.5px;line-height:1.4}
 .ecl-spots li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:99px;background:var(--corona)}
@@ -911,6 +916,12 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <p class="ecl-times" id="ecl-times"></p>
       <p>Serve un <b>orizzonte libero verso ovest/nord-ovest</b>, meglio sul mare: colline, edifici o foschia bassa possono nascondere del tutto la totalità.</p>
     </div>
+  </div>
+
+  <div class="card" style="margin-top:16px">
+    <h3>Le fasi a Santander, ora per ora</h3>
+    <div class="ecl-phases" id="ecl-phases"></div>
+    <p class="ecl-note">Al massimo: oscuramento 100% · Sole a 8,8° · azimut 282°. Progressione basata sui calcoli dell'Osservatorio Astronomico Nazionale (<a href="https://eclipses.ign.es/eclipse-total-sol-de-12-de-agosto-2026.html" target="_blank" rel="noopener">IGN</a>).</p>
   </div>
 
   <div class="card" style="margin-top:16px">
@@ -2174,6 +2185,33 @@ if (window.L) {
   }
   sel.addEventListener('change', ()=>apply(+sel.value));
   apply(0);
+})();
+
+/* ---------- striscia delle fasi a Santander (grafica originale dai dati IGN) ---------- */
+(function(){
+  const box = document.getElementById('ecl-phases');
+  if(!box) return;
+  const CARD = getComputedStyle(document.body).getPropertyValue('--card') || '#111935';
+  // orari campione e frazione rispetto al massimo (20:27): -1 inizio, 0 totale, +1 fine
+  const PH = [['19:39',-.90],['19:51',-.67],['20:03',-.45],['20:15',-.22],['20:27',0],['20:39',.22],['20:51',.45],['21:03',.67],['21:15',.90]];
+  const R = 17, CX = 28, CY = 26;
+  box.innerHTML = PH.map(([t,f])=>{
+    const total = f===0;
+    let disc;
+    if(total){
+      disc = `<circle cx="${CX}" cy="${CY}" r="${R+8}" fill="url(#ph-cor)"/><circle cx="${CX}" cy="${CY}" r="${R}" fill="#05060f"/>`;
+    } else {
+      const mx = CX + f*2*R, my = CY - f*4;         // luna che scorre e copre il Sole
+      disc = `<circle cx="${CX}" cy="${CY}" r="${R}" fill="#FFC24A"/><circle cx="${mx.toFixed(1)}" cy="${my.toFixed(1)}" r="${(R+0.6).toFixed(1)}" fill="${CARD.trim()}"/>`;
+    }
+    return `<div class="ecl-ph${total?' tot':''}">
+      <svg viewBox="0 0 56 56" role="img" aria-label="Fase alle ${t}">
+        <defs><radialGradient id="ph-cor" cx="50%" cy="50%" r="50%"><stop offset="55%" stop-color="rgba(255,255,255,.55)"/><stop offset="100%" stop-color="rgba(255,194,74,0)"/></radialGradient></defs>
+        ${disc}
+      </svg>
+      <span>${t}${total?' ·  totale':''}</span>
+    </div>`;
+  }).join('');
 })();
 </script>
 </body>
