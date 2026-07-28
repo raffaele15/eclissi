@@ -242,6 +242,33 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .sp-row-del:hover{background:rgba(255,107,107,.12)}
 .sp-row-ins{color:var(--sea);border-color:var(--sea)}
 .sp-row-ins:hover{background:rgba(58,209,190,.12)}
+/* dettaglio spese per categoria */
+.sp-cat-toggle{width:100%;height:38px;display:inline-flex;align-items:center;gap:8px;justify-content:flex-start;
+  padding:0 10px;border-radius:8px;border:1px solid var(--line-2);background:var(--ink-2);color:var(--text);
+  font-family:var(--body);font-size:13.5px;cursor:pointer;text-align:left}
+.sp-cat-toggle:hover{border-color:var(--sea)}
+.sp-cat-toggle .chev{color:var(--muted);font-size:10px;transition:transform .15s}
+.sp-cat-toggle.open .chev{transform:rotate(90deg)}
+.sp-cat-toggle .cnt{color:var(--muted);font-family:var(--mono);font-size:12.5px}
+.sp-cat-total{height:38px;display:flex;align-items:center;justify-content:flex-end;
+  font-family:var(--mono);font-size:14.5px;color:var(--corona)}
+.sp-detail-cell{background:var(--card-2);padding:12px 14px !important}
+.sp-entries{display:flex;flex-direction:column;gap:8px}
+.sp-entry{display:flex;gap:8px;align-items:center}
+.sp-elabel,.sp-enew-label{flex:1;min-width:0;height:36px;background:var(--ink-2);border:1px solid var(--line-2);
+  color:var(--text);font-family:var(--body);font-size:14px;padding:0 10px;border-radius:8px}
+.sp-elabel:focus,.sp-enew-label:focus,.sp-eamt:focus,.sp-enew-amt:focus{outline:none;border-color:var(--sea)}
+.sp-eamt,.sp-enew-amt{flex:none;width:98px;height:36px;background:var(--ink-2);border:1px solid var(--line-2);
+  color:var(--corona);font-family:var(--mono);font-size:14px;padding:0 8px;border-radius:8px;text-align:right}
+.sp-entry-del{flex:none;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;
+  border-radius:8px;border:1px solid rgba(255,107,107,.5);color:var(--warn);background:transparent;cursor:pointer;
+  font-size:18px;line-height:1}
+.sp-entry-del:hover{background:rgba(255,107,107,.12)}
+.sp-entry-add{display:flex;gap:8px;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--line-2)}
+.sp-eadd-btn{flex:none;width:36px;height:36px;display:inline-flex;align-items:center;justify-content:center;
+  font-size:20px;line-height:1;border-radius:8px;border:1px solid var(--sea);color:var(--sea);background:transparent;cursor:pointer}
+.sp-eadd-btn:hover{background:rgba(58,209,190,.12)}
+.sp-empty{color:var(--muted);font-size:13px;font-style:italic;padding:2px 2px 4px}
 .btn.on{border-color:var(--corona);color:var(--corona);background:rgba(255,194,74,.1)}
 .btn:disabled{opacity:.4;cursor:not-allowed}
 .btn.ghost:disabled:hover{border-color:var(--line-2);color:var(--muted)}
@@ -385,13 +412,15 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .sp-sync-body .sp-actions{margin-top:14px}
 @media(max-width:560px){
   .spese th,.spese td{padding:9px 8px}
-  .spese .c-add{width:112px}
-  .spese .c-tot{width:88px}
+  .spese .c-add{width:120px}
+  .spese .c-tot{width:82px}
   .sp-name{padding:0 6px}
   .sp-add{gap:6px}
-  .sp-name,.sp-input,.sp-total,.sp-btn,.sp-row-del,.sp-row-ins{height:36px}
+  .sp-name,.sp-cat-toggle,.sp-btn,.sp-row-del,.sp-row-ins{height:36px}
+  .sp-cat-toggle{font-size:12.5px;padding:0 8px;gap:6px}
   .sp-btn{width:36px;font-size:18px}
-  .sp-total{padding:0 6px}
+  .sp-detail-cell{padding:10px 8px !important}
+  .sp-eamt,.sp-enew-amt{width:82px}
 }
 
 /* sticky total */
@@ -987,7 +1016,7 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
   <div class="spese-wrap">
   <table class="spese">
     <colgroup><col class="c-voce"><col class="c-add"><col class="c-tot"></colgroup>
-    <thead><tr><th>Voce</th><th id="sp-th-mid">Aggiungi</th><th class="r">Totale</th></tr></thead>
+    <thead><tr><th>Categoria</th><th id="sp-th-mid">Dettaglio</th><th class="r">Totale</th></tr></thead>
     <tbody id="sp-body"></tbody>
   </table>
   </div>
@@ -1249,7 +1278,7 @@ compute();
 
 /* ---------- spese reali: tabella manuale, salvata sul dispositivo e condivisibile via JSONBin ---------- */
 (function(){
-  const KEY = 'eclissi-spese-v1';        // {items:[{name,total}], updatedAt}
+  const KEY = 'eclissi-spese-v1';        // {items:[{name,entries:[{label,amount}]}], updatedAt}
   const CFG = 'eclissi-spese-sync';       // {bin, key}
   const DEFAULT = ['Benzina','Pedaggi','Alloggi','Cibo','Musei ed extra','Varie'];
   const body = document.getElementById('sp-body');
@@ -1257,14 +1286,27 @@ compute();
   const grandPpEl = document.getElementById('sp-grand-pp');
   if(!body) return;
 
+  // porta ogni categoria al formato {name, entries:[{label,amount}]},
+  // migrando il vecchio formato {name,total} in un'unica voce dettagliata
+  function normItems(arr){
+    return (arr||[]).map(r=>{
+      if(Array.isArray(r.entries))
+        return {name:r.name||'', entries:r.entries.map(e=>({label:e.label||'', amount:+e.amount||0}))};
+      const t = +r.total||0;
+      return {name:r.name||'', entries: t>0 ? [{label:'', amount:t}] : []};
+    });
+  }
+  const catTotal = r => (r.entries||[]).reduce((a,e)=>a+(+e.amount||0),0);
+
   // --- stato locale ---
   function loadStore(){
     let d=null; try{ d=JSON.parse(localStorage.getItem(KEY)); }catch(e){}
-    if(d && Array.isArray(d.items)) return {items:d.items, updatedAt:+d.updatedAt||0};
-    if(Array.isArray(d)) return {items:d, updatedAt:0};   // migra il vecchio formato (array puro)
-    return {items: DEFAULT.map(n=>({name:n, total:0})), updatedAt:0};
+    if(d && Array.isArray(d.items)) return {items:normItems(d.items), updatedAt:+d.updatedAt||0};
+    if(Array.isArray(d)) return {items:normItems(d), updatedAt:0};   // migra il vecchio formato (array puro)
+    return {items: DEFAULT.map(n=>({name:n, entries:[]})), updatedAt:0};
   }
   let store = loadStore();
+  const openSet = new WeakSet();   // categorie espanse (per riferimento all'oggetto)
   const persist = () => { try{ localStorage.setItem(KEY, JSON.stringify(store)); }catch(e){} };
   const items = () => store.items;
 
@@ -1274,7 +1316,7 @@ compute();
   // --- cronologia per "Annulla" ---
   const undoStack = [];
   const UNDO_MAX = 40;
-  const snapshot = () => items().map(r=>({name:r.name, total:+r.total||0}));
+  const snapshot = () => items().map(r=>({name:r.name, entries:(r.entries||[]).map(e=>({label:e.label||'', amount:+e.amount||0}))}));
   function pushUndo(){ undoStack.push(snapshot()); if(undoStack.length>UNDO_MAX) undoStack.shift(); updateUndoBtn(); }
   function updateUndoBtn(){ const b=document.getElementById('sp-undo'); if(b) b.disabled = undoStack.length===0; }
   function undo(){
@@ -1284,7 +1326,7 @@ compute();
   }
 
   function grand(){
-    const g = items().reduce((a,r)=>a+(+r.total||0),0);
+    const g = items().reduce((a,r)=>a+catTotal(r),0);
     grandEl.textContent = EUR2(g);
     const ppl = Math.max(1, +(document.getElementById('people')||{}).value || 1);
     if(grandPpEl) grandPpEl.textContent = EUR2(g/ppl);
@@ -1292,73 +1334,111 @@ compute();
 
   let editing = false;
   const thMid = document.getElementById('sp-th-mid');
+  const esc = s => (s||'').replace(/"/g,'&quot;');
 
   function render(){
-    body.innerHTML = items().map((r,i)=>`
-      <tr data-i="${i}">
-        <td><input class="sp-name" value="${(r.name||'').replace(/"/g,'&quot;')}" aria-label="voce"></td>
-        <td class="sp-add">${editing
-          ? `<button class="sp-row-del" type="button" title="Rimuovi questa riga" aria-label="rimuovi riga">−</button>
-             <button class="sp-row-ins" type="button" title="Inserisci una riga qui sotto" aria-label="inserisci riga">+</button>`
-          : `<input class="sp-input" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" aria-label="importo da aggiungere">
-             <button class="sp-btn" type="button" title="Aggiungi" aria-label="Aggiungi spesa">+</button>`}
-        </td>
-        <td class="r"><input class="sp-total" type="number" min="0" step="0.01" value="${+r.total||0}" aria-label="totale voce"></td>
-      </tr>`).join('');
-    if(thMid) thMid.textContent = editing ? 'Righe' : 'Aggiungi';
+    body.innerHTML = items().map((r,i)=>{
+      const open = openSet.has(r), n = (r.entries||[]).length;
+      const mid = editing
+        ? `<button class="sp-row-del" type="button" title="Rimuovi questa categoria" aria-label="rimuovi categoria">−</button>
+           <button class="sp-row-ins" type="button" title="Inserisci una categoria qui sotto" aria-label="inserisci categoria">+</button>`
+        : `<button class="sp-cat-toggle${open?' open':''}" type="button" data-toggle aria-expanded="${open}" title="Mostra/nascondi il dettaglio">
+             <span class="chev">▶</span><span class="cnt">${n} ${n===1?'voce':'voci'}</span>
+           </button>`;
+      let html = `<tr data-i="${i}" class="sp-cat">
+          <td><input class="sp-name" value="${esc(r.name)}" aria-label="nome categoria"></td>
+          <td class="sp-add">${mid}</td>
+          <td class="r"><div class="sp-cat-total">${EUR2(catTotal(r))}</div></td>
+        </tr>`;
+      if(open && !editing){
+        const entries = (r.entries||[]).map((e,j)=>`
+            <div class="sp-entry" data-j="${j}">
+              <input class="sp-elabel" value="${esc(e.label)}" placeholder="voce (es. distributore A4)" aria-label="descrizione voce">
+              <input class="sp-eamt" type="number" min="0" step="0.01" inputmode="decimal" value="${+e.amount||0}" aria-label="importo voce">
+              <button class="sp-entry-del" type="button" title="Rimuovi voce" aria-label="rimuovi voce">−</button>
+            </div>`).join('') || `<div class="sp-empty">Nessuna voce ancora: aggiungine una qui sotto.</div>`;
+        html += `<tr data-i="${i}" class="sp-detail"><td class="sp-detail-cell" colspan="3">
+            <div class="sp-entries">${entries}</div>
+            <div class="sp-entry-add">
+              <input class="sp-enew-label" placeholder="voce (es. cena a Pals)" aria-label="nuova voce">
+              <input class="sp-enew-amt" type="number" min="0" step="0.01" inputmode="decimal" placeholder="0" aria-label="importo">
+              <button class="sp-eadd-btn" type="button" title="Aggiungi voce" aria-label="aggiungi voce">+</button>
+            </div>
+          </td></tr>`;
+      }
+      return html;
+    }).join('');
+    if(thMid) thMid.textContent = editing ? 'Categorie' : 'Dettaglio';
+    grand();
+  }
+
+  // aggiorna il totale mostrato di una categoria senza ridisegnare (mantiene il focus)
+  function refreshCat(i){
+    const r = items()[i], catRow = body.querySelector(`tr.sp-cat[data-i="${i}"]`);
+    if(catRow){ catRow.querySelector('.sp-cat-total').textContent = EUR2(catTotal(r)); }
     grand();
   }
 
   body.addEventListener('click', e=>{
     const tr = e.target.closest('tr'); if(!tr) return;
-    const i = +tr.dataset.i;
-    if(e.target.classList.contains('sp-btn')){
-      const inp = tr.querySelector('.sp-input');
-      const add = +inp.value || 0;
-      if(add){
+    const i = +tr.dataset.i, r = items()[i];
+    if(e.target.closest('[data-toggle]')){
+      if(openSet.has(r)) openSet.delete(r); else openSet.add(r);
+      render();
+      if(openSet.has(r)){ const f = body.querySelector(`tr.sp-detail[data-i="${i}"] .sp-enew-label`); if(f) f.focus(); }
+    } else if(e.target.classList.contains('sp-eadd-btn')){
+      const dtr = e.target.closest('tr');
+      const lab = dtr.querySelector('.sp-enew-label'), amt = dtr.querySelector('.sp-enew-amt');
+      const a = +amt.value || 0, l = (lab.value||'').trim();
+      if(a || l){
         pushUndo();
-        items()[i].total = (+items()[i].total||0) + add;
-        tr.querySelector('.sp-total').value = items()[i].total;
-        inp.value = '';
-        grand(); touched();
-      }
-      inp.focus();
-    } else if(e.target.classList.contains('sp-row-del')){
-      const r = items()[i];
-      if((+r.total||0) > 0 && !confirm(`Rimuovere la riga "${r.name||'senza nome'}" (${EUR2(r.total)})?`)) return;
+        r.entries = r.entries || []; r.entries.push({label:l, amount:a});
+        render(); touched();
+        const f = body.querySelector(`tr.sp-detail[data-i="${i}"] .sp-enew-label`); if(f) f.focus();
+      } else { lab.focus(); }
+    } else if(e.target.classList.contains('sp-entry-del')){
+      const j = +e.target.closest('.sp-entry').dataset.j;
       pushUndo();
-      items().splice(i,1); render(); touched();
+      r.entries.splice(j,1); render(); touched();
+    } else if(e.target.classList.contains('sp-row-del')){
+      if(catTotal(r) > 0 && !confirm(`Rimuovere la categoria "${r.name||'senza nome'}" (${EUR2(catTotal(r))})?`)) return;
+      pushUndo();
+      openSet.delete(r); items().splice(i,1); render(); touched();
     } else if(e.target.classList.contains('sp-row-ins')){
       pushUndo();
-      items().splice(i+1, 0, {name:'Nuova voce', total:0}); render(); touched();
-      const nr = body.querySelector(`tr[data-i="${i+1}"] .sp-name`); if(nr) nr.focus();
+      items().splice(i+1, 0, {name:'Nuova categoria', entries:[]}); render(); touched();
+      const nr = body.querySelector(`tr.sp-cat[data-i="${i+1}"] .sp-name`); if(nr) nr.focus();
     }
   });
 
-  // Per la digitazione (nome/totale) salva lo stato pre-modifica una sola volta per campo
+  // Per la digitazione salva lo stato pre-modifica una sola volta per campo
+  const editable = t => t.classList.contains('sp-name') || t.classList.contains('sp-elabel') || t.classList.contains('sp-eamt');
   let preEdit = null, preEditVal = null;
   body.addEventListener('focusin', e=>{
-    if(e.target.classList.contains('sp-name') || e.target.classList.contains('sp-total')){
-      preEdit = snapshot(); preEditVal = e.target.value;
-    }
+    if(editable(e.target)){ preEdit = snapshot(); preEditVal = e.target.value; }
   });
   body.addEventListener('focusout', e=>{
-    if(preEdit && (e.target.classList.contains('sp-name') || e.target.classList.contains('sp-total')) && e.target.value !== preEditVal){
+    if(preEdit && editable(e.target) && e.target.value !== preEditVal){
       undoStack.push(preEdit); if(undoStack.length>UNDO_MAX) undoStack.shift(); updateUndoBtn();
     }
     preEdit = null;
   });
   body.addEventListener('keydown', e=>{
-    if(e.key==='Enter' && e.target.classList.contains('sp-input')){
+    if(e.key==='Enter' && (e.target.classList.contains('sp-enew-amt') || e.target.classList.contains('sp-enew-label'))){
       e.preventDefault();
-      e.target.closest('tr').querySelector('.sp-btn').click();
+      e.target.closest('.sp-entry-add').querySelector('.sp-eadd-btn').click();
     }
   });
   body.addEventListener('input', e=>{
     const tr = e.target.closest('tr'); if(!tr) return;
-    const i = +tr.dataset.i;
-    if(e.target.classList.contains('sp-total')){ items()[i].total = +e.target.value||0; grand(); touched(); }
-    else if(e.target.classList.contains('sp-name')){ items()[i].name = e.target.value; touched(); }
+    const i = +tr.dataset.i, r = items()[i];
+    if(e.target.classList.contains('sp-name')){ r.name = e.target.value; touched(); }
+    else if(e.target.classList.contains('sp-elabel')){
+      const j = +e.target.closest('.sp-entry').dataset.j; r.entries[j].label = e.target.value; touched();
+    } else if(e.target.classList.contains('sp-eamt')){
+      const j = +e.target.closest('.sp-entry').dataset.j; r.entries[j].amount = +e.target.value||0;
+      refreshCat(i); touched();
+    }
   });
 
   const editBtn = document.getElementById('sp-edit-toggle');
@@ -1422,7 +1502,7 @@ compute();
       if(!r.ok) throw new Error(authErr(r.status));
       const rec = (await r.json()).record;
       if(rec && Array.isArray(rec.items) && (+rec.updatedAt||0) > (store.updatedAt||0)){
-        store = {items:rec.items, updatedAt:+rec.updatedAt||Date.now()};
+        store = {items:normItems(rec.items), updatedAt:+rec.updatedAt||Date.now()};
         persist(); render();
       }
       setStatus('ok');
