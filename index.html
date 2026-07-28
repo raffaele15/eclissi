@@ -921,21 +921,21 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
         <div class="ecl-cmp-place">Galizia<small>A Coruña</small></div>
         <div>
           <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:100%;background:var(--corona)"></i></span><span class="val">~12°</span></div>
-          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:76%;background:var(--sea)"></i></span><span class="val">~76 s</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:70%;background:var(--sea)"></i></span><span class="val">~76 s</span></div>
         </div>
       </div>
       <div class="ecl-cmp-row">
         <div class="ecl-cmp-place">Asturie<small>Gijón · Oviedo</small></div>
         <div>
-          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:83%;background:var(--corona)"></i></span><span class="val">~10°</span></div>
-          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:100%;background:var(--sea)"></i></span><span class="val">~100 s</span></div>
+          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:86%;background:var(--corona)"></i></span><span class="val">~10°</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:100%;background:var(--sea)"></i></span><span class="val">108 s</span></div>
         </div>
       </div>
       <div class="ecl-cmp-row">
         <div class="ecl-cmp-place">Cantabria<small>Santander</small></div>
         <div>
           <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:75%;background:var(--corona)"></i></span><span class="val">~9°</span></div>
-          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:61%;background:var(--sea)"></i></span><span class="val">~61 s</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:56%;background:var(--sea)"></i></span><span class="val">~61 s</span></div>
         </div>
       </div>
     </div>
@@ -2147,7 +2147,7 @@ if (window.L) {
   // Altezza del Sole e orari alla totalità (ora locale CEST). Santander e A Coruña dai dati IGN; Asturie e Saragozza stime.
   const ZONE = [
     {label:'Santander / Somo (Cantabria)', alt:8.96, tot:'20:26:50', max:'20:27:21', dur:'1 min 01 s', note:'IGN · la base: comoda, ma totalità breve e Sole basso'},
-    {label:'Gijón · Oviedo (Asturie)',     alt:10,   tot:'~20:26',   max:'~20:27',   dur:'~1 min 40 s', note:'vicino alla centralità: la totalità più lunga del percorso, Sole un po\' più alto'},
+    {label:'Gijón · Oviedo (Asturie)',     alt:10.27, tot:'20:27:00', max:'20:27:54', dur:'1 min 48 s', note:'IGN · vicino alla centralità: la totalità più lunga del percorso, Sole un po\' più alto'},
     {label:'A Coruña (Galizia)',           alt:12,   tot:'~20:27',   max:'20:28',    dur:'1 min 16 s', note:'IGN · Sole più alto (12°), ma più rischio di nuvole atlantiche'},
     {label:'Saragozza (Aragona)',          alt:4,    tot:'~20:31',   max:'~20:31',   dur:'~1 min 10 s', note:'riserva meteo: cielo più spesso sereno, ma Sole quasi al tramonto'}
   ];
