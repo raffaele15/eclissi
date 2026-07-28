@@ -2142,17 +2142,17 @@ if (window.L) {
   // Orari (ora locale CEST) in secondi dalla mezzanotte + altezza del Sole al massimo. Fonte IGN dove indicato.
   // ps=inizio parziale, ts/te=totalità, mx=massimo, pe=fine (parziale o tramonto).
   const ZONE = [
-    {label:'Santander / Somo (Cantabria)', alt:8.96, ps:70274, ts:73610, mx:73641, te:73671, pe:76801,
+    {label:'Santander / Somo (Cantabria)', lat:43.4622, lon:-3.8097, ps:70274, ts:73610, mx:73641, te:73671, pe:76801,
      tot:'20:26:50', max:'20:27:21', dur:'1 min 01 s', note:'IGN · la base: comoda, ma totalità breve e Sole basso'},
-    {label:'Gijón · Oviedo (Asturie)', alt:10.27, ps:70275, ts:73620, mx:73674, te:73728, pe:76860,
+    {label:'Gijón · Oviedo (Asturie)', lat:43.3534, lon:-5.8801, ps:70275, ts:73620, mx:73674, te:73728, pe:76860,
      tot:'20:27:00', max:'20:27:54', dur:'1 min 48 s', note:'IGN · vicino alla centralità: la totalità più lunga del percorso, Sole un po\' più alto'},
-    {label:'A Coruña (Galizia)', alt:12, ps:70260, ts:73642, mx:73680, te:73718, pe:76920,
-     tot:'~20:27', max:'20:28', dur:'1 min 16 s', note:'IGN · Sole più alto (12°), ma più rischio di nuvole atlantiche'},
-    {label:'Saragozza (Aragona)', alt:6.1, ps:70473, ts:73736, mx:73778, te:73819, pe:76065,
+    {label:'A Coruña (Galizia)', lat:43.3623, lon:-8.4115, ps:70260, ts:73642, mx:73680, te:73718, pe:76920,
+     tot:'~20:27', max:'20:28', dur:'1 min 16 s', note:'IGN · Sole più alto (~12°), ma più rischio di nuvole atlantiche'},
+    {label:'Saragozza (Aragona)', lat:41.6488, lon:-0.8891, ps:70473, ts:73736, mx:73778, te:73819, pe:76065,
      tot:'20:28:56', max:'20:29:38', dur:'1 min 23 s', note:'IGN · vicino alla centralità e più a est: totalità lunga e cielo più spesso sereno, ma Sole basso'},
-    {label:'Tarragona (Catalogna)', alt:4.40, ps:70532, ts:73765, mx:73798, te:73830, pe:75490,
+    {label:'Tarragona (Catalogna)', lat:41.1062, lon:1.2303, ps:70532, ts:73765, mx:73798, te:73830, pe:75490,
      tot:'20:29:25', max:'20:29:58', dur:'1 min 05 s', note:'IGN · dentro la fascia! totale a pochi km da Barcellona, ma Sole bassissimo (~4°)'},
-    {label:'Barcellona (Catalogna)', alt:3.93, ps:70499, mx:73752, pe:75291, partial:true, peak:0.9982,
+    {label:'Barcellona (Catalogna)', lat:41.3927, lon:2.1593, ps:70499, mx:73752, pe:75291, partial:true, peak:0.9982,
      max:'20:29:12', set:'20:54:51', obsc:'99,82%', note:'IGN · fuori dalla fascia: solo parziale, e il Sole tramonta poco dopo il massimo'}
   ];
   sel.innerHTML = ZONE.map((z,i)=>`<option value="${i}">${z.label}</option>`).join('');
@@ -2175,19 +2175,34 @@ if (window.L) {
     return area/(Math.PI*r*r);
   }
 
+  // Posizione reale del Sole (modello NOAA/Meeus + rifrazione atmosferica di Saemundsson)
+  const RAD = Math.PI/180, AZ_PX = 3.6;
+  function sunPos(sec, lat, lon){
+    const nD = (Date.UTC(2026,7,12,0,0,0) + (sec-7200)*1000)/86400000 + 2440587.5 - 2451545.0;   // sec = ora locale CEST
+    let L=(280.460+0.9856474*nD)%360, g=(357.528+0.9856003*nD)%360;
+    const lam=(L+1.915*Math.sin(g*RAD)+0.020*Math.sin(2*g*RAD))*RAD, e=(23.439-0.0000004*nD)*RAD;
+    const ra=Math.atan2(Math.cos(e)*Math.sin(lam), Math.cos(lam)), dec=Math.asin(Math.sin(e)*Math.sin(lam));
+    let gmst=(280.46061837+360.98564736629*nD)%360;
+    const Hr=(((gmst+lon-ra/RAD)%360+540)%360-180)*RAD, la=lat*RAD;
+    let alt=Math.asin(Math.sin(la)*Math.sin(dec)+Math.cos(la)*Math.cos(dec)*Math.cos(Hr))/RAD;
+    if(alt>-1) alt += (1.02/Math.tan((alt+10.3/(alt+5.11))*RAD))/60;
+    const az=(Math.atan2(-Math.sin(Hr), Math.tan(dec)*Math.cos(la)-Math.sin(la)*Math.cos(Hr))/RAD+360)%360;
+    return {alt, az};
+  }
+
   function renderTime(sec){
-    const alt = Z.alt * (Z.pe - sec) / (Z.pe - Z.mx);   // discesa lineare: 0 al termine/tramonto, negativa dopo
-    const cy = Math.max(40, Math.min(162, HORIZON - alt*PX_PER_DEG));   // può scendere sotto l'orizzonte (mare)
-    sun.setAttribute('transform', `translate(0,${(cy-BASE_CY).toFixed(1)})`);
-    const below = alt <= 0;
+    const sp = sunPos(sec, Z.lat, Z.lon), alt = sp.alt, below = alt <= 0;
+    const sunY = Math.max(40, Math.min(160, HORIZON - alt*PX_PER_DEG));
+    const sunX = Math.max(52, Math.min(348, 128 + (sp.az - Z.azRef)*AZ_PX));   // deriva verso ovest-nordovest col tramonto
+    sun.setAttribute('transform', `translate(${(sunX-128).toFixed(1)},${(sunY-BASE_CY).toFixed(1)})`);
     drop.setAttribute('opacity', below ? 0 : 1);
-    if(!below) drop.setAttribute('y1', (cy+SUN_R).toFixed(1));
-    altT.setAttribute('y', (Math.min(cy, 122)+4).toFixed(1));
+    if(!below){ drop.setAttribute('x1', sunX.toFixed(1)); drop.setAttribute('x2', sunX.toFixed(1)); drop.setAttribute('y1', (sunY+SUN_R).toFixed(1)); }
+    altT.setAttribute('x', below ? 10 : (sunX+22).toFixed(1));
+    altT.setAttribute('y', (Math.min(sunY,122)+4).toFixed(1));
     altT.textContent = below ? 'sotto l\'orizzonte' : `~${(Math.round(alt*10)/10).toString().replace('.',',')}°`;
-    let f = sec<=Z.mx ? (sec-Z.mx)/(Z.mx-Z.ps) : (sec-Z.mx)/(Z.pe-Z.mx);   // Luna che scorre sul Sole
-    f = Math.max(-2.6, Math.min(2.6, f));   // fuori dall'eclissi la Luna è del tutto lontana dal Sole
-    // La Luna si muove verso est: entra dal bordo destro (in alto) ed esce in basso a sinistra
-    moon.setAttribute('cx', (128 - f*2*SUN_R).toFixed(1));
+    let f = sec<=Z.mx ? (sec-Z.mx)/(Z.mx-Z.ps) : (sec-Z.mx)/(Z.pe-Z.mx);
+    f = Math.max(-2.6, Math.min(2.6, f));
+    moon.setAttribute('cx', (128 - f*2*SUN_R).toFixed(1));   // Luna verso est: entra da destra-alto, esce sinistra-basso
     moon.setAttribute('cy', (106 + f*5).toFixed(1));
     const inTot = !Z.partial && sec>=Z.ts && sec<=Z.te;
     corona.setAttribute('opacity', inTot && !below ? 1 : 0);
@@ -2199,6 +2214,7 @@ if (window.L) {
   const fasi = document.getElementById('ecl-fasi');
   function apply(i){
     Z = ZONE[i];
+    Z.azRef = sunPos(Z.mx, Z.lat, Z.lon).az;   // azimut al massimo: il Sole è centrato a quell'istante
     if(fasi) fasi.style.display = (i===0) ? '' : 'none';   // "Le fasi a Santander" solo per Santander
     slider.min = Z.ps - 1800; slider.max = Z.pe + 1800; slider.step = 5; slider.value = Z.mx;   // ±30 min oltre l'eclissi
     const line = Z.partial
