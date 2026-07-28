@@ -2150,7 +2150,7 @@ if (window.L) {
      tot:'20:28:56', max:'20:29:38', dur:'1 min 23 s', note:'IGN · vicino alla centralità e più a est: totalità lunga e cielo più spesso sereno, ma Sole basso'},
     {label:'Tarragona (Catalogna)', alt:4.40, ps:70532, ts:73765, mx:73798, te:73830, pe:75490,
      tot:'20:29:25', max:'20:29:58', dur:'1 min 05 s', note:'IGN · dentro la fascia! totale a pochi km da Barcellona, ma Sole bassissimo (~4°)'},
-    {label:'Barcellona (Catalogna)', alt:3.93, ps:70499, mx:73752, pe:75291, partial:true,
+    {label:'Barcellona (Catalogna)', alt:3.93, ps:70499, mx:73752, pe:75291, partial:true, peak:0.9982,
      max:'20:29:12', set:'20:54:51', obsc:'99,82%', note:'IGN · fuori dalla fascia: solo parziale, e il Sole tramonta poco dopo il massimo'}
   ];
   sel.innerHTML = ZONE.map((z,i)=>`<option value="${i}">${z.label}</option>`).join('');
@@ -2163,6 +2163,15 @@ if (window.L) {
   let Z = ZONE[0];
   const fmt = s => { s=Math.round(s); const h=Math.floor(s/3600), m=Math.floor((s%3600)/60), ss=s%60;
     return `${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`; };
+  // frazione del disco solare coperta dalla Luna (sovrapposizione di due cerchi)
+  function overlap(d, r, R){
+    if(d >= r+R) return 0;
+    if(d <= Math.abs(R-r)) return 1;
+    const cl = x => Math.max(-1, Math.min(1, x));
+    const a = cl((d*d + r*r - R*R)/(2*d*r)), b = cl((d*d + R*R - r*r)/(2*d*R));
+    const area = r*r*Math.acos(a) + R*R*Math.acos(b) - 0.5*Math.sqrt(Math.max(0,(-d+r+R)*(d+r-R)*(d-r+R)*(d+r+R)));
+    return area/(Math.PI*r*r);
+  }
 
   function renderTime(sec){
     const alt = Z.alt * (Z.pe - sec) / (Z.pe - Z.mx);   // discesa lineare: 0 al termine/tramonto, negativa dopo
@@ -2178,11 +2187,10 @@ if (window.L) {
     moon.setAttribute('cx', (128 + f*2*SUN_R).toFixed(1));
     const inTot = !Z.partial && sec>=Z.ts && sec<=Z.te;
     corona.setAttribute('opacity', inTot && !below ? 1 : 0);
-    let ph='';
-    if(below) ph=' · tramontato';
-    else if(inTot) ph=' · TOTALE';
-    else if(Z.partial && Math.abs(f)<0.02) ph=' · max 99,8%';
-    tout.textContent = fmt(sec)+ph;
+    const obsc = overlap(Math.abs(f)*2*SUN_R, 15, 15.6) * (Z.peak||1) * 100;
+    const pct = obsc>=99.95 ? '100' : (Math.round(obsc*10)/10).toString().replace('.', ',');
+    tout.textContent = below ? fmt(sec)+' · tramontato'
+      : `${fmt(sec)} · ${pct}%${inTot?' · TOTALE':''}`;
   }
   const fasi = document.getElementById('ecl-fasi');
   function apply(i){
