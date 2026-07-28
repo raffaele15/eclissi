@@ -2144,12 +2144,13 @@ if (window.L) {
   const sel = document.getElementById('ecl-loc');
   if(!sel) return;
   // Zone dove conviene andare, con altezza del Sole alla totalità e orari locali (CEST). Valori stimati.
-  // Altezza del Sole e orari alla totalità (ora locale CEST). Santander e A Coruña dai dati IGN; Asturie e Saragozza stime.
+  // Altezza del Sole e orari (ora locale CEST) alla totalità (o al massimo, dove è solo parziale). Fonte IGN dove indicato.
   const ZONE = [
     {label:'Santander / Somo (Cantabria)', alt:8.96, tot:'20:26:50', max:'20:27:21', dur:'1 min 01 s', note:'IGN · la base: comoda, ma totalità breve e Sole basso'},
     {label:'Gijón · Oviedo (Asturie)',     alt:10.27, tot:'20:27:00', max:'20:27:54', dur:'1 min 48 s', note:'IGN · vicino alla centralità: la totalità più lunga del percorso, Sole un po\' più alto'},
     {label:'A Coruña (Galizia)',           alt:12,   tot:'~20:27',   max:'20:28',    dur:'1 min 16 s', note:'IGN · Sole più alto (12°), ma più rischio di nuvole atlantiche'},
-    {label:'Saragozza (Aragona)',          alt:4,    tot:'~20:31',   max:'~20:31',   dur:'~1 min 10 s', note:'riserva meteo: cielo più spesso sereno, ma Sole quasi al tramonto'}
+    {label:'Barcellona (Catalogna)',       alt:3.93, max:'20:29:12', set:'20:54:51', obsc:'99,82%', partial:true, note:'IGN · fuori dalla fascia: solo parziale, e il Sole tramonta poco dopo il massimo'},
+    {label:'Tarragona (Catalogna)',        alt:4.40, tot:'20:29:25', max:'20:29:58', dur:'1 min 05 s', note:'IGN · dentro la fascia! totale a pochi km da Barcellona, ma Sole bassissimo (~4°)'}
   ];
   sel.innerHTML = ZONE.map((z,i)=>`<option value="${i}">${z.label}</option>`).join('');
 
@@ -2166,7 +2167,10 @@ if (window.L) {
     drop.setAttribute('y1', (cy + 15).toFixed(1));
     altT.setAttribute('y', (cy + 4).toFixed(1));
     altT.textContent = `~${String(Math.round(z.alt*10)/10).replace('.', ',')}° sull'orizzonte`;
-    times.innerHTML = `<b>Totalità</b> ${z.tot} · <b>massimo</b> ${z.max} · <b>durata</b> ${z.dur}<br><span style="color:var(--muted)">${z.note}</span>`;
+    const line = z.partial
+      ? `<b>Solo parziale</b> ${z.obsc} · <b>massimo</b> ${z.max} · <b>tramonto</b> ${z.set}`
+      : `<b>Totalità</b> ${z.tot} · <b>massimo</b> ${z.max} · <b>durata</b> ${z.dur}`;
+    times.innerHTML = `${line}<br><span style="color:var(--muted)">${z.note}</span>`;
   }
   sel.addEventListener('change', ()=>apply(+sel.value));
   apply(0);
