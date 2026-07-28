@@ -880,13 +880,13 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
     <div class="card">
       <h3>Le fasi a Santander</h3>
       <div class="ecl-timeline">
-        <div class="ecl-phase"><b>~19:31</b><span>primo contatto: inizia la fase parziale</span></div>
-        <div class="ecl-phase hot"><b>20:26:51</b><span>inizio della totalità</span></div>
-        <div class="ecl-phase hot"><b>~20:27:24</b><span>massimo dell'eclissi</span></div>
-        <div class="ecl-phase"><b>~20:27:56</b><span>fine della totalità</span></div>
-        <div class="ecl-phase"><b>~21:27</b><span>tramonto del Sole</span></div>
+        <div class="ecl-phase"><b>19:31:14</b><span>primo contatto: inizia la fase parziale</span></div>
+        <div class="ecl-phase hot"><b>20:26:50</b><span>inizio della totalità</span></div>
+        <div class="ecl-phase hot"><b>20:27:21</b><span>massimo dell'eclissi</span></div>
+        <div class="ecl-phase"><b>20:27:51</b><span>fine della totalità</span></div>
+        <div class="ecl-phase"><b>21:20:01</b><span>fine della fase parziale (al tramonto)</span></div>
       </div>
-      <p>Totalità di appena <b>~1 minuto e 5 secondi</b>, un'ora prima del tramonto ma con il Sole già bassissimo sull'orizzonte.</p>
+      <p>Totalità di appena <b>1 minuto e 1 secondo</b>, con il Sole a <b>~9°</b> sull'orizzonte (azimut 282°, ovest-nordovest). Orari e dati dal <a href="https://visualizadores.ign.es/eclipses/" target="_blank" rel="noopener">Visualizador de Eclipses dell'IGN</a>.</p>
     </div>
     <div class="card">
       <h3>Il Sole sarà bassissimo, verso O-NO</h3>
@@ -920,22 +920,22 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <div class="ecl-cmp-row">
         <div class="ecl-cmp-place">Galizia<small>A Coruña</small></div>
         <div>
-          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:100%;background:var(--corona)"></i></span><span class="val">~12,5°</span></div>
-          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:70%;background:var(--sea)"></i></span><span class="val">~76 s</span></div>
+          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:100%;background:var(--corona)"></i></span><span class="val">~12°</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:76%;background:var(--sea)"></i></span><span class="val">~76 s</span></div>
         </div>
       </div>
       <div class="ecl-cmp-row">
-        <div class="ecl-cmp-place">Asturie<small>Gijón · Rodiles</small></div>
+        <div class="ecl-cmp-place">Asturie<small>Gijón · Oviedo</small></div>
         <div>
-          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:82%;background:var(--corona)"></i></span><span class="val">~10°</span></div>
-          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:100%;background:var(--sea)"></i></span><span class="val">~108 s</span></div>
+          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:83%;background:var(--corona)"></i></span><span class="val">~10°</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:100%;background:var(--sea)"></i></span><span class="val">~100 s</span></div>
         </div>
       </div>
       <div class="ecl-cmp-row">
         <div class="ecl-cmp-place">Cantabria<small>Santander</small></div>
         <div>
-          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:64%;background:var(--corona)"></i></span><span class="val">~8°</span></div>
-          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:60%;background:var(--sea)"></i></span><span class="val">~65 s</span></div>
+          <div class="ecl-metric"><span class="lab">Sole</span><span class="bar"><i style="width:75%;background:var(--corona)"></i></span><span class="val">~9°</span></div>
+          <div class="ecl-metric"><span class="lab">Totalità</span><span class="bar"><i style="width:61%;background:var(--sea)"></i></span><span class="val">~61 s</span></div>
         </div>
       </div>
     </div>
@@ -2144,11 +2144,12 @@ if (window.L) {
   const sel = document.getElementById('ecl-loc');
   if(!sel) return;
   // Zone dove conviene andare, con altezza del Sole alla totalità e orari locali (CEST). Valori stimati.
+  // Altezza del Sole e orari alla totalità (ora locale CEST). Santander e A Coruña dai dati IGN; Asturie e Saragozza stime.
   const ZONE = [
-    {label:'Santander / Somo (Cantabria)', alt:8,    tot:'20:26:51', dur:'~1 min 05 s', set:'21:27', note:'la base: comodo, ma totalità corta e Sole basso'},
-    {label:'Gijón · Rodiles (Asturie)',    alt:10,   tot:'~20:26',   dur:'~1 min 48 s', set:'21:33', note:'il miglior compromesso: totalità quasi doppia'},
-    {label:'A Coruña (Galizia)',           alt:12.5, tot:'~20:27',   dur:'~1 min 16 s', set:'21:38', note:'Sole più alto, ma più rischio nuvole atlantiche'},
-    {label:'Saragozza (Aragona)',          alt:4,    tot:'20:29',    dur:'~1 min 25 s', set:'21:10', note:'riserva meteo: cielo più probabilmente sereno, ma Sole quasi al tramonto'}
+    {label:'Santander / Somo (Cantabria)', alt:8.96, tot:'20:26:50', max:'20:27:21', dur:'1 min 01 s', note:'IGN · la base: comoda, ma totalità breve e Sole basso'},
+    {label:'Gijón · Oviedo (Asturie)',     alt:10,   tot:'~20:26',   max:'~20:27',   dur:'~1 min 40 s', note:'vicino alla centralità: la totalità più lunga del percorso, Sole un po\' più alto'},
+    {label:'A Coruña (Galizia)',           alt:12,   tot:'~20:27',   max:'20:28',    dur:'1 min 16 s', note:'IGN · Sole più alto (12°), ma più rischio di nuvole atlantiche'},
+    {label:'Saragozza (Aragona)',          alt:4,    tot:'~20:31',   max:'~20:31',   dur:'~1 min 10 s', note:'riserva meteo: cielo più spesso sereno, ma Sole quasi al tramonto'}
   ];
   sel.innerHTML = ZONE.map((z,i)=>`<option value="${i}">${z.label}</option>`).join('');
 
@@ -2164,8 +2165,8 @@ if (window.L) {
     sun.setAttribute('transform', `translate(0,${(cy - BASE_CY).toFixed(1)})`);
     drop.setAttribute('y1', (cy + 15).toFixed(1));
     altT.setAttribute('y', (cy + 4).toFixed(1));
-    altT.textContent = `~${String(z.alt).replace('.', ',')}° sull'orizzonte`;
-    times.innerHTML = `<b>Totalità</b> ${z.tot} · <b>durata</b> ${z.dur} · <b>tramonto</b> ${z.set}<br><span style="color:var(--muted)">${z.note}</span>`;
+    altT.textContent = `~${String(Math.round(z.alt*10)/10).replace('.', ',')}° sull'orizzonte`;
+    times.innerHTML = `<b>Totalità</b> ${z.tot} · <b>massimo</b> ${z.max} · <b>durata</b> ${z.dur}<br><span style="color:var(--muted)">${z.note}</span>`;
   }
   sel.addEventListener('change', ()=>apply(+sel.value));
   apply(0);
