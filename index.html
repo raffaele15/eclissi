@@ -304,7 +304,9 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
 .ecl-times b{color:var(--corona);font-weight:400}
 .ecl-slider{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 .ecl-slider input[type=range]{width:100%;accent-color:var(--corona);height:5px;cursor:pointer}
-.ecl-slider output{font-family:var(--mono);font-size:16px;color:var(--corona);text-align:center;white-space:nowrap}
+.ecl-slider output{font-family:var(--mono);font-size:16px;color:var(--corona);text-align:center;white-space:nowrap;font-variant-numeric:tabular-nums}
+.ecl-slider output .ot-pct{display:inline-block;min-width:58px;text-align:right}
+.ecl-slider output .ot-tag{display:inline-block;min-width:80px;text-align:left;color:var(--corona-hot)}
 .ecl-spots{list-style:none;padding:0;margin:6px 0 0;display:grid;gap:8px}
 .ecl-spots li{padding-left:16px;position:relative;font-size:14.5px;line-height:1.4}
 .ecl-spots li::before{content:"";position:absolute;left:0;top:9px;width:6px;height:6px;border-radius:99px;background:var(--corona)}
@@ -2189,8 +2191,8 @@ if (window.L) {
     corona.setAttribute('opacity', inTot && !below ? 1 : 0);
     const obsc = overlap(Math.abs(f)*2*SUN_R, 15, 15.6) * (Z.peak||1) * 100;
     const pct = obsc>=99.95 ? '100' : (Math.round(obsc*10)/10).toString().replace('.', ',');
-    tout.textContent = below ? fmt(sec)+' · tramontato'
-      : `${fmt(sec)} · ${pct}%${inTot?' · TOTALE':''}`;
+    tout.innerHTML = below ? `${fmt(sec)} · tramontato`
+      : `${fmt(sec)} · <span class="ot-pct">${pct}%</span><span class="ot-tag">${inTot?' · TOTALE':''}</span>`;
   }
   const fasi = document.getElementById('ecl-fasi');
   function apply(i){
