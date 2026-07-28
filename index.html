@@ -302,9 +302,9 @@ h2 .num{font-family:var(--mono);font-size:13px;color:var(--corona);display:block
   font-family:var(--body);font-size:14px;letter-spacing:0;text-transform:none;padding:8px 10px;border-radius:8px;cursor:pointer}
 .ecl-times{font-family:var(--mono);font-size:12.5px;color:var(--muted);margin:12px 0 0}
 .ecl-times b{color:var(--corona);font-weight:400}
-.ecl-slider{display:flex;align-items:center;gap:12px;margin-top:10px}
-.ecl-slider input[type=range]{flex:1;min-width:120px;accent-color:var(--corona);height:4px}
-.ecl-slider output{font-family:var(--mono);font-size:15px;color:var(--corona);min-width:118px;text-align:right;white-space:nowrap}
+.ecl-slider{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+.ecl-slider input[type=range]{width:100%;accent-color:var(--corona);height:5px;cursor:pointer}
+.ecl-slider output{font-family:var(--mono);font-size:16px;color:var(--corona);text-align:center;white-space:nowrap}
 .ecl-phases{display:flex;flex-wrap:wrap;gap:10px 6px;justify-content:center;margin:6px 0 10px}
 .ecl-ph{width:62px;text-align:center}
 .ecl-ph svg{width:56px;height:56px;display:block;margin:0 auto}
@@ -885,8 +885,8 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
       <p>Totalità di appena <b>1 minuto e 1 secondo</b>, con il Sole a <b>~9°</b> sull'orizzonte (azimut 282°, ovest-nordovest). Orari e dati dal <a href="https://visualizadores.ign.es/eclipses/" target="_blank" rel="noopener">Visualizador de Eclipses dell'IGN</a>.</p>
     </div>
     <div class="card">
-      <h3>Il Sole sarà bassissimo, verso O-NO</h3>
-      <label class="ecl-sel-wrap">Da dove la guardi<select id="ecl-loc" class="ecl-sel" aria-label="Zona di osservazione"></select></label>
+      <h3>Simulatore eclissi</h3>
+      <label class="ecl-sel-wrap"><select id="ecl-loc" class="ecl-sel" aria-label="Zona di osservazione"></select></label>
       <svg class="ecl-horizon" viewBox="0 0 400 168" role="img" aria-label="Il Sole eclissato basso sull'orizzonte ovest-nordovest, sopra il mare">
         <defs>
           <linearGradient id="ecl-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#161a34"/><stop offset="1" stop-color="#3a2836"/></linearGradient>
@@ -905,8 +905,8 @@ footer{padding:40px 0 20px;color:var(--muted);font-size:13px;font-family:var(--m
         <text x="10" y="152" fill="#9199BE" font-size="11" font-family="monospace">mare · orizzonte ovest–nordovest</text>
       </svg>
       <div class="ecl-slider">
-        <input type="range" id="ecl-time" aria-label="Trascina per cambiare l'orario">
         <output id="ecl-time-out">20:27:21</output>
+        <input type="range" id="ecl-time" aria-label="Trascina per cambiare l'orario">
       </div>
       <p class="ecl-times" id="ecl-times"></p>
       <p>Serve un <b>orizzonte libero verso ovest/nord-ovest</b>, meglio sul mare: colline, edifici o foschia bassa possono nascondere del tutto la totalità.</p>
@@ -2177,27 +2177,28 @@ if (window.L) {
     return `${h}:${String(m).padStart(2,'0')}:${String(ss).padStart(2,'0')}`; };
 
   function renderTime(sec){
-    let alt = Z.alt * (Z.pe - sec) / (Z.pe - Z.mx);   // discesa lineare fino a 0 al termine/tramonto
-    alt = Math.max(0, alt);
-    const cy = Math.max(40, Math.min(HORIZON - 4, HORIZON - alt*PX_PER_DEG));
+    const alt = Z.alt * (Z.pe - sec) / (Z.pe - Z.mx);   // discesa lineare: 0 al termine/tramonto, negativa dopo
+    const cy = Math.max(40, Math.min(162, HORIZON - alt*PX_PER_DEG));   // può scendere sotto l'orizzonte (mare)
     sun.setAttribute('transform', `translate(0,${(cy-BASE_CY).toFixed(1)})`);
-    drop.setAttribute('y1', (cy+SUN_R).toFixed(1));
-    altT.setAttribute('y', (cy+4).toFixed(1));
-    altT.textContent = `~${(Math.round(alt*10)/10).toString().replace('.',',')}°`;
+    const below = alt <= 0;
+    drop.setAttribute('opacity', below ? 0 : 1);
+    if(!below) drop.setAttribute('y1', (cy+SUN_R).toFixed(1));
+    altT.setAttribute('y', (Math.min(cy, 122)+4).toFixed(1));
+    altT.textContent = below ? 'sotto l\'orizzonte' : `~${(Math.round(alt*10)/10).toString().replace('.',',')}°`;
     let f = sec<=Z.mx ? (sec-Z.mx)/(Z.mx-Z.ps) : (sec-Z.mx)/(Z.pe-Z.mx);   // Luna che scorre sul Sole
-    f = Math.max(-1, Math.min(1, f));
+    f = Math.max(-2.6, Math.min(2.6, f));   // fuori dall'eclissi la Luna è del tutto lontana dal Sole
     moon.setAttribute('cx', (128 + f*2*SUN_R).toFixed(1));
     const inTot = !Z.partial && sec>=Z.ts && sec<=Z.te;
-    corona.setAttribute('opacity', inTot ? 1 : 0);
+    corona.setAttribute('opacity', inTot && !below ? 1 : 0);
     let ph='';
-    if(alt<=0.05) ph=' · tramontato';
+    if(below) ph=' · tramontato';
     else if(inTot) ph=' · TOTALE';
     else if(Z.partial && Math.abs(f)<0.02) ph=' · max 99,8%';
     tout.textContent = fmt(sec)+ph;
   }
   function apply(i){
     Z = ZONE[i];
-    slider.min = Z.ps; slider.max = Z.pe; slider.step = 5; slider.value = Z.mx;
+    slider.min = Z.ps - 1800; slider.max = Z.pe + 1800; slider.step = 5; slider.value = Z.mx;   // ±30 min oltre l'eclissi
     const line = Z.partial
       ? `<b>Solo parziale</b> ${Z.obsc} · <b>massimo</b> ${Z.max} · <b>tramonto</b> ${Z.set}`
       : `<b>Totalità</b> ${Z.tot} · <b>massimo</b> ${Z.max} · <b>durata</b> ${Z.dur}`;
